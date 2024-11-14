@@ -1,0 +1,100 @@
+<!-- Screen Header -->
+<div class="card">
+    <h5 class="card-header">{{ 'ADD_COORPERATE' | translate }}</h5>
+</div>
+
+<!-- Loading Spinner -->
+<div *ngIf="isLoading" class="spinner-grow" role="status">
+    <span class="sr-only">{{ 'LOADING' | translate }}...</span>
+</div>
+
+<!-- Form -->
+<form class="p-2" *ngIf="!isLoading" [formGroup]="coorperatesForm" (ngSubmit)="onSubmit()">
+
+    <!-- Form Fields -->
+    <div class="row">
+
+        <!-- Name -->
+        <div class="form-group col-md-6 col-12">
+            <label for="name">{{ 'NAME' | translate }}</label>
+            <input type="text" id="name" class="form-control" formControlName="name" required />
+            <small *ngIf="coorperatesForm.get('name').hasError('required') && coorperatesForm.get('name').touched"
+                class="form-text text-danger">
+                {{ 'REQUIRED_FIELD' | translate }}
+            </small>
+        </div>
+
+        <!-- Info -->
+        <div class="form-group col-md-6 col-12">
+            <label for="info">{{ 'INFO' | translate }}</label>
+            <input type="text" id="info" class="form-control" formControlName="info" />
+        </div>
+
+        <!-- Address -->
+        <div class="form-group col-md-6 col-12">
+            <label for="address">{{ 'ADDRESS' | translate }}</label>
+            <input type="text" id="address" class="form-control" formControlName="address" required />
+            <small *ngIf="coorperatesForm.get('address').hasError('required') && coorperatesForm.get('address').touched"
+                class="form-text text-danger">
+                {{ 'REQUIRED_FIELD' | translate }}
+            </small>
+        </div>
+
+        <!-- Rules -->
+        <div class="form-group col-md-6 col-12">
+            <label for="rules">{{ 'RULES' | translate }}</label>
+            <input type="text" id="rules" class="form-control" formControlName="rules" />
+        </div>
+
+        <!-- Commission -->
+        <div class="form-group col-md-6 col-12">
+            <label for="commission">{{ 'COMMISSION' | translate }}</label>
+            <input type="number" id="commission" class="form-control" formControlName="commission" />
+            <small *ngIf="coorperatesForm.get('commission').hasError('min')" class="form-text text-danger">
+                {{ 'INVALID_COMMISSION' | translate }}
+            </small>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group col-md-6 col-12">
+            <label for="isActive">{{ 'STATUS' | translate }}</label>
+            <select id="isActive" class="form-control" formControlName="isActive">
+                <option [value]="true">{{ 'ACTIVE' | translate }}</option>
+                <option [value]="false">{{ 'INACTIVE' | translate }}</option>
+            </select>
+        </div>
+
+        <!-- Upload File -->
+        <div class="form-group col-md-6 col-12">
+            <fieldset class="form-group">
+                <label for="file-upload-single">{{ 'SELECT_IMAGE' | translate }}</label>
+                <div class="custom-file">
+                    <input type="file" accept="image/*" class="custom-file-input" (change)="onFileSelected($event)"
+                        id="file-upload-single" />
+                    <label class="custom-file-label">{{ 'CHOOSE_FILE' | translate }}</label>
+                </div>
+            </fieldset>
+            <div *ngIf="selectedFile">
+                <img [src]="selectedFile || 'image'" alt="{{ 'IMAGE' | translate }}"
+                    style="width: 200px; height: 200px;" />
+                <button type="button" class="btn btn-danger btn-sm round m-1" rippleEffect (click)="deleteImage()">
+                    <i class="feather icon-x"></i>
+                </button>
+            </div>
+            <small *ngIf="coorperatesForm.get('coverImage').hasError('required') && !selectedFile"
+                class="form-text text-danger">
+                {{ 'REQUIRED_FIELD' | translate }}
+            </small>
+        </div>
+
+        <!-- Actions -->
+        <div class="col-12">
+            <button type="submit" rippleEffect class="btn btn-primary mr-1" (click)="onSubmit()">
+                {{ 'SUBMIT' | translate }}
+            </button>
+            <button type="reset" rippleEffect class="btn btn-outline-secondary" (click)="back()">
+                {{ 'CANCEL' | translate }}
+            </button>
+        </div>
+    </div>
+</form>

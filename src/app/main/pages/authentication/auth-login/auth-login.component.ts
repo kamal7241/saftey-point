@@ -1,16 +1,23 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { takeUntil, first } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 import { AuthenticationService } from 'app/auth/service';
 import { CoreConfigService } from '@core/services/config.service';
+import { InputWithLabelComponent } from '@core/components/input-with-label/input-with-label.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-auth-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputWithLabelComponent // Import the InputWithLabelComponent
+  ],
   templateUrl: './auth-login.component.html',
-  styleUrls: ['./auth-login.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class AuthLoginComponent implements OnInit {

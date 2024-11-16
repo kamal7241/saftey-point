@@ -1,0 +1,25 @@
+<div>
+  <label>{{ label }}</label>
+  <img *ngIf="icon" [src]="icon" class="nav-icon" />
+
+  <input
+    [type]="isPasswordVisible && type === 'password' ? 'text' : type"
+    [placeholder]="placeholder"
+    [required]="required"
+    [value]="value"
+    (input)="onInputChange($event)"
+    (blur)="onTouched()"
+    class="border border-neutral-500"
+  />
+
+  <!-- Show the button only if the input type is password -->
+  <button
+    type="button"
+    *ngIf="type === 'password'"
+    (click)="togglePasswordVisibility()"
+  >
+    <!-- <mat-icon>{{
+      isPasswordVisible ? "visibility_off" : "visibility"
+    }}</mat-icon> -->
+  </button>
+</div>

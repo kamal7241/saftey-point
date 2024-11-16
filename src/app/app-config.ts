@@ -16,37 +16,36 @@ import { CoreConfig } from '@core/types';
 // prettier-ignore
 export const coreConfig: CoreConfig = {
   app: {
-    appName: 'SearchNPark',                                        // App Name
-    appTitle: 'Platform', // App Title
-    appLogoImage: 'assets/images/logo/logo1.svg',                  // App Logo
-    appLanguage: 'en',                                           // App Default Language (en, fr, de, pt etc..)
+    appName: 'Safety Point Academy',
+    appTitle: 'Safety Point Academy',
+    appLogoImage: 'assets/images/logo/logo1.svg',
+    appLanguage: 'en',
   },
   layout: {
-    skin: 'semi-dark',                        // default, dark, bordered, semi-dark
-    type: 'vertical',                       // vertical, horizontal
-    animation: 'fadeIn',                     // fadeInLeft, zoomIn , fadeIn, none
+    skin: 'semi-dark',
+    type: 'vertical',
+    animation: 'fadeIn',
     menu: {
-      hidden: false,           // Boolean: true, false
-      collapsed: false,           // Boolean: true, false
+      hidden: false,
+      collapsed: false,
     },
-    // ? For horizontal menu, navbar type will work for navMenu type
     navbar: {
-      hidden: false,           // Boolean: true, false
-      type: 'fixed-top',  // navbar-static-top, fixed-top, floating-nav, d-none
-      background: 'navbar-light',  // navbar-light. navbar-dark
-      customBackgroundColor: true,            // Boolean: true, false
-      backgroundColor: ''               // BS color i.e bg-primary, bg-success
+      hidden: false,
+      type: 'fixed-top',
+      background: 'navbar-light',
+      customBackgroundColor: true,
+      backgroundColor: ''
     },
     footer: {
-      hidden: false,           // Boolean: true, false
-      type: 'footer-sticky', // footer-static, footer-sticky, d-none
-      background: 'footer-light',  // footer-light. footer-dark
-      customBackgroundColor: false,           // Boolean: true, false
-      backgroundColor: ''               // BS color i.e bg-primary, bg-success
+      hidden: false,
+      type: 'footer-sticky',
+      background: 'footer-light',
+      customBackgroundColor: false,
+      backgroundColor: ''
     },
     enableLocalStorage: true,
-    customizer: false,                       // Boolean: true, false (Enable theme customizer)
-    scrollTop: false,                       // Boolean: true, false (Enable scroll to top button)
-    buyNow: false                        // Boolean: true, false (Set false in real project, For demo purpose only)
+    customizer: false,
+    scrollTop: false,
+    buyNow: false
   }
 }

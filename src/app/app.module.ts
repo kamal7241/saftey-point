@@ -19,6 +19,7 @@ import { AppComponent } from 'app/app.component';
 import { LayoutModule } from 'app/layout/layout.module';
 import { SampleModule } from 'app/main/sample/sample.module';
 import { AppRoutingModule } from './app-routing.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -43,6 +44,11 @@ import { AppRoutingModule } from './app-routing.module';
     SampleModule
   ],
 
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+
+  providers: [
+     provideAnimationsAsync()
+
+  ]
 })
 export class AppModule { }

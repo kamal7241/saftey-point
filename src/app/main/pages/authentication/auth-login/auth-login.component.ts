@@ -105,8 +105,8 @@ export class AuthLoginComponent implements OnInit {
    */
   ngOnInit(): void {
     this.loginForm = this._formBuilder.group({
-      email: ['e', [Validators.required, Validators.email]],
-      password: ['Test1234', Validators.required]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
 
     // get return url from route parameters or default to '/'

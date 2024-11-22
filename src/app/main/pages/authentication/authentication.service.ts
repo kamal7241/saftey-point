@@ -14,6 +14,7 @@ export class AuthenticationService extends ApiService {
    * Constructor
    *
    * @param {HttpClient} _httpClient
+   * @param {ToastrService} _toastrService
    */
   constructor(
     private _httpClient: HttpClient,
@@ -23,14 +24,51 @@ export class AuthenticationService extends ApiService {
     this.getUserData();
   }
 
+  // Existing Methods
   requestLogin(request: any): Promise<ApiResult<any>> {
     return this.postResponse('auth/login', request);
+  }
+
+  requestForgetPassword(request: any): Promise<ApiResult<any>> {
+    return this.postResponse('auth/forget-password', request);
   }
 
   requestRegisterInstructor(request: any): Promise<ApiResult<any>> {
     return this.postResponse('admin/register', request);
   }
 
+  // New forgotPassword method
+  forgotPassword(request: any): Promise<ApiResult<any>> {
+    return this.postResponse('c/c5f9-0bcb-42ac-83cd', request);
+  }
+
+  verifyOtp(request: { otp: string }): Promise<ApiResult<any>> {
+    return this.postResponse('c/c5f9-0bcb-42ac-83cd', request);
+  }
+
+  resendOtp(): Promise<ApiResult<any>> {
+    return this.postResponse('c/c5f9-0bcb-42ac-83cd');
+  }
+
+  // Updated resetPassword method
+  resetPassword(request: { newPassword: string }): Promise<ApiResult<any>> {
+    return this.postResponse('auth/update-password', request)
+      .then(response => {
+        if (response.status) {
+          // Handle success - Notify the user
+          this._toastrService.success('Password updated successfully!', 'Success');
+        } else {
+          // Handle failure - Notify the user
+          this._toastrService.error('Failed to update password. Please try again.', 'Error');
+        }
+        return response;
+      })
+      .catch(error => {
+        // Handle network or other errors
+        this._toastrService.error('An error occurred while resetting your password.', 'Error');
+        throw error;
+      });
+  }
   getUserData(): void {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {
@@ -49,6 +87,4 @@ export class AuthenticationService extends ApiService {
     this.userData$.next(null);
     localStorage.clear();
   }
-
-
 }

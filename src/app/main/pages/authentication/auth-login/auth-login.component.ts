@@ -1,13 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { takeUntil, first } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { AuthenticationService } from 'app/auth/service';
-import { CoreConfigService } from '@core/services/config.service';
-import { InputWithLabelComponent } from '@core/components/input-with-label/input-with-label.component';
 import { CommonModule } from '@angular/common';
+import { InputWithLabelComponent } from '@core/components/input-with-label/input-with-label.component';
+import { CoreConfigService } from '@core/services/config.service';
+import { AuthenticationService } from 'app/auth/service';
 
 @Component({
   selector: 'app-auth-login',
@@ -15,7 +13,7 @@ import { CommonModule } from '@angular/common';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    InputWithLabelComponent // Import the InputWithLabelComponent
+    InputWithLabelComponent
   ],
   templateUrl: './auth-login.component.html',
   encapsulation: ViewEncapsulation.None

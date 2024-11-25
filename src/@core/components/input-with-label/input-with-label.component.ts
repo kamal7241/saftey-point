@@ -19,6 +19,7 @@ export class InputWithLabelComponent implements ControlValueAccessor {
   @Input() type: string = 'text'; // Default input type
   @Input() placeholder: string = '';
   @Input() required: boolean = false;
+  @Input() formControlName: string = '';
   @Input() icon: string = '';
 
   value: string = '';

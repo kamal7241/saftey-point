@@ -50,25 +50,35 @@ export class AuthenticationService extends ApiService {
     return this.postResponse('c/c5f9-0bcb-42ac-83cd');
   }
 
-  // Updated resetPassword method
+  // Updated resetPassword method with explicit typing for Promise<ApiResult<any>>
   resetPassword(request: { newPassword: string }): Promise<ApiResult<any>> {
-    return this.postResponse('auth/update-password', request)
-      .then(response => {
-        if (response.status) {
-          // Handle success - Notify the user
-          this._toastrService.success('Password updated successfully!', 'Success');
+    return new Promise<ApiResult<any>>((resolve, reject) => {
+      // Simulating a delay for a mock API response
+      setTimeout(() => {
+        const mockResponse: ApiResult<any> = {
+          code: 200, // Example code, adjust to your needs
+          status: true, // Toggle for success (true) or failure (false)
+          innerData: null, // Add any data if required, null for now
+          message: 'Password updated successfully!', // Custom message
+          authToken: 'fake-auth-token' // Example auth token, if applicable
+        };
+  
+        // Fake success/failure response based on status
+        if (mockResponse.status) {
+          this._toastrService.success(mockResponse.message, 'Success');
+          resolve(mockResponse);
         } else {
-          // Handle failure - Notify the user
-          this._toastrService.error('Failed to update password. Please try again.', 'Error');
+          this._toastrService.error(mockResponse.message, 'Error');
+          reject(mockResponse);
         }
-        return response;
-      })
-      .catch(error => {
-        // Handle network or other errors
-        this._toastrService.error('An error occurred while resetting your password.', 'Error');
-        throw error;
-      });
+      }, 1000); // Simulate a 1-second delay (adjust as needed)
+    }).catch(error => {
+      // Handle network or other errors
+      this._toastrService.error('An error occurred while resetting your password.', 'Error');
+      throw error;
+    });
   }
+
   getUserData(): void {
     const userData = JSON.parse(localStorage.getItem('userData'));
     if (userData) {

@@ -8,7 +8,6 @@ import { CoreConfigService } from '@core/services/config.service';
 @Component({
   selector: 'vertical-layout',
   templateUrl: './vertical-layout.component.html',
-  styleUrls: ['./vertical-layout.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class VerticalLayoutComponent implements OnInit, OnDestroy {

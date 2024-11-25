@@ -10,7 +10,6 @@ import { CoreSidebarService } from '@core/components/core-sidebar/core-sidebar.s
 @Component({
   selector: 'core-theme-customizer',
   templateUrl: './theme-customizer.component.html',
-  styleUrls: ['./theme-customizer.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class CoreThemeCustomizerComponent implements OnInit, OnDestroy {

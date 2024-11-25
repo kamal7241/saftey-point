@@ -12,6 +12,7 @@ import { NavbarBookmarkComponent } from 'app/layout/components/navbar/navbar-boo
 import { NavbarSearchComponent } from 'app/layout/components/navbar/navbar-search/navbar-search.component';
 
 import { NavbarNotificationComponent } from 'app/layout/components/navbar/navbar-notification/navbar-notification.component';
+import { InputWithLabelComponent } from '@core/components/input-with-label/input-with-label.component';
 
 @NgModule({
   declarations: [
@@ -24,8 +25,9 @@ import { NavbarNotificationComponent } from 'app/layout/components/navbar/navbar
     RouterModule,
     NgbModule,
     CoreCommonModule,
-    ScrollingModule, // Use Angular CDK Scrolling
-    CoreTouchspinModule
+    ScrollingModule,
+    CoreTouchspinModule,
+    InputWithLabelComponent
   ],
   exports: [NavbarComponent]
 })

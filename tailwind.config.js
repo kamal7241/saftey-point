@@ -12,6 +12,8 @@ module.exports = {
           100: "#FAFAFA",
           200: "#CED0D3",
           300: "#8E8E8E",
+          400: "#F2F4F7",
+          500: "#F1F1F1",
         },
       },
       maxWidth: {
@@ -26,6 +28,9 @@ module.exports = {
       fontFamily: {
         Jost: ["Jost", "sans-serif"],
         Cairo: ["Cairo", "sans-serif"],
+      },
+      boxShadow: {
+        custom: "0px 4px 4px rgba(0, 0, 0, 0.05)",
       },
     },
   },

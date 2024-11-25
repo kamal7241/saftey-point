@@ -1,21 +1,19 @@
-<div *ngIf="horizontalMenu" class="navbar-header d-xl-block d-none">
-  <!-- Navbar brand -->
-  <ul class="nav navbar-nav flex-row">
+<!-- <div *ngIf="horizontalMenu" class="navbar-header d-xl-block d-none">
+  <ul class="flex-row nav navbar-nav">
     <li class="nav-item">
       <a class="navbar-brand" [routerLink]="['/']">
         <span class="brand-logo">
-          <!-- <img src="{{ coreConfig.app.appLogoImage }}" alt="brand-logo" width="36" /> -->
+          <img src="{{ coreConfig.app.appLogoImage }}" alt="brand-logo" width="36" />
         </span>
-        <h2 class="brand-text mb-0">{{ coreConfig.app.appName }}</h2>
+        <h2 class="mb-0 brand-text">{{ coreConfig.app.appName }}</h2>
       </a>
     </li>
   </ul>
-  <!--/ Navbar brand -->
 </div>
 
-<div class="navbar-container d-flex content">
+<div class="flex bg-white">
   <div class="bookmark-wrapper d-flex align-items-center">
-    <!-- Menu Toggler | Menu icon will be hidden in case of layout without menu -->
+    
     <ul class="nav navbar-nav d-xl-none" *ngIf="!coreConfig.layout.menu.hidden">
       <li class="nav-item">
         <a class="nav-link menu-toggle" (click)="toggleSidebar('menu')">
@@ -23,19 +21,19 @@
         </a>
       </li>
     </ul>
-    <!--/ Menu Toggler -->
+    
 
-    <!-- Toggle skin -->
+    
     <li class="nav-item d-none d-lg-block">
       <a type="button" class="nav-link nav-link-style btn" (click)="toggleDarkSkin()">
         <span [ngClass]="currentSkin === 'dark' ? 'icon-sun' : 'icon-moon'" class="ficon font-medium-5 feather"></span>
       </a>
     </li>
-    <!--/ Toggle skin -->
+    
   </div>
 
-  <ul class="nav navbar-nav align-items-center ml-auto">
-    <!-- ? Language selection | Uncomment if needed-->
+  <ul class="ml-auto nav navbar-nav align-items-center">
+    
     <li ngbDropdown class="nav-item dropdown dropdown-language">
       <a class="nav-link dropdown-toggle" id="dropdown-flag" ngbDropdownToggle>
         <i class="flag-icon flag-icon-{{ languageOptions[_translateService.currentLang].flag }}"></i><span
@@ -46,9 +44,9 @@
         </a>
       </div>
     </li>
-    <!--/ Language selection -->
+    
 
-    <!-- User Dropdown -->
+    
     <li ngbDropdown class="nav-item dropdown-user">
       <a class="nav-link dropdown-toggle dropdown-user-link" id="dropdown-user" ngbDropdownToggle
         id="navbarUserDropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,6 +67,67 @@
             [class]="'mr-50'"></span> Logout</a>
       </div>
     </li>
-    <!--/ User Dropdown -->
+    
   </ul>
+</div> -->
+
+<div class="px-6 py-4 bg-white shadow-custom">
+  <div class="flex justify-between items-center">
+    <div>
+      <!-- [formGroup]="forgetPasswordForm" -->
+      <!-- (ngSubmit)="onSubmit()" -->
+      <form class="flex flex-col gap-4 w-full">
+        <app-input-with-label
+          label=""
+          type="search"
+          placeholder="Start typing to search..."
+          formControlName="search"
+          [required]="true"
+          icon="assets/images/icons/search.svg"
+        ></app-input-with-label>
+      </form>
+    </div>
+    <div>
+      <ul class="flex space-x-4 divide-x divide-gray-400">
+        <li class="ps-4">
+          <div class="flex gap-2 justify-between items-center h-full cursor-pointer">
+            <img [src]="languageOptions[_translateService.currentLang].flag" />
+            <span class="text-sm font-medium font-Jost">{{
+              languageOptions[_translateService.currentLang].title
+            }}</span>
+            <span>
+              <img [src]="'/assets/images/icons/chevron-down.svg'" />
+            </span>
+          </div>
+        </li>
+        <li class="ps-4">
+          <div class="flex gap-2 justify-center items-center h-full cursor-pointer">
+            <span>
+              <img [src]="'/assets/images/icons/notification.svg'" />
+            </span>
+          </div>
+        </li>
+        <li class="ps-4">
+          <div class="flex gap-2 justify-between items-center h-full cursor-pointer">
+            <span
+              class="flex justify-center items-center p-2 w-10 h-10 bg-gray-500 rounded-full"
+            >
+              <img [src]="'/assets/images/icons/user.svg'" />
+            </span>
+            <span class="text-sm font-medium font-Jost">Admin</span>
+            <span>
+              <img [src]="'/assets/images/icons/chevron-down.svg'" />
+            </span>
+          </div>
+        </li>
+        <li class="ps-4">
+          <div class="flex gap-2 justify-center items-center h-full cursor-pointer">
+            <span>
+              <img [src]="'/assets/images/icons/maximize.svg'" />
+            </span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>

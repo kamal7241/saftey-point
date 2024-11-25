@@ -349,7 +349,7 @@ export class CoreSidebarComponent implements OnInit, OnDestroy {
 
     // Add a class to the overlay element and make it visible
     this._overlay.classList.add(this.overlayClass);
-    this._overlay.classList.add('show');
+    this._overlay.classList.add('block');
 
     // If overlayVisibility is false, set the bg transparent
     if (!this.overlayVisibility) {
@@ -421,7 +421,7 @@ export class CoreSidebarComponent implements OnInit, OnDestroy {
     }
     // For default sidebar add show class to make it visible
     else {
-      this._renderer.addClass(this._elementRef.nativeElement, 'show');
+      this._renderer.addClass(this._elementRef.nativeElement, 'block');
       // Add .modal-open from body to remove browser scroll
       if (this.overlayClass === 'modal-backdrop') {
         this.rootElement.classList.add('modal-open');
@@ -446,7 +446,7 @@ export class CoreSidebarComponent implements OnInit, OnDestroy {
     }
     // For default sidebar remove show class to make it visible
     else {
-      this._renderer.removeClass(this._elementRef.nativeElement, 'show');
+      this._renderer.removeClass(this._elementRef.nativeElement, 'block');
 
       // Remove .modal-open from body
       if (this.overlayClass === 'modal-backdrop') {

@@ -16,7 +16,7 @@
   </ng-template>
 
   <!-- sub-menu item/collapsible -->
-  <ul class="dropdown-menu" [ngClass]="{ show: isShow }">
+  <ul class="dropdown-menu here" [ngClass]="{ block: isShow }">
     <ng-container *ngFor="let item of item.children">
       <!-- item -->
       <li

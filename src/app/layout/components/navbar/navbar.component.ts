@@ -19,7 +19,6 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class NavbarComponent implements OnInit, OnDestroy {
@@ -88,23 +87,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.languageOptions = {
       en: {
         title: 'English',
-        flag: 'us'
-      },
-      fr: {
-        title: 'French',
-        flag: 'fr'
-      },
-      de: {
-        title: 'German',
-        flag: 'de'
-      },
-      pt: {
-        title: 'Portuguese',
-        flag: 'pt'
+        flag: '/assets/images/icons/en.png'
       },
       ar: {
         title: 'arabic',
-        flag: 'ar'
+        flag: '/assets/images/icons/ar.png'
       }
     };
 

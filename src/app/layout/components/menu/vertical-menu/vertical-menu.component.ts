@@ -9,7 +9,6 @@ import { filter, takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'vertical-menu',
   templateUrl: './vertical-menu.component.html',
-  styleUrls: ['./vertical-menu.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class VerticalMenuComponent implements OnInit, OnDestroy {

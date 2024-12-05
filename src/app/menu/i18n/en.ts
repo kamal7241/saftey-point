@@ -23,8 +23,12 @@ export const locale = {
         SUPPORT: 'Support & Help'
       },
 
-      content_management: "Content Management",
-      admin_management: "Admins",
+      content_management: "Content Management EN",
+      admin_management: "Admin Management",
+      manage_admins: "Manage Admins",
+      manage_companies: "Manage Companies",
+      manage_branches: "Manage Branches",
+      roles_permissions: "Roles & Permissions",
       admin_list: "Admin List",
       permissions: "Permissions",
       organizations: "Organizations",

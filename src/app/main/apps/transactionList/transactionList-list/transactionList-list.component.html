@@ -9,7 +9,7 @@
 <div class="row p-2">
     <div class="col-md-6 col-12">
         <div class="d-flex justify-content-between align-items-center m-1">
-            <label class="d-flex align-items-center">{{ "SHOW" | translate }}
+            <label class="flex items-center">{{ "SHOW" | translate }}
                 <select class="form-control mx-25" [(ngModel)]="selectedOption">
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -22,8 +22,8 @@
     </div>
 
     <div class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end">
-        <div class="d-flex align-items-center justify-content-end">
-            <label class="d-flex align-items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
+        <div class="flex items-center justify-content-end">
+            <label class="flex items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
             <input [(ngModel)]="searchValue" name="searchValue" type="search" class="form-control"
                 (keyup)="filterUpdate($event)" (search)="filterUpdate($event)" />
         </div>
@@ -44,7 +44,7 @@
     <!-- User Name -->
     <ngx-datatable-column name="{{ 'USER_NAME' | translate }}" prop="name">
         <ng-template let-row="row" let name="value" ngx-datatable-cell-template>
-            <div class="d-flex align-items-center">
+            <div class="flex items-center">
                 {{ row.user.firstName }} {{ row.user.lastName }}
             </div>
         </ng-template>
@@ -53,7 +53,7 @@
     <!-- Amount -->
     <ngx-datatable-column name="{{ 'AMOUNT' | translate }}" prop="name">
         <ng-template let-row="row" let name="value" ngx-datatable-cell-template>
-            <div class="d-flex align-items-center">
+            <div class="flex items-center">
                 {{ row.amount }} {{ 'EGP' | translate }}
             </div>
         </ng-template>
@@ -89,7 +89,7 @@
     <!-- Created At -->
     <ngx-datatable-column name="{{ 'CREATED_AT' | translate }}" prop="createdAt">
         <ng-template let-row=row let-name=value ngx-datatable-cell-template>
-            <div class=d-flex align-items-center>{{ row.createdAt | date:'MMMM dd, yyyy' }}</div>
+            <div class=flex items-center>{{ row.createdAt | date:'MMMM dd, yyyy' }}</div>
         </ng-template>
     </ngx-datatable-column>
 

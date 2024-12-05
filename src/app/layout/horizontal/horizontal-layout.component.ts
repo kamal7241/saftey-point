@@ -8,7 +8,6 @@ import { CoreConfigService } from '@core/services/config.service';
 @Component({
   selector: 'horizontal-layout',
   templateUrl: './horizontal-layout.component.html',
-  styleUrls: ['./horizontal-layout.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class HorizontalLayoutComponent implements OnInit, OnDestroy {

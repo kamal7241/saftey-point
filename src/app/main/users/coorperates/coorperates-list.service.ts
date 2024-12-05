@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 @Injectable()
 export class CoorperatesListService extends ApiService {
 
-  public routeEndPoint: string = 'coorperates';
+  public routeEndPoint: string = 'users';
 
   /**
    * Constructor 
@@ -28,7 +28,7 @@ export class CoorperatesListService extends ApiService {
    * Get List
    */
   getDataTableRows(): Promise<ApiResult<any>> {
-    return this.getResponse(`${this.routeEndPoint}/all`);
+    return this.getResponse(`${this.routeEndPoint}`);
   }
 
   /**

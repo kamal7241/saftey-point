@@ -34,7 +34,7 @@
       [collapsed]="coreConfig.layout.menu.collapsed"
       collapsibleSidebar="bs-gt-xl"
       *ngIf="!coreConfig.layout.menu.hidden"
-      class="flex overflow-y-hidden absolute top-0 left-0 flex-col w-80 h-screen bg-black duration-300 ease-linear -translate-x-full z-9999 dark:bg-boxdark lg:static lg:translate-x-0"
+      class="flex overflow-y-hidden absolute top-0 left-0 z-10 flex-col px-5 py-6 w-80 h-screen bg-white duration-300 ease-linear -translate-x-full shadow-custom z-9999 lg:static lg:translate-x-0"
       overlayClass="sidenav-overlay"
       [ngClass]="[
         coreConfig.layout.skin === 'semi-dark' ||

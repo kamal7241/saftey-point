@@ -19,7 +19,7 @@
                     <!-- Show Entries -->
                     <div class="col-md-6 col-12">
                         <div class="d-flex justify-content-between align-items-center m-1">
-                            <label class="d-flex align-items-center">{{ "SHOW" | translate }}
+                            <label class="flex items-center">{{ "SHOW" | translate }}
                                 <select class="form-control mx-25" [(ngModel)]="selectedOption">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
@@ -32,8 +32,8 @@
                     </div>
                     <!-- Search Input -->
                     <div class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <label class="d-flex align-items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
+                        <div class="flex items-center justify-content-end">
+                            <label class="flex items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
                             <input [(ngModel)]="searchValue" name="searchValue" type="search" class="form-control"
                                 (keyup)="filterUpdate($event)" (search)="filterUpdate($event)" />
                             <!-- Add New Button -->
@@ -52,7 +52,7 @@
                     <!-- ID -->
                     <ngx-datatable-column name="#" prop="id" [width]="50">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.id }}
                             </div>
                         </ng-template>
@@ -62,7 +62,7 @@
                     <!-- Requested By -->
                     <ngx-datatable-column name="{{ 'Requested By' | translate }}" prop="name">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.user.firstName }} {{ row.user.lastName }}
                             </div>
                         </ng-template>
@@ -71,7 +71,7 @@
                     <!-- Bank Information -->
                     <ngx-datatable-column name="{{ 'Bank Information' | translate }}" prop="name" [width]="0">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 Bank Name: {{ row.bankName }}
                                 <br> Bank Account Name: {{ row.bankAccountName}}
                                 <br> Bank Account Number: {{ row.bankAccountNumber }}
@@ -82,7 +82,7 @@
                     <!-- Amount -->
                     <ngx-datatable-column name="{{ 'Amount' | translate }}" prop="amount">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.amount}} EGP
                             </div>
                         </ng-template>

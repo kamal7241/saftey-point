@@ -14,6 +14,10 @@ module.exports = {
           300: "#8E8E8E",
           400: "#F2F4F7",
           500: "#F1F1F1",
+          600: "#4A4F55",
+        },
+        light: {
+          100: "#F5F5F5",
         },
       },
       maxWidth: {

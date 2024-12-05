@@ -3,7 +3,6 @@ import { Component, ElementRef, Input, Renderer2, ViewEncapsulation } from '@ang
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class MenuComponent {

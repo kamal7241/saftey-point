@@ -12,7 +12,7 @@
 </div>
 
 <div class="flex bg-white">
-  <div class="bookmark-wrapper d-flex align-items-center">
+  <div class="flex items-center bookmark-wrapper">
     
     <ul class="nav navbar-nav d-xl-none" *ngIf="!coreConfig.layout.menu.hidden">
       <li class="nav-item">
@@ -89,26 +89,61 @@
     </div>
     <div>
       <ul class="flex space-x-4 divide-x divide-gray-400">
-        <li class="ps-4">
-          <div class="flex gap-2 justify-between items-center h-full cursor-pointer">
-            <img [src]="languageOptions[_translateService.currentLang].flag" />
-            <span class="text-sm font-medium font-Jost">{{
-              languageOptions[_translateService.currentLang].title
-            }}</span>
+        <li class="relative ps-4">
+          <div
+            class="flex gap-2 justify-between items-center h-full cursor-pointer"
+            (click)="toggleDropdown()"
+          >
+            <img
+              [src]="languageOptions[_translateService.currentLang].flag"
+              class="w-5 h-5"
+              alt="Flag"
+            />
+            <span class="text-sm font-medium font-Jost">
+              {{ languageOptions[_translateService.currentLang].title }}
+            </span>
             <span>
-              <img [src]="'/assets/images/icons/chevron-down.svg'" />
+              <img
+                src="/assets/images/icons/chevron-down.svg"
+                class="w-4 h-4"
+                alt="Dropdown icon"
+              />
             </span>
           </div>
+
+          <!-- Dropdown Menu -->
+          <ul
+            class="absolute right-0 py-2 mt-2 w-36 bg-white rounded-md shadow-md transition-opacity duration-200"
+            *ngIf="dropdownOpen"
+          >
+            <li
+              *ngFor="let lang of _translateService.getLangs()"
+              class="flex gap-2 items-center px-4 py-2 cursor-pointer hover:bg-gray-100"
+              (click)="setLanguage(lang); toggleDropdown()"
+            >
+              <img
+                [src]="languageOptions[lang].flag"
+                class="w-5 h-5"
+                alt="Flag"
+              />
+              <span class="text-sm">{{ languageOptions[lang].title }}</span>
+            </li>
+          </ul>
         </li>
         <li class="ps-4">
-          <div class="flex gap-2 justify-center items-center h-full cursor-pointer">
+          <div
+            class="flex gap-2 justify-center items-center h-full cursor-pointer"
+          >
             <span>
               <img [src]="'/assets/images/icons/notification.svg'" />
             </span>
           </div>
         </li>
+
         <li class="ps-4">
-          <div class="flex gap-2 justify-between items-center h-full cursor-pointer">
+          <div
+            class="flex gap-2 justify-between items-center h-full cursor-pointer"
+          >
             <span
               class="flex justify-center items-center p-2 w-10 h-10 bg-gray-500 rounded-full"
             >
@@ -121,7 +156,9 @@
           </div>
         </li>
         <li class="ps-4">
-          <div class="flex gap-2 justify-center items-center h-full cursor-pointer">
+          <div
+            class="flex gap-2 justify-center items-center h-full cursor-pointer"
+          >
             <span>
               <img [src]="'/assets/images/icons/maximize.svg'" />
             </span>

@@ -18,7 +18,7 @@
                     <!-- Show Entries -->
                     <div class="col-md-6 col-12">
                         <div class="d-flex justify-content-between align-items-center m-1">
-                            <label class="d-flex align-items-center">{{ "SHOW" | translate }}
+                            <label class="flex items-center">{{ "SHOW" | translate }}
                                 <select class="form-control mx-25" [(ngModel)]="selectedOption">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
@@ -31,8 +31,8 @@
                     </div>
                     <!-- Search Input -->
                     <div class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <label class="d-flex align-items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
+                        <div class="flex items-center justify-content-end">
+                            <label class="flex items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
                             <input [(ngModel)]="searchValue" name="searchValue" type="search" class="form-control"
                                 (keyup)="filterUpdate($event)" (search)="filterUpdate($event)" />
                             <!-- Add New Button -->
@@ -50,7 +50,7 @@
                     <!-- ID -->
                     <ngx-datatable-column name="#" prop="id" [width]="50">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.id }}
                             </div>
                         </ng-template>
@@ -59,7 +59,7 @@
                     <!-- Image -->
                     <ngx-datatable-column name="{{ 'IMAGE' | translate }}" prop="imageUrl" [width]="50">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 <img class="rounded-circle mr-1" src="{{ row.image }}" height="32" width="32"
                                     alt="datatable-avatar" />
                             </div>
@@ -69,7 +69,7 @@
                     <!-- Name -->
                     <ngx-datatable-column name="{{ 'NAME' | translate }}" prop="name">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.firstName }} {{ row.lastName}}
                             </div>
                         </ng-template>
@@ -78,7 +78,7 @@
                     <!-- Phone Number -->
                     <ngx-datatable-column name="{{ 'PHONE_NUMBER' | translate }}" prop="title">
                         <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
+                            <div class="flex items-center">
                                 {{ row.phone }}
                             </div>
                         </ng-template>

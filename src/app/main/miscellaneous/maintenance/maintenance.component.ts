@@ -7,8 +7,7 @@ import { CoreConfigService } from '@core/services/config.service';
 
 @Component({
   selector: 'app-maintenance',
-  templateUrl: './maintenance.component.html',
-  styleUrls: ['./maintenance.component.scss']
+  templateUrl: './maintenance.component.html'
 })
 export class MaintenanceComponent implements OnInit {
   public coreConfig: any;

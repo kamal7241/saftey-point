@@ -4,6 +4,7 @@ export interface ApiResult<T> {
     innerData: T;
     message: string;
     authToken: string;
+    users?: any;
 }
 
 

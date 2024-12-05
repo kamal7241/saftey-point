@@ -1,22 +1,16 @@
 export const locale = {
   lang: 'ar',
   data: {
-    MENU: {
-      DASHBOARD: {
-        COLLAPSIBLE: 'Dashboards',
-        BADGE: '2',
-        ANALYTICS: 'Analytics',
-        ECOMMERCE: 'eCommerce'
+    menu: {
+      coorperates: 'Coorperates',
+      compounds: 'Compounds',
+      dashboard: {
+        collapsible: 'Dashboards',
+        badge: '2',
+        analytics: 'Analytics',
+        ecommerce: 'eCommerce'
       },
-      USERS: {
-        USER_MANAGEMENTS: 'Users Management',
-        TRAINERS: 'إداره المدربين',
-        STUDENTS: 'إدارة الطلاب',
-        PERMISSIONS: 'الأذونات',
-        COURSES: 'الدورات'
 
-
-      },
       APP: {
         MANAGEMENT: 'App Management',
         TRANSACTIONS: 'Transaction List',
@@ -29,58 +23,37 @@ export const locale = {
         SUPPORT: 'Support & Help'
       },
 
+      content_management: "Content Management ar",
+      admin_management: "Admin Management",
+      manage_admins: "Manage Admins",
+      manage_companies: "Manage Companies",
+      manage_branches: "Manage Branches",
+      roles_permissions: "Roles & Permissions",
+      admin_list: "Admin List",
+      permissions: "Permissions",
+      organizations: "Organizations",
+      app_users: "Customers",
+      app_residentials: "Residentials",
+      app_employees: "Employees",
+      compound_visitors: "Visitors",
+      transactions: "Transactions",
+      notifications: "Notifications",
+      policy_privacy: "Policy & Privacy",
+      terms_and_conditions: "Terms and Conditions",
+      settings: "Settings",
 
-      APPS: {
-        SECTION: 'إداره الكورسات',
-        GATE: 'البوابات التعليمية',
-        STAGE: 'المراحل التعليمية',
-        EMAIL: 'Email',
-        CHAT: 'Chat',
-        TODO: 'Todo',
-        CALENDAR: 'Calendar',
-        INVOICE: {
-          COLLAPSIBLE: 'Invoice',
-          LIST: 'List',
-          PREVIEW: 'Preview',
-          EDIT: 'Edit',
-          ADD: 'Add'
-        },
-        ECOMMERCE: {
-          COLLAPSIBLE: 'eCommerce',
-          SHOP: 'Shop',
-          DETAIL: 'Details',
-          WISHLIST: 'Wish List',
-          CHECKOUT: 'Checkout'
-        },
-        USER: {
-          COLLAPSIBLE: 'User',
-          LIST: 'List',
-          VIEW: 'View',
-          EDIT: 'Edit'
-        }
+
+
+      courses: {
+        courses_managements: 'Courses Management',
+        organizations: 'Organizations',
+        trainers: 'Trainers',
+        students: 'Students',
+        portal: 'Educational Portals',
+        stage: 'Educational Stages',
+        subject: 'Subjects',
+        courses: 'COURSES',
       },
-      PAGES: {
-        SECTION: 'Pages',
-        AUTH: {
-          COLLAPSIBLE: 'Authentication',
-          LOGIN1: 'Login V1',
-          LOGIN2: 'Login V2',
-          REGISTER1: 'Register V1',
-          REGISTER2: 'Register V2',
-          FORGOTPASSWORD1: 'Forgot Password V1',
-          FORGOTPASSWORD2: 'Forgot Password V2',
-          RESETPASSWORD1: 'Reset Password V1',
-          RESETPASSWORD2: 'Reset Password V2'
-        },
-        ACCOUNTSETTINGS: 'Account Settings',
-        PROFILE: 'Profile',
-        FAQ: 'FAQ',
-        KB: 'Knowledge Base',
-        PRICING: 'Pricing',
-      },
-
-
-
     }
   }
 };

@@ -1,4 +1,4 @@
-<div class="content-wrapper container-xxl p-0">
+<div class="p-0 content-wrapper container-xxl">
     <div class="content-body">
         <!-- Coorperates List -->
         <section class="coorperates-list-wrapper">
@@ -14,11 +14,11 @@
 
             <!-- Main Card -->
             <div *ngIf="!isLoading" class="card">
-                <div class="row p-2">
+                <div class="p-2 row">
                     <!-- Show Entries -->
                     <div class="col-md-6 col-12">
-                        <div class="d-flex justify-content-between align-items-center m-1">
-                            <label class="d-flex align-items-center">{{ "SHOW" | translate }}
+                        <div class="m-1 d-flex justify-content-between align-items-center">
+                            <label class="flex items-center">{{ "SHOW" | translate }}
                                 <select class="form-control mx-25" [(ngModel)]="selectedOption">
                                     <option value="10">10</option>
                                     <option value="25">25</option>
@@ -31,12 +31,12 @@
                     </div>
                     <!-- Search Input -->
                     <div class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end">
-                        <div class="d-flex align-items-center justify-content-end">
-                            <label class="d-flex align-items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
+                        <div class="flex items-center justify-content-end">
+                            <label class="flex items-center m-2 ml-md-0">{{ "SEARCH" | translate }}:</label>
                             <input [(ngModel)]="searchValue" name="searchValue" type="search" class="form-control"
                                 (keyup)="filterUpdate($event)" (search)="filterUpdate($event)" />
                             <!-- Add New Button -->
-                            <button class="btn btn-primary m-2 col-4" rippleEffect (click)="addItem()">
+                            <button class="m-2 btn btn-primary col-4" rippleEffect (click)="addItem()">
                                 {{ "ADD_NEW" | translate }}
                             </button>
                         </div>
@@ -50,15 +50,15 @@
                     <!-- ID Column -->
                     <ngx-datatable-column name="#" prop="id" [width]="50">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">{{ row.id }}</div>
+                            <div class="flex items-center">{{ row.id }}</div>
                         </ng-template>
                     </ngx-datatable-column>
 
                     <!-- Image Column -->
                     <ngx-datatable-column name="{{ 'IMAGE' | translate }}" prop="coverImage" [width]="50">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle mr-1" [src]="row.coverImage" height="32" width="32"
+                            <div class="flex items-center">
+                                <img class="mr-1 rounded-circle" [src]="row.coverImage" height="32" width="32"
                                     alt="datatable-avatar" />
                             </div>
                         </ng-template>
@@ -67,14 +67,14 @@
                     <!-- Name Column -->
                     <ngx-datatable-column name="{{ 'NAME' | translate }}" prop="name">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">{{ row.name }}</div>
+                            <div class="flex items-center">{{ row.name }}</div>
                         </ng-template>
                     </ngx-datatable-column>
 
                     <!-- Info Column -->
                     <ngx-datatable-column name="{{ 'INFO' | translate }}" prop="info">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">{{ row.info }}</div>
+                            <div class="flex items-center">{{ row.info }}</div>
                         </ng-template>
                     </ngx-datatable-column>
 
@@ -88,9 +88,9 @@
                     </ngx-datatable-column>
 
                     <!-- Commission Column -->
-                    <ngx-datatable-column name="{{ 'COMMISSION' | translate }}" prop="commission">
+                    <ngx-datatable-column name="{{ 'COMMISSION2' | translate }}" prop="commission">
                         <ng-template let-row="row" ngx-datatable-cell-template>
-                            <div class="d-flex align-items-center">{{ row.commission }}%</div>
+                            <div class="flex items-center">{{ row.commission }}%</div>
                         </ng-template>
                     </ngx-datatable-column>
 

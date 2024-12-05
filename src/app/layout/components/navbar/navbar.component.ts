@@ -41,6 +41,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostBinding('class.navbar-static-style-on-scroll')
   public windowScrolled = false;
 
+
+  public dropdownOpen = false;
+
+
   // Add .navbar-static-style-on-scroll on scroll using HostListener & HostBinding
   @HostListener('window:scroll', [])
   onWindowScroll() {
@@ -126,6 +130,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this._coreConfigService.setConfig({ app: { appLanguage: language } }, { emitEvent: true });
 
   }
+
+
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
 
   /**
    * Toggle Dark Skin

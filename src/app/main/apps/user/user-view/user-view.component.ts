@@ -9,7 +9,6 @@ import { UserViewService } from 'app/main/apps/user/user-view/user-view.service'
 @Component({
   selector: 'app-user-view',
   templateUrl: './user-view.component.html',
-  styleUrls: ['./user-view.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 export class UserViewComponent implements OnInit, OnDestroy {

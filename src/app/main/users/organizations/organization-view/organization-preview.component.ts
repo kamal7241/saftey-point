@@ -5,8 +5,7 @@ import { OrganizationListService } from '../organization-list.service';
 
 @Component({
   selector: 'app-organization-preview',
-  templateUrl: './organization-preview.component.html',
-  styleUrls: ['./organization-preview.service.scss']
+  templateUrl: './organization-preview.component.html'
 })
 export class OrganizationPreviewComponent implements OnInit {
 

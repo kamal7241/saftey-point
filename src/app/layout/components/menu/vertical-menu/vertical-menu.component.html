@@ -1,23 +1,36 @@
 <!-- Menu header -->
 <div class="navbar-header">
-  <ul class="flex-row nav navbar-nav">
-    <li class="mr-auto nav-item">
+  <ul class="flex justify-center items-center">
+    <li class="">
       <!-- App Branding -->
       <a class="navbar-brand" [routerLink]="['/']">
         <span class="brand-logo">
-          <!-- <img src="{{ coreConfig.app.appLogoImage }}" alt="brand-logo" /> -->
+          <img
+            class=""
+            [src]="'assets/images/logo/logo.webp'"
+            alt="Logo"
+            width="138"
+            height="158"
+          />
         </span>
-        <h2 class="mb-0 brand-text">{{ coreConfig.app.appName }}</h2>
       </a>
     </li>
 
     <!-- Menu Toggler -->
-    <li class="nav-item nav-toggle">
-      <a class="pr-0 nav-link modern-nav-toggle d-none d-xl-block" (click)="toggleSidebarCollapsible()">
-        <i [ngClass]="isCollapsed === true ? 'icon-circle' : 'icon-disc'"
-          class="toggle-icon feather font-medium-4 collapse-toggle-icon text-primary"></i>
+    <li class="hidden">
+      <a
+        class="pr-0 nav-link modern-nav-toggle d-none d-xl-block"
+        (click)="toggleSidebarCollapsible()"
+      >
+        <i
+          [ngClass]="isCollapsed === true ? 'icon-circle' : 'icon-disc'"
+          class="toggle-icon feather font-medium-4 collapse-toggle-icon text-primary"
+        ></i>
       </a>
-      <a class="pr-0 nav-link modern-nav-toggle d-block d-xl-none" (click)="toggleSidebar()">
+      <a
+        class="pr-0 nav-link modern-nav-toggle d-block d-xl-none"
+        (click)="toggleSidebar()"
+      >
         <i data-feather="x" class="font-medium-4 text-primary toggle-icon"></i>
       </a>
     </li>
@@ -25,11 +38,12 @@
 </div>
 <!--/ Menu header -->
 
-<!-- Navbar shadow -->
-<div class="shadow-bottom" [ngClass]="{ 'd-block': isScrolled }"></div>
-
 <!-- Main menu -->
-<div class="main-menu-content">
-  <ul class="flex overflow-y-auto flex-col duration-300 ease-linear no-scrollbar" layout="vertical" core-menu></ul>
+<div class="mt-6">
+  <ul
+    class="flex overflow-y-auto flex-col duration-300 ease-linear no-scrollbar"
+    layout="vertical"
+    core-menu
+  ></ul>
 </div>
 <!--/ Main menu -->

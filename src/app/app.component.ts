@@ -19,14 +19,13 @@ import { locale as menuArabic } from 'app/menu/i18n/ar';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
   coreConfig: any;
   menu: any;
-  defaultLanguage: 'en'; // This language will be used as a fallback when a translation isn't found in the current language
-  appLanguage: 'en'; // Set application default language i.e fr
+  defaultLanguage: 'en';
+  appLanguage: 'en';
 
   // Private
   private _unsubscribeAll: Subject<any>;

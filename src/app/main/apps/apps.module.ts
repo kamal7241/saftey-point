@@ -29,6 +29,13 @@ const routes: Routes = [
     path: 'termsAndConditions',
     loadChildren: () => import('./termsAndConditions/termsAndConditions.module').then(m => m.TermsAndConditionsModule)
   },
+  {
+    path: 'company-management',
+    loadChildren: () =>
+      import('./company-management/company-management.module').then(
+        (m) => m.CompanyManagementModule
+      ),
+  },
 ];
 
 @NgModule({

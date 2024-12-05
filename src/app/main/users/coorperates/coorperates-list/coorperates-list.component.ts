@@ -11,7 +11,6 @@ import { CoorperatesListService } from '../coorperates-list.service';
 @Component({
   selector: 'app-coorperates-list',
   templateUrl: './coorperates-list.component.html',
-  styleUrls: ['./coorperates-list.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
 
@@ -114,7 +113,7 @@ export class CoorperatesListComponent implements OnInit {
     await this._coorperatesListService.getDataTableRows().then(response => {
       this.isLoading = false;
       if (response.status) {
-        this.rows = response.innerData;
+        this.rows = response.users;
         this.tempData = this.rows;
       } else {
         this.ConfirmColorOpen(response.message, false);

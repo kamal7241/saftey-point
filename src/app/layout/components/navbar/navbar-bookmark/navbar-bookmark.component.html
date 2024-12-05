@@ -41,7 +41,7 @@
             [ngClass]="{ current_item: i === activeIndex }"
           >
             <a
-              class="d-flex align-items-center justify-content-between w-100"
+              class="flex items-center justify-content-between w-100"
               [routerLink]="page.link"
               (click)="$event.stopPropagation(); $event.preventDefault(); closeBookmark(); removeOverlay()"
               ><div class="d-flex justify-content-start align-items-center">
@@ -62,7 +62,7 @@
           <ng-container *ngFor="let page of pages | filter: bookmarkText:'title'; let i = index">
             <li class="auto-suggestion" *ngIf="page.isBookmarked" [ngClass]="{ current_item: i === activeIndex }">
               <a
-                class="d-flex align-items-center justify-content-between w-100"
+                class="flex items-center justify-content-between w-100"
                 [routerLink]="page.link"
                 (click)="$event.stopPropagation(); $event.preventDefault(); closeBookmark(); removeOverlay()"
                 ><div class="d-flex justify-content-start align-items-center">

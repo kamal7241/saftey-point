@@ -6,7 +6,6 @@ import { TransactionListListService } from "../transactionList-list.service";
 @Component({
   selector: "app-transactionList-preview",
   templateUrl: "./transactionList-preview.component.html",
-  styleUrls: ["./transactionList-preview.service.scss"],
   encapsulation: ViewEncapsulation.None,
 })
 export class TransactionListPreviewComponent implements OnInit, OnDestroy {

@@ -1,7 +1,7 @@
 <ng-container *ngIf="!item.hidden">
   <!-- collapsible title -->
   <a
-    class="d-flex align-items-center"
+    class="flex items-center"
     [ngClass]="item.classes"
     [ngClass]="item.type == 'section' ? 'dropdown-toggle nav-link' : 'dropdown-item dropdown-toggle'"
     *ngIf="!item.url"

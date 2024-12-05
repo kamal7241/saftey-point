@@ -1,0 +1,42 @@
+<table class="w-full">
+  <thead>
+    <tr>
+      <th
+        *ngFor="let header of headers"
+        class="px-3 py-[18px] text-start border-b border-light-100"
+      >
+        <span class="text-sm font-medium bg-white font-Cairo text-primary">
+          {{ header }}
+        </span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of data">
+      <td
+        *ngFor="let header of headers"
+        class="px-3 py-[18px] text-start border-b border-light-100"
+      >
+        <!-- Dynamically render data based on the header using headerMapping -->
+        <ng-container *ngIf="header === 'Actions'">
+          <div class="flex gap-2.5">
+            <button (click)="row.actions.toggle()"><img src="assets/images/icons/table-actions/toggle.svg" alt="toggle"></button>
+            <button (click)="row.actions.edit()"><img src="assets/images/icons/table-actions/edit.svg" alt="Edit"></button>
+            <button (click)="row.actions.view()"><img src="assets/images/icons/table-actions/view.svg" alt="view"></button>
+            <button (click)="row.actions.delete()"><img src="assets/images/icons/table-actions/delete.svg" alt="Delete"></button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="header !== 'Actions'">
+          <!-- Add translation pipe for status, regular binding for others -->
+          <ng-container *ngIf="header === 'Status'">
+            {{ row[headerMapping[header]] | translate }}
+          </ng-container>
+          <ng-container *ngIf="header !== 'Status'">
+            {{ row[headerMapping[header]] }}
+          </ng-container>
+        </ng-container>
+  
+      </td>
+    </tr>
+  </tbody>
+</table>

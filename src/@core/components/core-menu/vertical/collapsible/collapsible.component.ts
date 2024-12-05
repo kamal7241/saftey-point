@@ -19,7 +19,7 @@ export class CoreMenuVerticalCollapsibleComponent implements OnInit, OnDestroy {
   @Input()
   item: CoreMenuItem;
 
-  @HostBinding('class.open')
+  @HostBinding('class.is-published')
   public isOpen = false;
 
   // Private

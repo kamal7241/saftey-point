@@ -2,7 +2,7 @@
 <ng-container *ngIf="layout === 'vertical'">
   <ng-container *ngFor="let item of menu">
     <!-- section -->
-    <li core-menu-vertical-section *ngIf="item.type == 'section'" [item]="item" class="navigation-header"></li>
+    <li core-menu-vertical-section *ngIf="item.type == 'section'" [item]="item" class="flex gap-3 items-center px-3 py-2.5 navigation-header"></li>
 
     <!-- sub-menu item/collapsible of sections  -->
     <ng-container *ngIf="item.type == 'section'">
@@ -40,7 +40,7 @@
       <span [routerLink]="item.openInNewTab ? [] : [item.url]" class="d-none"></span>
     </li>
     <!-- collapsible -->
-    <li core-menu-vertical-collapsible *ngIf="item.type == 'collapsible'" [item]="item" class="nav-item has-sub"></li>
+    <li core-menu-vertical-collapsible *ngIf="item.type == 'collapsible'" [item]="item" class="cursor-pointer nav-item has-sub group"></li>
   </ng-container>
 </ng-container>
 <!--/ Vertical Menu -->

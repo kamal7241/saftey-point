@@ -1,0 +1,5 @@
+<button [ngClass]="[type, state, size]" class="btn">
+  <span *ngIf="leftIcon" class="left-icon">Left Icon</span>
+  <span>{{ label }}</span>
+  <span *ngIf="rightIcon" class="right-icon">Right Icon</span>
+</button>

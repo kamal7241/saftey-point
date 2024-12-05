@@ -1,7 +1,7 @@
 <ng-container *ngIf="!item.hidden">
   <!-- item with router url -->
   <a
-    class="d-flex align-items-center"
+    class="flex gap-3 items-center px-3 py-2.5 group-[.is-active]:bg-primary rounded-lg"
     [ngClass]="item.classes"
     *ngIf="item.url && !item.externalUrl"
     [routerLink]="[item.url]"
@@ -12,7 +12,7 @@
 
   <!-- item with external url -->
   <a
-    class="d-flex align-items-center"
+    class="flex gap-3 items-center px-3 py-2.5"
     [ngClass]="item.classes"
     *ngIf="item.url && item.externalUrl"
     [href]="item.url"
@@ -22,10 +22,14 @@
   </a>
 
   <ng-template #itemContent>
-    <span [data-feather]="item.icon" *ngIf="item.icon"></span>
-    <span class="menu-title text-truncate" [translate]="item.translate">{{ item.title }}</span>
+    <img *ngIf="item.icon" [src]="item.icon" class="nav-icon" width="20" />
     <span
-      class="badge ml-auto mr-1"
+      class="text-base font-medium text-gray-600 capitalize group-[.is-active]:text-white"
+      [translate]="item.translate"
+      >{{ item.title }}</span
+    >
+    <span
+      class="mr-1 ml-auto badge"
       *ngIf="item.badge"
       [translate]="item.badge.translate"
       [ngClass]="item.badge.classes"

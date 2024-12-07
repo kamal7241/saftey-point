@@ -6,6 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyManagementRoutingModule } from './company-management-routing.module';
 import { ManageCompaniesComponent } from './manage-companies/manage-companies.component';
 import { ManageBranchesComponent } from './manage-branches/manage-branches.component';
+import { CompanyDetailsComponent } from './company-details/company-details.component';
 
 @NgModule({
   imports: [
@@ -13,8 +14,9 @@ import { ManageBranchesComponent } from './manage-branches/manage-branches.compo
     FormsModule,
     NgbModule,
     CompanyManagementRoutingModule,
-    ManageCompaniesComponent, // Import standalone component
-    ManageBranchesComponent, // Import standalone component
+    ManageCompaniesComponent,
+    ManageBranchesComponent,
+    CompanyDetailsComponent,
   ],
   providers: [],
 })

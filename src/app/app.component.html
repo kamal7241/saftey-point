@@ -1,4 +1,5 @@
-<div class="root font-Jost">
+<div [ngClass]="{'font-Jost': appLanguage === 'en', 'font-Cairo': appLanguage === 'ar'}">
+
     <!-- vertical-layout -->
     <ng-container *ngIf="coreConfig.layout.type === 'vertical'">
         <vertical-layout></vertical-layout>

@@ -25,7 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
   coreConfig: any;
   menu: any;
   defaultLanguage: 'en';
-  appLanguage: 'en';
+  appLanguage: 'en' | 'ar' = 'en'; // Make sure to set the default language
+
 
   // Private
   private _unsubscribeAll: Subject<any>;
@@ -91,36 +92,11 @@ export class AppComponent implements OnInit, OnDestroy {
     // Subscribe to config changes
     this._coreConfigService.config.pipe(takeUntil(this._unsubscribeAll)).subscribe(config => {
       this.coreConfig = config;
-
-      // Set application default language.
-
-      // Change application language? Read the ngxTranslate Fix
-
-      // ? Use app-config.ts file to set default language
-      const appLanguage = this.coreConfig.app.appLanguage || 'ar';
+      
+      const appLanguage = this.coreConfig.app.appLanguage || 'en';
+      this.appLanguage = appLanguage; // Set the language based on configuration or default to 'en'
       this._translateService.use(appLanguage);
 
-      // ? OR
-      // ? User the current browser lang if available, if undefined use 'en'
-      // const browserLang = this._translateService.getBrowserLang();
-      // this._translateService.use(browserLang.match(/en|fr|de|pt/) ? browserLang : 'en');
-
-      /**
-       * ! Fix : ngxTranslate
-       * ----------------------------------------------------------------------------------------------------
-       */
-
-      /**
-       *
-       * Using different language than the default ('en') one i.e French?
-       * In this case, you may find the issue where application is not properly translated when your app is initialized.
-       *
-       * It's due to ngxTranslate module and below is a fix for that.
-       * Eventually we will move to the multi language implementation over to the Angular's core language service.
-       *
-       **/
-
-      // Set the default language to 'en' and then back to 'fr'.
 
       setTimeout(() => {
         this._translateService.setDefaultLang('en');

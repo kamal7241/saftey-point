@@ -1,10 +1,5 @@
-<div
-  class="flex flex-row items-center justify-start gap-2 rounded-lg bg-[#FAFAFA] py-3 pl-3.5 pr-[7px]"
->
-  <div
-    class="flex h-[20px] w-[20px] flex-row items-center justify-center"
-    style="width: 20px"
-  >
+<div class="flex w-[285px] flex-row items-center justify-start gap-2 rounded-lg bg-[#FAFAFA] py-3 pl-3.5 pr-[7px]">
+  <div class="flex h-[20px] w-[20px] flex-row items-center justify-center" style="width: 20px">
     <svg
       width="20"
       height="20"
@@ -28,7 +23,10 @@
       />
     </svg>
   </div>
-  <span class="font-['Cairo'] text-xs text-[#CACACA]"
-    >Start typing to search...</span
-  >
+  <input
+    type="text"
+    [(ngModel)]="searchQuery"
+    placeholder="Start typing to search..."
+    class="flex-1 text-xs text-gray-300 bg-transparent appearance-none outline-none placeholder:text-light-200"
+  />
 </div>

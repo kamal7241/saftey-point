@@ -7,6 +7,7 @@ export interface CoreMenuItem {
     role?        : Array<string>;
     translate?   : string;
     icon?        : string;
+    iconActive?  : string;
     disabled?    : boolean;
     hidden?      : boolean;
     classes?     : string;

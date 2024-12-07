@@ -1,0 +1,18 @@
+<h1 class="py-1.5 text-2xl capitalize text-gray-700">
+  {{ "COMPANY_DETAILS" | translate }}
+</h1>
+
+<app-breadcrumb-pages [breadcrumbs]="breadcrumbs"></app-breadcrumb-pages>
+
+<div *ngIf="companyDetails; else loading">
+  <h1>{{ companyDetails.name }}</h1>
+  <p>Location: {{ companyDetails.location }}</p>
+  <p>Branches: {{ companyDetails.branches }}</p>
+  <p>Employees: {{ companyDetails.employees }}</p>
+  <p>Created on: {{ companyDetails.created }}</p>
+  <p>Status: {{ companyDetails.status === "1" ? "Active" : "Deactivated" }}</p>
+</div>
+
+<ng-template #loading>
+  <p>Loading company details...</p>
+</ng-template>

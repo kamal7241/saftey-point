@@ -2,9 +2,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ManageCompaniesComponent } from './manage-companies/manage-companies.component';
 import { ManageBranchesComponent } from './manage-branches/manage-branches.component';
+import { CompanyDetailsComponent } from './company-details/company-details.component';
 
 const routes: Routes = [
   { path: 'companies', component: ManageCompaniesComponent },
+  { path: 'companies/:id', component: CompanyDetailsComponent },
   { path: 'branches', component: ManageBranchesComponent },
 ];
 

@@ -156,6 +156,15 @@ export class CoreMenuVerticalCollapsibleComponent implements OnInit, OnDestroy {
     this._coreMenuService.onItemCollapseToggled.next(this.item);
   }
 
+  isActive(item: CoreMenuItem): boolean {
+    return (
+      this._router.url === item.url ||
+      this.confirmUrlInChildren(item, this._router.url)
+    );
+  }
+
+  
+
   /**
    * Confirms if the provided url can be found in one of the given parent's children
    *

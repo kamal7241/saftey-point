@@ -16,6 +16,7 @@ export const menu: CoreMenu[] = [
     title: 'Company Management',
     translate: 'menu.content_management',
     icon: "assets/images/icons/navbar/company-management.svg",
+    iconActive: "assets/images/icons/navbar/company-management-active.svg",
     children: [
       {
         id: '2',

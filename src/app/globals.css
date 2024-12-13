@@ -1,4 +1,4 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -18,4 +18,75 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 256 58% 99%;
+    --foreground: 256 56% 1%;
+    --muted: 16 30% 87%;
+    --muted-foreground: 16 10% 39%;
+    --popover: 256 58% 99%;
+    --popover-foreground: 256 56% 1%;
+    --card: 256 58% 99%;
+    --card-foreground: 256 56% 1%;
+    --border: 256 10% 91%;
+    --input: 256 10% 91%;
+    --primary: 256 61% 79%;
+    --primary-foreground: 256 61% 19%;
+    --secondary: 16 61% 79%;
+    --secondary-foreground: 16 61% 19%;
+    --accent: 136 61% 79%;
+    --accent-foreground: 136 61% 19%;
+    --destructive: 0 88% 27%;
+    --destructive-foreground: 0 88% 87%;
+    --ring: 256 61% 79%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 256 55% 3%;
+    --foreground: 256 14% 100%;
+    --muted: 16 30% 13%;
+    --muted-foreground: 16 10% 61%;
+    --popover: 256 55% 3%;
+    --popover-foreground: 256 14% 100%;
+    --card: 256 55% 3%;
+    --card-foreground: 256 14% 100%;
+    --border: 256 10% 10%;
+    --input: 256 10% 10%;
+    --primary: 256 61% 79%;
+    --primary-foreground: 256 61% 19%;
+    --secondary: 16 61% 79%;
+    --secondary-foreground: 16 61% 19%;
+    --accent: 136 61% 79%;
+    --accent-foreground: 136 61% 19%;
+    --destructive: 0 88% 53%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 256 61% 79%;
+  }
+}
+
+@layer base {
+
+
+  body {
+    @apply scroll-smooth antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary;
+  }
+
+  input:-webkit-autofill,
+  textarea:-webkit-autofill,
+  select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+    box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  }
 }

@@ -1,7 +1,29 @@
-import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+import { NextConfig } from 'next';
+const withNextIntl = createNextIntlPlugin();
+
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "loremflickr.com", // Allow images from this domain
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
+  webpack(config, { isServer }) {
+    if (!isServer) {
+      // Set fallback for async_hooks only on the client side
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        async_hooks: false,
+      };
+    }
+    return config;
+  },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

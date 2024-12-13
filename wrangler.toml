@@ -1,9 +1,0 @@
-name = "safety-dashboard"
-main = "dist/index.js"
-
-[build]
-command = "yarn build"
-directory = "out"  # or your build output directory
-
-[env]
-  NODE_ENV = "production"

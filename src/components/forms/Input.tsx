@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { InputProps } from "@/types/input";
+import Image from "next/image";
 
 const Input: React.FC<InputProps> = ({
   label,
@@ -30,7 +31,7 @@ const Input: React.FC<InputProps> = ({
         {label}
       </label>
       <div className={`flex items-center justify-start gap-2 overflow-hidden rounded-lg ${border ? 'border border-gray-200' : ''} ${extraClass}`}>
-        {icon && <img src={icon} alt="icon" className="nav-icon" width="20" />}
+        {icon && <Image src={icon} alt="icon" className="nav-icon" width={20} height={20} />}
         <input
           type={isPasswordVisible && type === "password" ? "text" : type}
           placeholder={placeholder}

@@ -2,7 +2,6 @@ export const runtime = "edge";
 
 import Companies from "@/components/pages/Companies";
 
-export default function Page({
   params,
   searchParams,
 }: {

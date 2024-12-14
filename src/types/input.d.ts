@@ -7,6 +7,8 @@ export interface InputProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     name: string;
     icon?: string;
+    extraClass?: string;
+    border?: boolean;
     togglePasswordVisibility?: () => void;
   }
   

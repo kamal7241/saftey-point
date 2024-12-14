@@ -1,14 +1,11 @@
-// src/middleware.ts (or just middleware.ts depending on the location)
-
-import createMiddleware from 'next-intl/middleware';
-import { NextRequest, NextResponse } from 'next/server';
-import { routing } from './i18n/routing';
+import createMiddleware from "next-intl/middleware";
+import { NextRequest, NextResponse } from "next/server";
+import { routing } from "./i18n/routing";
 
 // Define CSP headers
 const cspHeaders = ``;
 const enforcedCspHeaders = cspHeaders + "frame-ancestors 'self';";
 
-// Function to add custom headers
 function customHeadersMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = new Response(null);
@@ -37,44 +34,45 @@ function customHeadersMiddleware(request: NextRequest) {
   return response;
 }
 
-// Create the internationalization middleware with next-intl
 const intlMiddleware = createMiddleware(routing);
 
-// Main middleware function
 export default async function middleware(request: NextRequest) {
-  const token = request.cookies.get("token")?.value;
-  const locale = request.cookies.get("NEXT_LOCALE")?.value || "en";
+  const token = request.cookies.get("accessToken")?.value;
+  const locale =
+    request.cookies.get("NEXT_LOCALE")?.value ||
+    request.headers.get("accept-language")?.split(",")[0] ||
+    "en";
   const pathname = request.nextUrl.pathname;
 
-  // Add custom headers to the response
+  // Add custom headers
   const customHeadersResponse = customHeadersMiddleware(request);
 
-  // Handle token-based redirection (if the user is logged in, redirect them away from login/sign-up)
-  if (
-    (token || request.cookies.get("token")) &&
-    (pathname === "/sign-in" || pathname === "/sign-up")
-  ) {
-    return NextResponse.redirect(new URL(`/my-account`, request.url));
+  // Publicly accessible routes (e.g., login, signup)
+  const publicRoutes = ["/authentication/login", "/authentication/signup"];
+
+  // If the user is already logged in, and tries to access the login page, redirect to the dashboard or another page
+  if (publicRoutes.some(route => pathname.startsWith(route)) && token) {
+    return NextResponse.redirect(new URL("/dashboard", request.url)); // Redirect to a protected page (e.g., dashboard)
   }
 
-  // Redirect to sign-in page if the user is not authenticated and trying to access the account page
-  if (!token && pathname.startsWith("/my-account")) {
-    return NextResponse.redirect(new URL(`/sign-in`, request.url));
+  // If no token is found, protect other routes and redirect to login
+  if (!token && !publicRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL(`/authentication/login`, request.url));
   }
 
-  // Handle internationalization logic using the next-intl middleware
+  // Internationalization handling
   const intlResponse = await intlMiddleware(request);
 
-  // Set the NEXT_LOCALE cookie with Secure and HttpOnly flags
-  intlResponse.cookies.set('NEXT_LOCALE', locale, {
+  // Set NEXT_LOCALE cookie
+  intlResponse.cookies.set("NEXT_LOCALE", locale, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
     maxAge: 365 * 24 * 60 * 60, // 1 year
-    sameSite: "strict"
+    sameSite: "strict",
   });
 
-  // Merge custom headers and i18n headers
+  // Merge custom headers
   customHeadersResponse.headers.forEach((value, key) => {
     intlResponse.headers.set(key, value);
   });
@@ -82,7 +80,6 @@ export default async function middleware(request: NextRequest) {
   return intlResponse;
 }
 
-// Config for which paths the middleware should run
 export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)'], // Apply to all paths except API and Next.js internals
+  matcher: ["/((?!api|_next|.*\\..*).*)"], // Apply to all routes except API and Next.js internals
 };

@@ -1,6 +1,6 @@
 export const runtime = "edge";
 
-import NotDevelopedYet from "@/components/NotDevelopedYet";
+import Companies from "@/components/pages/Companies";
 
 export default function Page({
   params,
@@ -9,9 +9,10 @@ export default function Page({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  
   return (
-    <div>
-      <NotDevelopedYet />
+    <div className="px-6 py-4">
+      <Companies />
     </div>
   );
 }

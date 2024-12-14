@@ -4,6 +4,7 @@ import Input from "@/components/forms/Input";
 import { loginValidationSchema } from "@/utils/validation/loginValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 export default function LoginForm() {
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -11,7 +12,13 @@ export default function LoginForm() {
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
       const response = await login(values.email, values.password);
-      console.log(response);
+      // Extract user and tokens from response
+      const { user, tokens } = response;
+      Cookies.set("accessToken", tokens.access, { secure: true, httpOnly: false }); // Set secure to true in production
+      Cookies.set("refreshToken", tokens.refresh, { secure: true, httpOnly: false });
+      console.log("User data:", user);
+      window.location.href = "/dashboard";
+
     } catch (error) {
       console.error("Login failed:", error);
       setLoginError("Invalid email or password.");

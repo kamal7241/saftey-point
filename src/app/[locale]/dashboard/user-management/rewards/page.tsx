@@ -1,7 +1,5 @@
 export const runtime = "edge";
 
-import NotDevelopedYet from "@/components/NotDevelopedYet";
-
 export default function Page({
   params,
   searchParams,
@@ -9,9 +7,6 @@ export default function Page({
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  return (
-    <div>
-      <NotDevelopedYet />
-    </div>
-  );
+  
+  return <h1>rewards</h1>;
 }

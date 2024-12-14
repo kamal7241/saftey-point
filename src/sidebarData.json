@@ -1,0 +1,49 @@
+[
+    {
+      "name": "Dashboard",
+      "link": "/dashboard",
+      "children": [],
+      "icon": "/images/icons/navbar/dashboard.svg",
+      "activeIcon": "/images/icons/navbar/dashboard-active.svg"
+    },
+    {
+      "name": "Company Management",
+      "link": "/dashboard/company-management",
+      "children": [
+        { "name": "Companies", "link": "/dashboard/company-management/companies" },
+        { "name": "Branches", "link": "/dashboard/company-management/branches" }
+      ],
+      "icon": "/images/icons/navbar/company-management.svg",
+      "activeIcon": "/images/icons/navbar/company-management-active.svg"
+    },
+    {
+      "name": "Admin Management",
+      "link": "/dashboard/admin-management",
+      "children": [
+        { "name": "Manage Admins", "link": "/dashboard/admin-management/manage-admins" },
+        { "name": "Roles & Permissions", "link": "/dashboard/admin-management/roles-permissions" }
+      ],
+      "icon": "/images/icons/navbar/admin-management.svg",
+      "activeIcon": "/images/icons/navbar/admin-management-active.svg"
+    },
+    {
+      "name": "Staff Management",
+      "link": "/dashboard/staff-management",
+      "children": [],
+      "icon": "/images/icons/navbar/staff-management.svg",
+      "activeIcon": "/images/icons/navbar/staff-management-active.svg"
+    },
+    {
+      "name": "User Management",
+      "link": "/dashboard/user-management",
+      "children": [
+        { "name": "Users", "link": "/dashboard/user-management/users" },
+        { "name": "Certificates", "link": "/dashboard/user-management/certificates" },
+        { "name": "Exams", "link": "/dashboard/user-management/exams" },
+        { "name": "Rewards", "link": "/dashboard/user-management/rewards" }
+      ],
+      "icon": "/images/icons/navbar/user-management.svg",
+      "activeIcon": "/images/icons/navbar/user-management-active.svg"
+    }
+  ]
+  

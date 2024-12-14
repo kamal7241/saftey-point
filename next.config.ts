@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
   webpack(config, { isServer }) {
     if (!isServer) {
       // Set fallback for async_hooks only on the client side

@@ -1,17 +1,19 @@
 import AuthLayout from "@/components/AuthLayout";
 
-export default function Layout({ 
+export default async function Layout({
   children,
-  params 
-}: { 
+  params,
+}: {
   children: React.ReactNode;
-  params: { locale: string }
+  params: { locale: string };
 }) {
+  const resolvedParams = await params; // Ensure params is resolved
+
   return (
     <>
-      <AuthLayout params={params}>
+      <AuthLayout params={resolvedParams}>
         <main>{children}</main>
       </AuthLayout>
     </>
-  )
+  );
 }

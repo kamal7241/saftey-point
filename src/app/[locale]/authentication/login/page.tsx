@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import LoginForm from "@/components/authentication/LoginForm";
 import Image from "next/image";
 

@@ -3,78 +3,76 @@ import LanguageSwitcher from "./HeaderActions/LanguageSwitcher";
 import Notifications from "./HeaderActions/Notifications";
 import UserMenu from "./HeaderActions/UserMenu";
 import Image from "next/image";
-// import UserMenu from "./UserMenu";
+
+type MenuType = "language" | "notifications" | "user" | null;
 
 const HeaderActions = () => {
-  const [activeMenu, setActiveMenu] = useState<"language" | "notifications" | "user" | null>(null);
-  const [isFullscreen, setIsFullscreen] = useState(false); // Track fullscreen state
+  const [activeMenu, setActiveMenu] = useState<MenuType>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleMenuToggle = (menu: "language" | "notifications" | "user") => {
-    setActiveMenu(activeMenu === menu ? null : menu); // Close if it's already open, otherwise open it
+  const refs = {
+    language: useRef<HTMLDivElement>(null),
+    notifications: useRef<HTMLDivElement>(null),
+    user: useRef<HTMLDivElement>(null),
   };
-  
-  const languageMenuRef = useRef<HTMLDivElement>(null);
-  const notificationsMenuRef = useRef<HTMLDivElement>(null);
-  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  const handleMenuToggle = (menu: MenuType) => {
+    setActiveMenu((prev) => (prev === menu ? null : menu));
+  };
+
+  const handleOutsideClick = (e: MouseEvent) => {
+    const isClickOutside = Object.values(refs).every(
+      (ref) => !ref.current?.contains(e.target as Node)
+    );
+
+    if (isClickOutside) setActiveMenu(null);
+  };
 
   useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (
-        !languageMenuRef.current?.contains(e.target as Node) &&
-        !notificationsMenuRef.current?.contains(e.target as Node) &&
-        !userMenuRef.current?.contains(e.target as Node)
-      ) {
-        setActiveMenu(null); // Close all menus if clicked outside
-      }
-    };
-
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, []);
 
-  // Fullscreen Toggle
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
-      setIsFullscreen(true); // Set fullscreen state to true
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-        setIsFullscreen(false); // Set fullscreen state to false
-      }
+      document.exitFullscreen();
     }
+    setIsFullscreen((prev) => !prev);
   };
 
   return (
     <div className="header-actions flex items-center gap-4">
-      <LanguageSwitcher
-        isOpen={activeMenu === "language"}
-        onToggle={() => handleMenuToggle("language")}
-        ref={languageMenuRef}
-      />
-      <Notifications
-        isOpen={activeMenu === "notifications"}
-        onToggle={() => handleMenuToggle("notifications")}
-        ref={notificationsMenuRef}
-      />
-      <UserMenu
-        isOpen={activeMenu === "user"}
-        onToggle={() => handleMenuToggle("user")}
-        ref={userMenuRef}
-      />
-      <div className="relative">
-        <button
-          className="p-2 rounded-full hover:bg-gray-100"
-          onClick={toggleFullscreen}
-        >
-          <Image
-            src={isFullscreen ? "/images/icons/close.svg" : "/images/icons/maximize.svg"}
-            alt="Fullscreen"
-            width={24}
-            height={24}
-          />
-        </button>
+      <div ref={refs.language}>
+        <LanguageSwitcher
+          isOpen={activeMenu === "language"}
+          onToggle={() => handleMenuToggle("language")}
+        />
       </div>
+      <div ref={refs.notifications}>
+        <Notifications
+          isOpen={activeMenu === "notifications"}
+          onToggle={() => handleMenuToggle("notifications")}
+        />
+      </div>
+      <div ref={refs.user}>
+        <UserMenu
+          isOpen={activeMenu === "user"}
+          onToggle={() => handleMenuToggle("user")}
+        />
+      </div>
+      <button
+        className="p-2 rounded-full hover:bg-gray-100"
+        onClick={toggleFullscreen}
+      >
+        <Image
+          src={isFullscreen ? "/images/icons/close.svg" : "/images/icons/maximize.svg"}
+          alt="Fullscreen"
+          width={24}
+          height={24}
+        />
+      </button>
     </div>
   );
 };

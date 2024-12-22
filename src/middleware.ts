@@ -48,7 +48,7 @@ export default async function middleware(request: NextRequest) {
   const customHeadersResponse = customHeadersMiddleware(request);
 
   // Publicly accessible routes (e.g., login, signup)
-  const publicRoutes = ["/authentication/login", "/authentication/signup"];
+  const publicRoutes = ["/authentication/login", "/authentication/signup", "/authentication/forget","/authentication/otp","/authentication/new-password"];
 
   // If the user is already logged in, and tries to access the login page, redirect to the dashboard or another page
   if (publicRoutes.some(route => pathname.startsWith(route)) && token) {

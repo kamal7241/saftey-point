@@ -1,7 +1,18 @@
 // components/Table.tsx
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
+import Status from "./Status";
+import Image from "next/image";
+import { KeyboardArrowLeft } from "./icons/KeyboardArrowLeft";
 
-interface TableProps<T> {
+const formatDate = (date: string): string => {
+  const parsedDate = new Date(date);
+  return new Intl.DateTimeFormat("en-GB")
+    .format(parsedDate)
+    .replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3 / $2 / $1");
+};
+
+interface TableProps<T extends { image?: string }> {
   data: T[];
   columns: { header: string; accessor: keyof T }[];
   renderRowActions?: (row: T) => React.ReactNode;
@@ -14,7 +25,7 @@ interface TableProps<T> {
   rowsPerPage?: number;
 }
 
-const Table = <T,>({
+const Table = <T extends { image?: string | undefined }>({
   data,
   columns,
   renderRowActions,
@@ -22,6 +33,7 @@ const Table = <T,>({
   sortable,
   rowsPerPage = 20,
 }: TableProps<T>) => {
+  const t = useTranslations("tables");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
     direction: "asc" | "desc" | null;
@@ -110,8 +122,8 @@ const Table = <T,>({
                   sortable && column.accessor && handleSort(column.accessor)
                 }
               >
-                <span className="text-sm font-medium font-Cairo text-primary">
-                  {column.header}
+                <span className="text-sm font-medium font-Cairo text-primary capitalize">
+                  {t(column.header)}
                 </span>
                 {sortable && sortConfig.key === column.accessor && (
                   <span>{sortConfig.direction === "asc" ? " ↑" : " ↓"}</span>
@@ -120,7 +132,7 @@ const Table = <T,>({
             ))}
             {renderRowActions && (
               <th className="px-3 py-[18px] text-start border-b border-light-100">
-                <span className="text-sm font-medium font-Cairo text-primary">
+                <span className="text-sm font-medium font-Cairo text-primary capitalize">
                   Actions
                 </span>
               </th>
@@ -131,14 +143,48 @@ const Table = <T,>({
           {paginatedData.map((row, rowIndex) => (
             <tr key={rowIndex} className="border-b">
               {columns.map((column) => (
-                <td key={column.header} className="px-4 py-2 text-start">
-                  {(column.accessor &&
-                    (row[column.accessor] as React.ReactNode)) ||
-                    "-"}
+                <td
+                  key={column.header}
+                  className="px-4 py-2 text-start border-b border-light-100"
+                  data-column={column.accessor}
+                >
+                  {column.accessor === "status" ? (
+                    <Status status={String(row[column.accessor])} />
+                  ) : column.accessor === "created" ? (
+                    // Format the 'created' date
+                    <span>{formatDate(String(row[column.accessor]))}</span>
+                  ) : column.accessor === "name" ? (
+                    <div className="flex items-center space-x-2">
+                      {/* Render image if it exists, otherwise show a default */}
+                      {row.image ? (
+                        <Image
+                          src={row.image}
+                          alt="Company Logo"
+                          className="w-10 h-10 object-cover rounded-full"
+                          width={30}
+                          height={30}
+                        />
+                      ) : (
+                        <Image
+                          src="/default-image.jpg"
+                          alt="Default Image"
+                          className="w-10 h-10 object-cover rounded-full"
+                          width={30}
+                          height={30}
+                        />
+                      )}
+                      <span>{String(row[column.accessor])}</span>
+                    </div>
+                  ) : column.accessor && row[column.accessor] !== undefined ? (
+                    (row[column.accessor] as React.ReactNode)
+                  ) : (
+                    "-"
+                  )}
                 </td>
               ))}
+
               {renderRowActions && (
-                <td className="px-4 py-2 text-start">
+                <td className="px-4 py-2 text-start border-b border-light-100">
                   {renderRowActions(row)}
                 </td>
               )}
@@ -149,27 +195,30 @@ const Table = <T,>({
 
       {/* Pagination Controls */}
       {pagination && (
-        <ul className="mt-4 flex justify-between">
+        <ul className="p-4 flex justify-end gap-4 select-none">
           <li>
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className={`p-2 text-gray-300 hover:opacity-100 ${
+                currentPage <= 1 ? "opacity-30 pointer-events-none" : ""
+              } cursor-pointer`}
             >
-              Previous
+              <KeyboardArrowLeft />
             </button>
           </li>
           {generatePagination().map((page, index) => (
-            <li key={index}>
+            <li
+              key={index}
+              className="w-10 h-10 text-gray-300 inline-flex items-center justify-center"
+            >
               {page === "..." ? (
-                <span className="px-4 py-2 text-gray-500">...</span>
+                <span>...</span>
               ) : (
                 <button
                   onClick={() => handlePageChange(Number(page))}
                   className={`px-4 py-2 rounded ${
-                    page === currentPage
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
+                    page === currentPage ? "!text-black" : ""
                   }`}
                 >
                   {page}
@@ -182,9 +231,9 @@ const Table = <T,>({
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage >= pagination.totalPages}
-              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              className="p-2 text-gray-300 hover:opacity-90 cursor-pointer rotate-180"
             >
-              Next
+              <KeyboardArrowLeft />
             </button>
           </li>
         </ul>

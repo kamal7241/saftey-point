@@ -5,6 +5,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import sidebarData from "@/sidebarData.json";
 import Image from "next/image";
 import { ArrowDown } from "./ui/icons/ArrowDown";
+import { useTranslations } from "next-intl";
 
 type SidebarItem = {
   name: string;
@@ -13,25 +14,44 @@ type SidebarItem = {
   icon?: string;
   activeIcon?: string;
 };
+const toTranslationKey = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, "-");
 
 const Sidebar = () => {
+  const t = useTranslations("nav");
   const pathname = usePathname() as string;
   const [openItem, setOpenItem] = useState<string | null>(null);
+
+  const translatedSidebarData = sidebarData.map((item: SidebarItem) => ({
+    ...item,
+    name: t(toTranslationKey(item.name)),
+    children: item.children?.map((child) => ({
+      ...child,
+      name: t(toTranslationKey(child.name)),
+    })),
+  }));
 
   const isActive = useCallback((link: string) => pathname === link, [pathname]);
 
   useEffect(() => {
-    const activeItem = sidebarData.find((item: SidebarItem) =>
+    const activeItem = translatedSidebarData.find((item: SidebarItem) =>
       item.children?.some((child) => isActive(child.link))
     );
     if (activeItem) setOpenItem(activeItem.name);
-  }, [pathname, isActive]);
+  }, [pathname, isActive, translatedSidebarData]);
 
   const toggleItem = (itemName: string) => {
     setOpenItem((prev) => (prev === itemName ? null : itemName));
   };
 
-  const renderMenuItem = (item: SidebarItem, active: boolean, isParentActive: boolean) => (
+  const renderMenuItem = (
+    item: SidebarItem,
+    active: boolean,
+    isParentActive: boolean
+  ) => (
     <>
       {item.icon && (
         <span className="relative flex-shrink-0 inline-block w-5 h-5">
@@ -47,15 +67,16 @@ const Sidebar = () => {
           />
         </span>
       )}
-      <span>{item.name}</span>
+      <span className="capitalize">{item.name}</span>
     </>
   );
 
   const renderMenu = (items: SidebarItem[]) => {
     return items.map((item) => {
       const active = isActive(item.link);
-      const isParentActive = !!item.children?.some((child) => isActive(child.link));
-
+      const isParentActive = !!item.children?.some((child) =>
+        isActive(child.link)
+      );
 
       return (
         <li key={item.name} className="relative whitespace-nowrap">
@@ -68,7 +89,9 @@ const Sidebar = () => {
             >
               {renderMenuItem(item, active, isParentActive)}
               <span
-                className={`${openItem === item.name ? "rotate-180" : ""} ms-auto`}
+                className={`${
+                  openItem === item.name ? "rotate-180" : ""
+                } ms-auto`}
               >
                 <ArrowDown />
               </span>
@@ -93,7 +116,7 @@ const Sidebar = () => {
 
   return (
     <div>
-      <ul className="space-y-4">{renderMenu(sidebarData)}</ul>
+      <ul className="space-y-4">{renderMenu(translatedSidebarData)}</ul>
     </div>
   );
 };

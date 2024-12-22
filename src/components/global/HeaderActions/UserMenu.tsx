@@ -1,35 +1,38 @@
-import Image from "next/image";
-import React, { forwardRef } from "react";
+import React, { FC } from "react";
+import Dropdown from "../ui/Dropdown";
+import Cookies from "js-cookie";
 
-const UserMenu = forwardRef<HTMLDivElement, { isOpen: boolean, onToggle: () => void }>(
-  ({ isOpen, onToggle }, ref) => {
-    return (
-      <div className="relative" ref={ref}>
-        <button
-          className="p-2 rounded-full hover:bg-gray-100"
-          onClick={onToggle}
-        >
-          <Image
-            src="/images/icons/user.svg"
-            alt="User"
-            width={24}
-            height={24}
-          />
-        </button>
-        {isOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white border shadow-md rounded-md z-10">
-            <ul>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  }
-);
+type UserMenuProps = {
+  isOpen: boolean;
+  onToggle: () => void;
+};
 
-UserMenu.displayName = "UserMenu";
+const UserMenu: FC<UserMenuProps> = ({ isOpen, onToggle }) => {
+    const handleLogout = () => {
+      // Clear authentication tokens
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+  
+      // Redirect to login page
+      window.location.href = "/login";
+    };
+  const menuItems = (
+    <>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>Logout</li>
+    </>
+  );
+
+  return (
+    <Dropdown
+      isOpen={isOpen}
+      onToggle={onToggle}
+      iconSrc="/images/icons/user.svg"
+      altText="User"
+      menuItems={menuItems}
+    />
+  );
+};
 
 export default UserMenu;

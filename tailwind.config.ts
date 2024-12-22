@@ -14,6 +14,7 @@ export default {
         dark: "#4B4B4B",
         gray: {
           100: "#FAFAFA",
+          101: "#A5A7AA",
           200: "#CED0D3",
           300: "#8E8E8E",
           400: "#F2F4F7",
@@ -21,6 +22,7 @@ export default {
           600: "#4A4F55",
           700: "#4B4B4B",
           800: "#484B50",
+          900: "#787C84",
         },
         light: {
           100: "#F5F5F5",
@@ -29,7 +31,14 @@ export default {
         },
         green: {
           100: "#C0E5D1",
+          200: "#F4FCF7",
           400: "#0C9D61",
+        },
+        blue: {
+          400: "#3A70E2",
+        },
+        red: {
+          400: "#EC2D30",
         },
       },
       maxWidth: {
@@ -50,5 +59,9 @@ export default {
       },
     },
   },
+  safelist: [
+    'text-blue-400',
+    'text-gray-900',
+  ],
   plugins: [],
 } satisfies Config;

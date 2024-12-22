@@ -67,6 +67,22 @@
     box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
     -webkit-text-fill-color: hsl(var(--foreground)) !important;
   }
+
+  .flexCenter{
+    @apply flex items-center justify-start gap-2
+  }
+  .auth-form-parent{
+    @apply h-[824px] w-1/2 px-10 pt-20
+  }
+  .auth-form-container{
+    @apply flex flex-col items-center justify-start gap-4 h-full pb-6 
+  }
+  .auth-submit-btn{
+    @apply mt-3 w-full rounded-lg bg-primary py-3 text-center text-white transition-all hover:bg-primaryLight
+  }
+  .errorMsg{
+    @apply text-xs text-red-500 flex items-center mt-1.5 gap-1 w-full
+  }
 }
 
 

@@ -1,3 +1,4 @@
+import Footer from "@/components/global/Footer";
 import Header from "@/components/global/Header";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Sidebar";
@@ -11,7 +12,7 @@ export default async function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="dashboard-layout flex">
+      <div className="dashboard-layout flex min-h-svh">
         <nav className="w-[312px] bg-white shadow-custom px-5 flex-shrink-0 overflow-hidden fixed top-0 start-0 z-40 h-screen transition-transform -translate-x-full sm:translate-x-0">
           <div className="flex flex-col justify-start h-full w-full">
             <div className="flex justify-center">
@@ -30,11 +31,14 @@ export default async function DashboardLayout({
             </div>
           </div>
         </nav>
-        <main className="w-full ms-[312px] bg-gray-500 relative pt-[90px]">
+        <main className="w-full ms-[312px] bg-gray-500 relative pt-[90px] flex-col flex">
           <div className="absolute left-0 right-0 top-0">
             <Header />
           </div>
           {children}
+          <div className="mt-auto">
+            <Footer />
+          </div>
         </main>
       </div>
     </ProtectedRoute>

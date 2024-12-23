@@ -33,13 +33,15 @@ const Input: React.FC<InputProps> = ({
 
   return (
     <div>
-      <label className="text-dark mb-1.5 block text-sm font-medium">
-        {label}
-      </label>
+      {label && (
+        <label className="text-dark mb-1.5 block text-sm font-medium">
+          {label}
+        </label>
+      )}
       <div
-        className={`flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 ${
+        className={`flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 h-full ${
           border ? "border border-gray-200" : ""
-        } ${error?"!border-red-400":""} ${extraClass}`}
+        } ${error ? "!border-red-400" : ""} ${extraClass}`}
       >
         {iconSVG && iconSVG}
         {icon && (

@@ -8,10 +8,10 @@ type ButtonProps = {
   onClick?: () => void;
   className?: string;
   icon?: ReactNode;
-  variant?: "primary" | "dark" | "transparent";
+  variant?: "primary" | "dark" | "transparent" | "selected";
   noLabel?: boolean;
   noBackground?: boolean;
-  textColor?: string; // New prop for custom text color
+  textColor?: string;
 };
 
 export default function Button({
@@ -24,10 +24,9 @@ export default function Button({
   variant = "primary",
   noBackground = false,
   noLabel = false,
-  textColor, // Destructure the new prop
+  textColor,
 }: ButtonProps) {
-  // Conditionally remove padding when noLabel is true
-  const baseClasses = `flex items-center justify-center gap-2 ${
+  const baseClasses = `flex items-center justify-center gap-2 capitalize ${
     noLabel ? "" : "px-6 py-2"
   } rounded-md font-medium transition duration-200 ease-in-out`;
 
@@ -40,32 +39,33 @@ export default function Button({
   } else if (variant === "transparent") {
     variantClasses =
       "bg-transparent text-primary border border-light-300 hover:border-light-400";
+  } else if (variant === "selected") {
+    variantClasses =
+      "bg-gray-201 text-primary border border-light-300 hover:border-light-400";
   }
 
-  // Add conditional styling if `noBackground` is true
   if (noBackground) {
     variantClasses = "bg-transparent border-none";
   }
 
-  // Apply custom text color if provided
   const textClasses = textColor ? `text-${textColor}` : "";
 
-  // Combine base, variant, and additional custom class names
-  const defaultClasses = `${baseClasses} ${variantClasses} ${textClasses} ${className}`;
+  // Only append textClasses if no text-related styles are already set in variantClasses
+  const combinedClasses = `${baseClasses} ${variantClasses} ${className}`;
 
   const buttonContent = (
     <>
-      {icon && icon}
-      {!noLabel && label && <span>{label}</span>}
+      {icon && <span className={textClasses}>{icon}</span>}
+      {!noLabel && label && <span className={textClasses}>{label}</span>}
     </>
   );
 
   return href ? (
-    <Link href={href} className={defaultClasses}>
+    <Link href={href} className={combinedClasses}>
       {buttonContent}
     </Link>
   ) : (
-    <button type={type} onClick={onClick} className={defaultClasses}>
+    <button type={type} onClick={onClick} className={combinedClasses}>
       {buttonContent}
     </button>
   );

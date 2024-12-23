@@ -32,6 +32,8 @@
     "buttons":{
       "add_company":"أضف شركة",
       "export":"تحميل",
+      "reset":"إعادة تعيين",
+      "apply":"تطبيق",
       "filters":"تصفية"
     }
   }

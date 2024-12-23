@@ -32,6 +32,8 @@
     "buttons":{
       "add_company":"Add Company",
       "export":"export",
+      "reset":"reset",
+      "apply":"apply",
       "filters":"Filters"
     }
   }

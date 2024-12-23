@@ -12,6 +12,10 @@ import { Edit } from "../ui/icons/Edit";
 import { Delete } from "../ui/icons/Delete";
 import SearchForm from "../forms/SearchForm";
 import { fetchCompanies } from "@/api/dashboardService";
+import Switcher from "../ui/SmallSwitcher";
+import FilterForm from "../ui/FilterForm";
+import { format } from "date-fns";
+
 
 interface Company {
   id: number;
@@ -28,23 +32,52 @@ const Companies = () => {
   const t = useTranslations("common");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterPopupOpen, setFilterPopupOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
+  const [createdOptions, setCreatedOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   useEffect(() => {
     const getCompanies = async () => {
       const response = await fetchCompanies();
       const data = await response;
       setCompanies(data);
+      // Extract unique created dates
+
+      // Extract unique dates and format them
+      const uniqueDates = Array.from(
+        new Set(data.map((company) => company.created))
+      );
+
+      const formattedDates = uniqueDates.map((date) => {
+        const formattedDate = format(new Date(date), "yyyy / MM / dd");
+        return { value: date, label: formattedDate };
+      });
+
+      setCreatedOptions(formattedDates);
     };
 
     getCompanies();
   }, []);
 
-  const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCompanies = companies.filter((company) => {
+    const matchesSearch = company.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFilters = Object.entries(filters).every(([key, value]) => {
+      if (!value) return true; // Ignore empty filter fields
+      return company[key as keyof Company]
+        ?.toString()
+        .toLowerCase()
+        .includes(value.toLowerCase());
+    });
+    return matchesSearch && matchesFilters;
+  });
 
   const columns: { header: string; accessor: keyof Company }[] = [
     { header: "company_id", accessor: "id" },
@@ -60,7 +93,13 @@ const Companies = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
+    setFilters(appliedFilters);
+  };
 
+  const handleResetFilters = () => {
+    setFilters({});
+  };
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
@@ -97,6 +136,7 @@ const Companies = () => {
 
   const renderRowActions = (row: Company) => (
     <div className="flex gap-2">
+      <Switcher />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -169,8 +209,8 @@ const Companies = () => {
             {/* Filters Button */}
             <Button
               label={t("buttons.filters")}
-              onClick={() => setFilterPopupOpen(true)}
-              variant="transparent"
+              onClick={() => setFiltersOpen((prev) => !prev)}
+              variant={!filtersOpen ? "transparent" : "selected"}
             />
 
             {/* Export Button */}
@@ -187,17 +227,42 @@ const Companies = () => {
           </div>
         </div>
 
-        {filterPopupOpen && (
-          <div className="bg-white p-6 rounded-lg">
-            <h2 className="text-xl mb-4">Filters</h2>
-            {/* Filter form */}
-            <button
-              onClick={() => setFilterPopupOpen(false)}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg"
-            >
-              Close
-            </button>
-          </div>
+        {filtersOpen && (
+          <FilterForm
+            fields={[
+              {
+                type: "text",
+                label: "Company ID",
+                name: "id",
+                placeholder: "Company ID",
+              },
+              {
+                type: "text",
+                label: "Name",
+                name: "name",
+                placeholder: "Name",
+              },
+              {
+                type: "select",
+                label: "Status",
+                placeholder: "Status",
+                name: "status",
+                options: [
+                  { value: "1", label: "Active" },
+                  { value: "0", label: "Inactive" },
+                ],
+              },
+              {
+                type: "select",
+                label: "Created",
+                placeholder: "Created",
+                name: "created",
+                options: createdOptions,
+              },
+            ]}
+            onApply={handleApplyFilters}
+            onReset={handleResetFilters}
+          />
         )}
         <Table
           data={filteredCompanies}
@@ -208,7 +273,7 @@ const Companies = () => {
             onPageChange: handlePageChange,
           }}
           sortable={true}
-          rowsPerPage={5}
+          rowsPerPage={10}
           renderRowActions={renderRowActions}
         />
       </div>

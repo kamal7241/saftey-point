@@ -88,7 +88,7 @@ const Companies = () => {
     { header: "created", accessor: "created" },
   ];
 
-  const totalPages = Math.ceil(filteredCompanies.length / 5);
+  const totalPages = Math.ceil(filteredCompanies.length / 10);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

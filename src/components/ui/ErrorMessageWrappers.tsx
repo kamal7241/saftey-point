@@ -5,7 +5,7 @@ interface ErrorMessageWrappersProps {
   }
 export default function ErrorMessageWrappers({ msg }: ErrorMessageWrappersProps) {
   return (
-    <div className="text-xs text-red-400 flex items-center mt-1.5 gap-1">
+    <div className="text-xs text-red-400 flex items-center mt-1.5 gap-1 w-full">
       <Error />
       {msg}
     </div>

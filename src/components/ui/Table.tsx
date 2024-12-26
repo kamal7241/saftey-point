@@ -110,90 +110,95 @@ const Table = <T extends { image?: string | undefined }>({
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.header}
-                className="px-3 py-[18px] text-start border-b border-light-100 cursor-pointer"
-                onClick={() =>
-                  sortable && column.accessor && handleSort(column.accessor)
-                }
-              >
-                <span className="text-sm font-medium font-Cairo text-primary capitalize">
-                  {t(column.header)}
-                </span>
-                {sortable && sortConfig.key === column.accessor && (
-                  <span>{sortConfig.direction === "asc" ? " ↑" : " ↓"}</span>
-                )}
-              </th>
-            ))}
-            {renderRowActions && (
-              <th className="px-3 py-[18px] text-start border-b border-light-100">
-                <span className="text-sm font-medium font-Cairo text-primary capitalize">
-                  Actions
-                </span>
-              </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-b">
+    <>
+      <div className="overflow-x-auto pb-4">
+        <table className="table-auto overflow-scroll w-full">
+          <thead>
+            <tr>
               {columns.map((column) => (
-                <td
+                <th
                   key={column.header}
-                  className="px-4 py-2 text-start border-b border-light-100"
-                  data-column={column.accessor}
+                  className="px-3 py-[18px] text-start border-b border-light-100 cursor-pointer whitespace-nowrap"
+                  onClick={() =>
+                    sortable && column.accessor && handleSort(column.accessor)
+                  }
                 >
-                  {column.accessor === "status" ? (
-                    <Status status={String(row[column.accessor])} />
-                  ) : column.accessor === "created" ? (
-                    // Format the 'created' date
-                    <span>{formatDate(String(row[column.accessor]))}</span>
-                  ) : column.accessor === "name" ? (
-                    <div className="flex items-center space-x-2">
-                      {/* Render image if it exists, otherwise show a default */}
-                      {row.image ? (
-                        <Image
-                          src={row.image}
-                          alt="Company Logo"
-                          className="w-10 h-10 object-cover rounded-full"
-                          width={30}
-                          height={30}
-                        />
-                      ) : (
-                        <Image
-                          src="/default-image.jpg"
-                          alt="Default Image"
-                          className="w-10 h-10 object-cover rounded-full"
-                          width={30}
-                          height={30}
-                        />
-                      )}
-                      <span>{String(row[column.accessor])}</span>
-                    </div>
-                  ) : column.accessor && row[column.accessor] !== undefined ? (
-                    (row[column.accessor] as React.ReactNode)
-                  ) : (
-                    "-"
+                  <span className="text-sm font-medium font-Cairo text-primary capitalize">
+                    {t(column.header)}
+                  </span>
+                  {sortable && sortConfig.key === column.accessor && (
+                    <span>{sortConfig.direction === "asc" ? " ↑" : " ↓"}</span>
                   )}
-                </td>
+                </th>
               ))}
-
               {renderRowActions && (
-                <td className="px-4 py-2 text-start border-b border-light-100">
-                  {renderRowActions(row)}
-                </td>
+                <th className="px-3 py-[18px] text-start border-b border-light-100">
+                  <span className="text-sm font-medium font-Cairo text-primary capitalize">
+                    Actions
+                  </span>
+                </th>
               )}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedData.map((row, rowIndex) => (
+              <tr key={rowIndex} className="border-b">
+                {columns.map((column) => (
+                  <td
+                    key={column.header}
+                    className="px-4 py-2 text-start border-b border-light-100"
+                    data-column={column.accessor}
+                  >
+                    {column.accessor === "status" ? (
+                      <Status status={String(row[column.accessor])} />
+                    ) : column.accessor === "created" ? (
+                      // Format the 'created' date
+                      <span className="whitespace-nowrap">
+                        {formatDate(String(row[column.accessor]))}
+                      </span>
+                    ) : column.accessor === "name" ? (
+                      <div className="flex items-center space-x-2 min-w-[200px]">
+                        {/* Render image if it exists, otherwise show a default */}
+                        {row.image ? (
+                          <Image
+                            src={row.image}
+                            alt="Company Logo"
+                            className="w-10 h-10 object-cover rounded-full"
+                            width={30}
+                            height={30}
+                          />
+                        ) : (
+                          <Image
+                            src="/default-image.jpg"
+                            alt="Default Image"
+                            className="w-10 h-10 object-cover rounded-full"
+                            width={30}
+                            height={30}
+                          />
+                        )}
+                        <span>{String(row[column.accessor])}</span>
+                      </div>
+                    ) : column.accessor &&
+                      row[column.accessor] !== undefined ? (
+                      (row[column.accessor] as React.ReactNode)
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                ))}
 
-      {/* Pagination Controls */}
+                {renderRowActions && (
+                  <td className="px-4 py-2 text-start border-b border-light-100 whitespace-nowrap">
+                    {renderRowActions(row)}
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Pagination Controls */}
+      </div>
       {pagination && (
         <ul className="p-4 flex justify-end gap-4 select-none">
           <li>
@@ -238,7 +243,7 @@ const Table = <T extends { image?: string | undefined }>({
           </li>
         </ul>
       )}
-    </div>
+    </>
   );
 };
 

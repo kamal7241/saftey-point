@@ -18,7 +18,7 @@ export default function Footer() {
             Reserved
           </span>
         </div>
-        <ul className="flex items-center justify-center gap-2 text-gray-900 text-sm">
+        <ul className="flex items-center justify-center gap-2 textRegular">
           <li>
             <Link href="/about" className="hover:underline">About</Link>
           </li>

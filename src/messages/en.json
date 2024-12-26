@@ -29,11 +29,19 @@
     "active": "Activate",
     "inactive": "Deactivated",
     "searchplaceholder": "Start typing to search...",
+    "add_company":"Add Company",
+    "logo_company":"Logo Company",
+    "add_company_subtitle":"Welcome back, fields marked with (*) are mandatory",
+    "fileuploader_note":"Click on the image to change it Note: Choose only JPG, PNG images and no more than 5MB in size",
     "buttons":{
       "add_company":"Add Company",
       "export":"export",
       "reset":"reset",
       "apply":"apply",
+      "delete":"delete",
+      "close":"close",
+      "submit":"submit",
+      "generate":"generate",
       "filters":"Filters"
     }
   }

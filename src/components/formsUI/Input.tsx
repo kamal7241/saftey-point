@@ -34,7 +34,7 @@ const Input: React.FC<InputProps> = ({
   return (
     <div>
       {label && (
-        <label className="text-dark mb-1.5 block text-sm font-medium">
+        <label className="inputLabel">
           {label}
         </label>
       )}
@@ -61,7 +61,7 @@ const Input: React.FC<InputProps> = ({
           onChange={onChange}
           name={name}
           onKeyDown={onKeyDown}
-          className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30"
+          className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[20px]"
         />
         {type === "password" && (
           <button

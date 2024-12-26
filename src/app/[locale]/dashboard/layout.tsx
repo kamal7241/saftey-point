@@ -31,7 +31,7 @@ export default async function DashboardLayout({
             </div>
           </div>
         </nav>
-        <main className="w-full ms-[312px] bg-gray-500 relative pt-[90px] flex-col flex">
+        <main className="w-[calc(100vw-312px)] ms-[312px] bg-gray-500 relative pt-[90px] flex-col flex">
           <div className="absolute left-0 right-0 top-0">
             <Header />
           </div>

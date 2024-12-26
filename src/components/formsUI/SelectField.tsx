@@ -29,7 +29,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   return (
     <div>
       {label && (
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="inputLabel">
           {label}
         </label>
       )}

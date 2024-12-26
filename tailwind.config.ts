@@ -18,10 +18,10 @@ export default {
           200: "#CED0D3",
           201: "#EEEEEE",
           300: "#8E8E8E",
+          301: "#888891",
           400: "#F2F4F7",
           500: "#F1F1F1",
           600: "#4A4F55",
-          700: "#4B4B4B",
           800: "#484B50",
           900: "#787C84",
         },
@@ -32,6 +32,7 @@ export default {
         },
         green: {
           100: "#C0E5D1",
+          101: "#E5F5EC",
           200: "#F4FCF7",
           400: "#0C9D61",
         },
@@ -57,6 +58,7 @@ export default {
       },
       boxShadow: {
         custom: "0px 4px 4px rgba(0, 0, 0, 0.05)",
+        custom2: "0 0 0 20px #E5F5EC",
       },
     },
   },

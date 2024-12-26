@@ -1,6 +1,6 @@
 "use client";
 
-import Input from "@/components/forms/Input";
+import Input from "@/components/formsUI/Input";
 import { Formik, Form } from "formik";
 
 export default function HeaderSearch() {

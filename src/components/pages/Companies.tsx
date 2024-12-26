@@ -10,12 +10,12 @@ import Popup from "../ui/Popup";
 import Eye from "../ui/icons/Eye";
 import { Edit } from "../ui/icons/Edit";
 import { Delete } from "../ui/icons/Delete";
-import SearchForm from "../forms/SearchForm";
+import SearchForm from "../formsUI/SearchForm";
 import { fetchCompanies } from "@/api/dashboardService";
 import Switcher from "../ui/SmallSwitcher";
 import FilterForm from "../ui/FilterForm";
 import { format } from "date-fns";
-
+import NewCompanyForm from "../forms/NewCompanyForm";
 
 interface Company {
   id: number;
@@ -184,17 +184,17 @@ const Companies = () => {
 
   return (
     <div>
-      <h1 className="py-1.5 text-2xl capitalize text-gray-700">
+      <h1 className="py-1.5 text-2xl capitalize text-dark">
         {t("manage-companies")}
       </h1>
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
-          <div className="flex gap-3 justify-between items-center">
+          <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
               label={t("buttons.add_company")}
               onClick={() => setAddPopupOpen(true)}
@@ -278,21 +278,12 @@ const Companies = () => {
         />
       </div>
 
-      <Popup
-        isOpen={addPopupOpen}
-        onClose={() => setAddPopupOpen(false)}
-        title="Add New Company"
-      >
-        <form>
-          <label>Company Name</label>
-          <input type="text" className="border rounded-lg w-full p-2 mb-4" />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          >
-            Add Company
-          </button>
-        </form>
+      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+        <NewCompanyForm
+          title={t("add_company")}
+          sub_title={t("add_company_subtitle")}
+          onClose={() => setAddPopupOpen(false)}
+        />
       </Popup>
     </div>
   );

@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import Input from "../forms/Input";
+import Input from "../formsUI/Input";
 import Button from "./Button";
 import { useTranslations } from "next-intl";
-import SelectField from "../forms/SelectField";
+import SelectField from "../formsUI/SelectField";
 
 interface Field {
   type: "text" | "select";

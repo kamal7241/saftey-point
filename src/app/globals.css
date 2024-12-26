@@ -50,8 +50,6 @@
 }
 
 @layer base {
-
-
   body {
     @apply scroll-smooth antialiased;
   }
@@ -68,35 +66,41 @@
     -webkit-text-fill-color: hsl(var(--foreground)) !important;
   }
 
-  .flexCenter{
-    @apply flex items-center justify-start gap-2
+  .flexCenter {
+    @apply flex items-center justify-start gap-2;
   }
-  .auth-form-parent{
-    @apply h-[824px] w-1/2 px-10 pt-20
+  .auth-form-parent {
+    @apply h-[824px] w-1/2 px-10 pt-20;
   }
-  .auth-form-container{
-    @apply flex flex-col items-center justify-start gap-4 h-full pb-6 
+  .auth-form-container {
+    @apply flex flex-col items-center justify-start gap-4 h-full pb-6;
   }
-  .auth-submit-btn{
-    @apply mt-3 w-full rounded-lg bg-primary py-3 text-center text-white transition-all hover:bg-primaryLight
+  .auth-submit-btn {
+    @apply mt-3 w-full rounded-lg bg-primary py-3 text-center text-white transition-all hover:bg-primaryLight;
   }
-  .errorMsg{
-    @apply text-xs text-red-500 flex items-center mt-1.5 gap-1 w-full
+  .errorMsg {
+    @apply text-xs text-red-500 flex items-center mt-1.5 gap-1 w-full;
+  }
+  .heading3 {
+    @apply text-primary text-xl font-bold capitalize;
+  }
+  .textRegular {
+    @apply text-gray-900 text-sm;
+  }
+  .inputLabel {
+    @apply text-dark mb-1.5 block text-sm font-medium capitalize;
   }
 }
-
 
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    display: none;
   }
   .no-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }
-}
-
-
 
 /* .header-actions {
   @apply flex bg-red-200;

@@ -1,6 +1,6 @@
 "use client";
 import { resetPassword } from "@/api/authService";
-import Input from "@/components/forms/Input";
+import Input from "@/components/formsUI/Input";
 import { passwordValidationSchema } from "@/utils/validation/authValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useState } from "react";

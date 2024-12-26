@@ -1,48 +1,42 @@
-import React, { useRef, useEffect, useCallback } from "react";
+"use client";
+import React, { useRef } from "react";
+import { Close } from "./icons/Close";
 
 interface PopupProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
   children: React.ReactNode;
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, onClose, title, children }) => {
+const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
   const popupRef = useRef<HTMLDivElement | null>(null);
 
-  const handleOverlayClick = useCallback(
-    (e: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    },
-    [onClose]
-  );
-
-  useEffect(() => {
-    if (isOpen) {
-      document.addEventListener("click", handleOverlayClick);
-    } else {
-      document.removeEventListener("click", handleOverlayClick);
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+      onClose(); // Close only if the click is outside the popup content
     }
-
-    return () => {
-      document.removeEventListener("click", handleOverlayClick);
-    };
-  }, [isOpen, handleOverlayClick]);
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div ref={popupRef} className="bg-white p-6 rounded-lg max-w-lg w-full">
-        <h2 className="text-xl mb-4">{title}</h2>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={handleOverlayClick} // Attach click handler to the overlay
+    >
+      <div
+        ref={popupRef}
+        className="bg-white p-6 rounded-lg max-w-[640px] w-full relative"
+        onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from bubbling to overlay
+      >
         <div>{children}</div>
         <button
           onClick={onClose}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
+          className="w-9 h-9 flex items-center justify-center absolute top-2 end-2 group/button"
         >
-          Close
+          <span className="w-3.5 text-gray-301 group-hover/button:rotate-90 transition-all">
+            <Close />
+          </span>
         </button>
       </div>
     </div>

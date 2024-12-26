@@ -8,10 +8,13 @@ type ButtonProps = {
   onClick?: () => void;
   className?: string;
   icon?: ReactNode;
-  variant?: "primary" | "dark" | "transparent" | "selected";
+  variant?: "primary" | "dark" | "transparent" | "selected" | "danger";
+  disabled?: boolean;
   noLabel?: boolean;
   noBackground?: boolean;
   textColor?: string;
+  padding?: string;
+  textSize?: string;
 };
 
 export default function Button({
@@ -21,14 +24,17 @@ export default function Button({
   onClick,
   className = "",
   icon,
+  disabled,
   variant = "primary",
   noBackground = false,
   noLabel = false,
   textColor,
+  textSize = "text-base",
+  padding = "px-6 py-2",
 }: ButtonProps) {
   const baseClasses = `flex items-center justify-center gap-2 capitalize ${
-    noLabel ? "" : "px-6 py-2"
-  } rounded-md font-medium transition duration-200 ease-in-out`;
+    noLabel ? "" : padding
+  } rounded-md font-medium transition duration-200 ease-in-out ${textSize}`;
 
   let variantClasses = "";
   if (variant === "primary") {
@@ -42,6 +48,9 @@ export default function Button({
   } else if (variant === "selected") {
     variantClasses =
       "bg-gray-201 text-primary border border-light-300 hover:border-light-400";
+  } else if (variant === "danger") {
+    variantClasses =
+      "bg-red-400 text-white border border-red-400 hover:bg-opacity-80";
   }
 
   if (noBackground) {
@@ -55,7 +64,13 @@ export default function Button({
 
   const buttonContent = (
     <>
-      {icon && <span className={textClasses}>{icon}</span>}
+      {icon && (
+        <span
+          className={`${textClasses} self-center flex items-center justify-center`}
+        >
+          {icon}
+        </span>
+      )}
       {!noLabel && label && <span className={textClasses}>{label}</span>}
     </>
   );
@@ -65,7 +80,7 @@ export default function Button({
       {buttonContent}
     </Link>
   ) : (
-    <button type={type} onClick={onClick} className={combinedClasses}>
+    <button type={type} onClick={onClick} className={combinedClasses} disabled={disabled}>
       {buttonContent}
     </button>
   );

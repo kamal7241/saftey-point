@@ -1,41 +1,62 @@
 {
   "nav": {
-    "dashboard": "لوحة التحكم",
-    "company-management": "إدارة الشركات",
-    "companies": "الشركات",
+    "dashboard": "لوحة القيادة",
+    "company-management": "إدارة الشركة",
+    "companies": "شركات",
     "branches": "الفروع",
-    "admin-management": "إدارة المسؤولين",
+    "admin-management": "إدارة المشرف",
     "manage-admins": "إدارة المسؤولين",
-    "roles-permissions": "الأدوار والأذونات",
+    "roles-permissions": "الدور والأذونات",
     "staff-management": "إدارة الموظفين",
-    "user-management": "إدارة المستخدمين",
-    "users": "المستخدمون",
-    "certificates": "الشهادات",
+    "user-management": "إدارة المستخدم",
+    "users": "المستخدمين",
+    "certificates": "شهادات",
     "exams": "الامتحانات",
     "rewards": "المكافآت"
   },
   "tables": {
     "company_id": "معرف الشركة",
-    "name": "الاسم",
+    "name": "اسم",
     "branches": "الفروع",
-    "status": "الحالة",
-    "employees": "الموظفون",
-    "created": "تاريخ الإنشاء"
+    "status": "حالة",
+    "employees": "موظفين",
+    "created": "مخلوق"
   },
   "common": {
-    "home": "الرئيسية",
-    "manage-companies": "الشركات",
-    "company-management": "إدارة الشركات",
-    "active": "نشط",
-    "inactive": "غير نشط",
-    "searchplaceholder": "ابدأ الكتابة للبحث...",
-    "add_company":"أضف شركة",
-    "buttons":{
-      "add_company":"أضف شركة",
-      "export":"تحميل",
-      "reset":"إعادة تعيين",
-      "apply":"تطبيق",
-      "filters":"تصفية"
+    "home": "بيت",
+    "manage-companies": "إدارة الشركات",
+    "company-management": "إدارة الشركة",
+    "company_details": "تفاصيل الشركة",
+    "active": "فعل",
+    "inactive": "معطل",
+    "searchplaceholder": "ابدأ بالكتابة للبحث...",
+    "add_company": "أضف شركة",
+    "logo_company": "شركة الشعار",
+    "add_company_subtitle": "مرحبًا بك مرة أخرى، الحقول التي تحمل علامة (*) إلزامية",
+    "fileuploader_note": "انقر على الصورة لتغييرها ملاحظة: اختر فقط صور JPG وPNG ولا يزيد حجمها عن 5 ميجابايت",
+    "phone_number": "رقم التليفون",
+    "company_email": "البريد الإلكتروني للشركة",
+    "status": "الحالة",
+    "company_status": {
+      "active": "نشيط",
+      "inactive": "غير نشط",
+      "pending": "قيد الانتظار",
+      "suspended": "معلق",
+      "expired": "منتهي الصلاحية"
+    },
+    "buttons": {
+      "add_company": "أضف شركة",
+      "export": "يصدّر",
+      "reset": "إعادة ضبط",
+      "apply": "يتقدم",
+      "delete": "يمسح",
+      "close": "يغلق",
+      "submit": "يُقدِّم",
+      "edit": "يحرر",
+      "suspend": "تعليق",
+      "reset_password": "إعادة تعيين كلمة المرور",
+      "generate": "يولد",
+      "filters": "المرشحات"
     }
   }
 }

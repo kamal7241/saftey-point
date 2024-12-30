@@ -20,13 +20,13 @@ export default function Forget() {
             <h2 className="text-center text-2xl font-medium leading-6 text-primary">
               Forget your password?
             </h2>
-            <p className="text-center text-black">
+            <p className="text-center text-black-400">
               {`Enter your email address and we'll send youa link to rest your password`}
             </p>
             <ForgetForm />
             <Link
               href="/authentication/login"
-              className="mt-auto text-center text-black hover:underline flex items-center gap-2 justify-center"
+              className="mt-auto text-center text-black-400 hover:underline flex items-center gap-2 justify-center"
             >
               <span className="w-6">
                 <ArrowLeft />

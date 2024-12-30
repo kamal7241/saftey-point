@@ -18,7 +18,7 @@ const Switcher = () => {
         />
         <span
           className={`flex h-3 w-[15px] items-center rounded-full p-1 duration-200 ${
-            isChecked ? "bg-black" : "bg-gray-900"
+            isChecked ? "bg-black-400" : "bg-gray-900"
           }`}
         >
           <span

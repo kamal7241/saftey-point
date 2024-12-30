@@ -21,7 +21,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      className="fixed inset-0 bg-black-400 bg-opacity-50 flex justify-center items-center z-50"
       onClick={handleOverlayClick} // Attach click handler to the overlay
     >
       <div

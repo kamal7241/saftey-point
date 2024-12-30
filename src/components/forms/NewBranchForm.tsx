@@ -9,28 +9,35 @@ import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
+import MapComponent from "@/components/ui/MapComponent";
+import { LatLngExpression } from "leaflet";
 
-interface NewCompanyFormProps {
+interface NewBranchFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
 }
+
 interface FormValues {
   companyName: string;
   status: string;
   email: string;
   phoneNumber: string;
   password: string;
+  address: string;
+  location: LatLngExpression;
   file: File | null;
 }
 
-export default function NewCompanyForm({
+export default function NewBranchForm({
   title,
   sub_title,
   onClose,
-}: NewCompanyFormProps) {
+}: NewBranchFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
+
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
@@ -39,11 +46,14 @@ export default function NewCompanyForm({
     setFieldValue("password", randomPassword);
   };
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
   const handleSubmit = (values: FormValues) => {
     console.log("Form Submitted:", values);
     setIsSubmitted(true);
+  };
+
+  const handleLocationSelect = (location: LatLngExpression, setFieldValue: (field: string, value: LatLngExpression) => void) => {
+    // Set the selected location in the form using setFieldValue
+    setFieldValue("location", location);
   };
 
   if (isSubmitted) {
@@ -51,12 +61,13 @@ export default function NewCompanyForm({
       <div className="py-10">
         <SuccessMessage
           title={"Successfully Added"}
-          msg={"Thank you for filling out your information! ."}
+          msg={"Thank you for filling out your information!"}
           bigger
         />
       </div>
     );
   }
+
   return (
     <div>
       {title && <h3 className="heading3">{title}</h3>}
@@ -80,6 +91,8 @@ export default function NewCompanyForm({
           email: "",
           phoneNumber: "",
           password: "",
+          address: "",
+          location: [51.505, -0.09], // Default location for the map (London, for example)
           file: null,
         }}
         validationSchema={addCompanyValidationSchema}
@@ -87,6 +100,7 @@ export default function NewCompanyForm({
       >
         {({ values, handleChange, setFieldValue, submitForm }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+            {/* File Upload */}
             <div className="col-span-4">
               <FileUploader
                 onChange={(file) => setFieldValue("file", file)}
@@ -135,40 +149,32 @@ export default function NewCompanyForm({
               />
             </div>
 
-            {/* Email */}
-            <div className="col-span-2">
+            {/* Address */}
+            <div className="col-span-4">
               <Input
-                label="Email"
-                type="email"
-                placeholder="Enter email address"
-                value={values.email}
-                onChange={handleChange}
-                name="email"
-              />
-              <ErrorMessage
-                name="email"
-                component="div"
-                className="text-xs text-red-500"
-              />
-            </div>
-
-            {/* Phone Number */}
-            <div className="col-span-2">
-              <Input
-                label="Phone Number"
+                label="Address"
                 type="text"
-                placeholder="Enter phone number"
-                value={values.phoneNumber}
+                placeholder="Enter address"
+                value={values.address}
                 onChange={handleChange}
-                name="phoneNumber"
+                name="address"
               />
               <ErrorMessage
-                name="phoneNumber"
+                name="address"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
 
+            {/* Map */}
+            <div className="col-span-4">
+              <MapComponent
+                onLocationSelect={(location) => handleLocationSelect(location, setFieldValue)}
+                initialLocation={values.location}
+              />
+            </div>
+
+            {/* Password */}
             <div className="col-span-3">
               <Input
                 label="Password"
@@ -195,6 +201,8 @@ export default function NewCompanyForm({
                 {(msg) => <ErrorMessageWrappers msg={msg} />}
               </ErrorMessage>
             </div>
+
+            {/* Submit & Close Buttons */}
             <div className="flex justify-end gap-4 col-span-4">
               <Button
                 label={t("buttons.close")}
@@ -208,7 +216,6 @@ export default function NewCompanyForm({
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"
-                // disabled={isSubmitting}
               />
             </div>
           </Form>

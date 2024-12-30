@@ -26,5 +26,21 @@ export const fetchCompanies = async () => {
         image: `https://loremflickr.com/320/240/business?random`,
     }));
 
-    return companies; // Return the generated companies
+    return companies;
+};
+
+export const fetchBranches = async () => {
+    const companies = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `Branch ${generateRandomString(5)}`,
+        location_map: `Location ${generateRandomString(3)}`,
+        address: `address ${generateRandomString(3)}`,
+        location_name: `Location ${generateRandomString(3)}`,
+        status: Math.random() > 0.5 ? "1" : "0",
+        branches: Math.floor(Math.random() * 10) + 1,
+        employees: Math.floor(Math.random() * 500) + 50,
+        created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+    }));
+
+    return companies;
 };

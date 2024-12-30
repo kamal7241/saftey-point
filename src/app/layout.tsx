@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 
 interface RootLayoutProps {
@@ -6,5 +7,9 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+    </>
+  );
 }

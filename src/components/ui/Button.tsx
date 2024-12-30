@@ -8,7 +8,7 @@ type ButtonProps = {
   onClick?: () => void;
   className?: string;
   icon?: ReactNode;
-  variant?: "primary" | "dark" | "transparent" | "selected" | "danger";
+  variant?: "primary" | "dark" | "transparent" | "selected" | "danger" | "secondary";
   disabled?: boolean;
   noLabel?: boolean;
   noBackground?: boolean;
@@ -34,7 +34,7 @@ export default function Button({
 }: ButtonProps) {
   const baseClasses = `flex items-center justify-center gap-2 capitalize ${
     noLabel ? "" : padding
-  } rounded-md font-medium transition duration-200 ease-in-out ${textSize}`;
+  } rounded-md font-medium transition duration-200 ease-in-out ${textSize} whitespace-nowrap`;
 
   let variantClasses = "";
   if (variant === "primary") {
@@ -51,6 +51,9 @@ export default function Button({
   } else if (variant === "danger") {
     variantClasses =
       "bg-red-400 text-white border border-red-400 hover:bg-opacity-80";
+  } else if (variant === "secondary") {
+    variantClasses =
+      "bg-blue-400 text-white border border-transparent hover:bg-opacity-80";
   }
 
   if (noBackground) {

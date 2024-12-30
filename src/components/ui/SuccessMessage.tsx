@@ -34,7 +34,7 @@ const SuccessMessage = ({ title, msg, bigger }: SuccessMessageProps) => (
       <p
         className={`${
           bigger
-            ? "text-xl font-medium text-black text-pretty max-w-[250px]"
+            ? "text-xl font-medium text-black-400 text-pretty max-w-[250px]"
             : "text-sm"
         }`}
       >

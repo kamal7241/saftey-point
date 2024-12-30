@@ -79,10 +79,9 @@ const Table = <T extends { image?: string | undefined }>({
   const generatePagination = () => {
     const totalPages = pagination?.totalPages || 1;
     const pageNumbers: (number | string)[] = [];
-    const range = 1; // Number of pages to show before/after the current page
+    const range = 1;
 
     for (let i = 1; i <= totalPages; i++) {
-      // Always show the first few and last few pages
       if (
         i <= range ||
         i >= totalPages - range ||
@@ -92,7 +91,6 @@ const Table = <T extends { image?: string | undefined }>({
       }
     }
 
-    // Add ellipsis when there are gaps
     const finalPages: (number | string)[] = [];
     pageNumbers.forEach((page, index) => {
       if (
@@ -152,13 +150,11 @@ const Table = <T extends { image?: string | undefined }>({
                     {column.accessor === "status" ? (
                       <Status status={String(row[column.accessor])} />
                     ) : column.accessor === "created" ? (
-                      // Format the 'created' date
                       <span className="whitespace-nowrap">
                         {formatDate(String(row[column.accessor]))}
                       </span>
                     ) : column.accessor === "name" ? (
-                      <div className="flex items-center space-x-2 min-w-[200px]">
-                        {/* Render image if it exists, otherwise show a default */}
+                      <div className="flex items-center gap-2 min-w-[200px]">
                         {row.image ? (
                           <Image
                             src={row.image}
@@ -167,15 +163,7 @@ const Table = <T extends { image?: string | undefined }>({
                             width={30}
                             height={30}
                           />
-                        ) : (
-                          <Image
-                            src="/default-image.jpg"
-                            alt="Default Image"
-                            className="w-10 h-10 object-cover rounded-full"
-                            width={30}
-                            height={30}
-                          />
-                        )}
+                        ) : null}
                         <span>{String(row[column.accessor])}</span>
                       </div>
                     ) : column.accessor &&
@@ -223,7 +211,7 @@ const Table = <T extends { image?: string | undefined }>({
                 <button
                   onClick={() => handlePageChange(Number(page))}
                   className={`px-4 py-2 rounded ${
-                    page === currentPage ? "!text-black" : ""
+                    page === currentPage ? "!text-black-400" : ""
                   }`}
                 >
                   {page}

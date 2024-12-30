@@ -81,6 +81,9 @@
   .errorMsg {
     @apply text-xs text-red-500 flex items-center mt-1.5 gap-1 w-full;
   }
+  .heading2 {
+    @apply text-black-100 text-2xl font-medium capitalize;
+  }
   .heading3 {
     @apply text-primary text-xl font-bold capitalize;
   }

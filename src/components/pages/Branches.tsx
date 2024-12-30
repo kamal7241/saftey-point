@@ -1,50 +1,44 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { fetchBranches } from "@/api/dashboardService";
 import Table from "@/components/ui/Table";
-import { useTranslations } from "next-intl";
-import Button from "../ui/Button";
-import { Add } from "../ui/icons/Add";
-import { Export } from "../ui/icons/Export";
-import Popup from "../ui/Popup";
-import Eye from "../ui/icons/Eye";
-import { Edit } from "../ui/icons/Edit";
-import { Delete } from "../ui/icons/Delete";
-import SearchForm from "../formsUI/SearchForm";
-import { fetchCompanies } from "@/api/dashboardService";
-import Switcher from "../ui/SmallSwitcher";
-import FilterForm from "../ui/FilterForm";
-import { format } from "date-fns";
-import NewCompanyForm from "../forms/NewCompanyForm";
-import PageHeader from "../global/PageHeader";
 import { useRouter } from "@/i18n/routing";
-import { Company } from "@/types/ui.types";
+import { Branch } from "@/types/ui.types";
+import { format } from "date-fns";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import NewBranchForm from "../forms/NewBranchForm";
+import SearchForm from "../formsUI/SearchForm";
+import PageHeader from "../global/PageHeader";
+import Button from "../ui/Button";
+import FilterForm from "../ui/FilterForm";
+import { Add } from "../ui/icons/Add";
+import { Delete } from "../ui/icons/Delete";
+import { Edit } from "../ui/icons/Edit";
+import { Export } from "../ui/icons/Export";
+import Eye from "../ui/icons/Eye";
+import Popup from "../ui/Popup";
+import Switcher from "../ui/SmallSwitcher";
 
 
-const Companies = () => {
+const Branches = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
-  const [createdOptions, setCreatedOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+  const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     const getCompanies = async () => {
-      const response = await fetchCompanies();
+      const response = await fetchBranches();
       const data = await response;
-      setCompanies(data);
-      // Extract unique created dates
-
-      // Extract unique dates and format them
+      setBranches(data);
+      
       const uniqueDates = Array.from(
-        new Set(data.map((company) => company.created))
+        new Set(data.map((item) => item.created))
       );
 
       const formattedDates = uniqueDates.map((date) => {
@@ -58,13 +52,13 @@ const Companies = () => {
     getCompanies();
   }, []);
 
-  const filteredCompanies = companies.filter((company) => {
-    const matchesSearch = company.name
+  const filteredBranches = branches.filter((item) => {
+    const matchesSearch = item.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true; // Ignore empty filter fields
-      return company[key as keyof Company]
+      if (!value) return true;
+      return item[key as keyof Branch]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
@@ -72,16 +66,15 @@ const Companies = () => {
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof Company }[] = [
-    { header: "company_id", accessor: "id" },
-    { header: "name", accessor: "name" },
-    { header: "branches", accessor: "branches" },
-    { header: "status", accessor: "status" },
-    { header: "employees", accessor: "employees" },
+  const columns: { header: string; accessor: keyof Branch }[] = [
+    { header: "branch_name", accessor: "name" },
+    { header: "address", accessor: "address" },
+    { header: "location", accessor: "location_name" },
     { header: "created", accessor: "created" },
+    { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredCompanies.length / 10);
+  const totalPages = Math.ceil(filteredBranches.length / 10);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -102,17 +95,17 @@ const Companies = () => {
           "Name",
           "Location",
           "Status",
-          "Branches",
-          "Employees",
+          // "Branches",
+          // "Employees",
           "Created",
         ],
-        ...filteredCompanies.map((c) => [
+        ...filteredBranches.map((c) => [
           c.id,
           c.name,
-          c.location,
+          c.location_name,
           c.status,
-          c.branches,
-          c.employees,
+          // c.branches,
+          // c.employees,
           c.created,
         ]),
       ]
@@ -127,7 +120,7 @@ const Companies = () => {
     document.body.removeChild(link);
   };
 
-  const renderRowActions = (row: Company) => (
+  const renderRowActions = (row: Branch) => (
     <div className="flex gap-2">
       <Switcher />
       <Button
@@ -155,24 +148,24 @@ const Companies = () => {
   );
 
   const handleView = (id: number) => {
-    console.log("Viewing company with ID:", id);
-    router.push(`/dashboard/company-management/companies/${id}`);
+    console.log("Viewing branch with ID:", id);
+    router.push(`/dashboard/company-management/branches/${id}`);
 
   };
 
   const handleEdit = (id: number) => {
-    console.log("Editing company with ID:", id);
+    console.log("Editing branch with ID:", id);
   };
 
   const handleDelete = (id: number) => {
-    console.log("Deleting company with ID:", id);
+    console.log("Deleting branch with ID:", id);
   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("company-management"), href: "/company-management" },
     {
-      label: t("manage-companies"),
+      label: t("manage-branches"),
       href: "/company-management/manage-companies",
     },
   ];
@@ -181,7 +174,7 @@ const Companies = () => {
     <div>
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("manage-companies")}
+        title={t("manage-branches")}
       />
 
       {/* Table */}
@@ -191,7 +184,7 @@ const Companies = () => {
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
-              label={t("buttons.add_company")}
+              label={t("buttons.add_branch")}
               onClick={() => setAddPopupOpen(true)}
               icon={
                 <span className="w-6 inline-block">
@@ -227,9 +220,9 @@ const Companies = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
+                label: "Branch Name",
                 name: "id",
-                placeholder: "Company ID",
+                placeholder: "Branch Name",
               },
               {
                 type: "text",
@@ -260,7 +253,7 @@ const Companies = () => {
           />
         )}
         <Table
-          data={filteredCompanies}
+          data={filteredBranches}
           columns={columns}
           pagination={{
             currentPage,
@@ -274,9 +267,9 @@ const Companies = () => {
       </div>
 
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-        <NewCompanyForm
-          title={t("add_company")}
-          sub_title={t("add_company_subtitle")}
+        <NewBranchForm
+          title={t("add_branch")}
+          sub_title={t("add_branch_subtitle")}
           onClose={() => setAddPopupOpen(false)}
         />
       </Popup>
@@ -284,4 +277,4 @@ const Companies = () => {
   );
 };
 
-export default Companies;
+export default Branches;

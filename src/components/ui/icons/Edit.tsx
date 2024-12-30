@@ -1,4 +1,3 @@
-import React from "react";
 
 export const Edit = () => {
   return (
@@ -20,7 +19,7 @@ export const Edit = () => {
         d="M12.0304 2.26495L6.1204 8.17495C5.8954 8.39995 5.6704 8.84245 5.6254 9.16495L5.3029 11.4224C5.1829 12.2399 5.7604 12.8099 6.5779 12.6974L8.8354 12.3749C9.1504 12.3299 9.5929 12.1049 9.8254 11.8799L15.7354 5.96995C16.7554 4.94995 17.2354 3.76495 15.7354 2.26495C14.2354 0.764945 13.0504 1.24495 12.0304 2.26495Z"
         stroke="currentColor"
         strokeWidth="1.5"
-        stroke-miterlimit="10"
+        strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -28,7 +27,7 @@ export const Edit = () => {
         d="M11.1826 3.1123C11.6851 4.9048 13.0876 6.3073 14.8876 6.8173"
         stroke="currentColor"
         strokeWidth="1.5"
-        stroke-miterlimit="10"
+        strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

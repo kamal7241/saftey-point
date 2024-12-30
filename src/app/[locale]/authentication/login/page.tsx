@@ -19,7 +19,7 @@ export default function Login() {
               Aiming to supply our customers all solutions needed during
               operation
             </h2>
-            <p className="text-center text-black">
+            <p className="text-center text-black-400">
               Welcome back! Please login to your account.
             </p>
             <LoginForm />

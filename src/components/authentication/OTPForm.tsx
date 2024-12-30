@@ -94,7 +94,7 @@ const OTPForm = () => {
                 className={`rounded border text-center w-full aspect-square ${
                   index > 0 && otpFields[index - 1]
                     ? "border-gray-101"
-                    : "border-black"
+                    : "border-black-400"
                 }`}
                 disabled={index > 0 && otpFields[index - 1] === ""}
               />
@@ -124,7 +124,7 @@ const OTPForm = () => {
               Resend Code
             </button>
           ) : (
-            <p className="mt-2 text-sm text-black">
+            <p className="mt-2 text-sm text-black-400">
               You can resend the code within 0:
               {timeLeft.toString().padStart(2, "0")} seconds
             </p>

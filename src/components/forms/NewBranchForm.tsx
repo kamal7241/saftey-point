@@ -1,13 +1,12 @@
 "use client";
 import Input from "@/components/formsUI/Input";
-import { addCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
+import { addBranchValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
-import FileUploader from "../formsUI/FileUploader";
 import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
-import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
+// import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
 import MapComponent from "@/components/ui/MapComponent";
 import { LatLngExpression } from "leaflet";
@@ -19,14 +18,10 @@ interface NewBranchFormProps {
 }
 
 interface FormValues {
-  companyName: string;
+  name: string;
   status: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
   address: string;
-  location: LatLngExpression;
-  file: File | null;
+  pinLocation: [number, number];
 }
 
 export default function NewBranchForm({
@@ -39,21 +34,18 @@ export default function NewBranchForm({
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleGeneratePassword = (
-    setFieldValue: (field: string, value: string) => void
-  ) => {
-    const randomPassword = Math.random().toString(36).slice(-8);
-    setFieldValue("password", randomPassword);
-  };
-
   const handleSubmit = (values: FormValues) => {
     console.log("Form Submitted:", values);
     setIsSubmitted(true);
   };
 
-  const handleLocationSelect = (location: LatLngExpression, setFieldValue: (field: string, value: LatLngExpression) => void) => {
+  const handleLocationSelect = (
+    location: LatLngExpression,
+    setFieldValue: (field: string, value: LatLngExpression) => void
+  ) => {
     // Set the selected location in the form using setFieldValue
-    setFieldValue("location", location);
+    console.log("location", location);
+    setFieldValue("pinLocation", location);
   };
 
   if (isSubmitted) {
@@ -86,41 +78,28 @@ export default function NewBranchForm({
 
       <Formik
         initialValues={{
-          companyName: "",
+          name: "",
           status: "",
-          email: "",
-          phoneNumber: "",
-          password: "",
           address: "",
-          location: [51.505, -0.09], // Default location for the map (London, for example)
-          file: null,
+          pinLocation: [30.033333, 31.233334],
         }}
-        validationSchema={addCompanyValidationSchema}
+        validationSchema={addBranchValidationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue, submitForm }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
-            {/* File Upload */}
-            <div className="col-span-4">
-              <FileUploader
-                onChange={(file) => setFieldValue("file", file)}
-                label={t("logo_company")}
-                note={t("fileuploader_note")}
-              />
-            </div>
-
-            {/* Company Name */}
+            {/* Name */}
             <div className="col-span-2">
               <Input
-                label="Company Name"
+                label="Name"
                 type="text"
-                placeholder="Enter company name"
-                value={values.companyName}
+                placeholder="Name"
+                value={values.name}
                 onChange={handleChange}
-                name="companyName"
+                name="name"
               />
               <ErrorMessage
-                name="companyName"
+                name="name"
                 component="div"
                 className="text-xs text-red-500"
               />
@@ -166,40 +145,35 @@ export default function NewBranchForm({
               />
             </div>
 
-            {/* Map */}
+            {/* Pin Location Input */}
             <div className="col-span-4">
-              <MapComponent
-                onLocationSelect={(location) => handleLocationSelect(location, setFieldValue)}
-                initialLocation={values.location}
+              <Input
+                label="Pin Location"
+                type="text"
+                placeholder="Pin location"
+                value={values.pinLocation
+                  .toString()
+                  .replace(/LatLng\(/, "")
+                  .replace(/\)/, "")}
+                readOnly={true}
+                onChange={() => {}}
+                name=""
+              />
+              <ErrorMessage
+                name="pinLocation"
+                component="div"
+                className="text-xs text-red-500"
               />
             </div>
 
-            {/* Password */}
-            <div className="col-span-3">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
-                onChange={handleChange}
-                name="password"
-                extraClass="p-3"
-              />
-            </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
+            {/* Map */}
             <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
+              <MapComponent
+                onLocationSelect={(location) =>
+                  handleLocationSelect(location, setFieldValue)
+                }
+                initialLocation={values.pinLocation}
+              />
             </div>
 
             {/* Submit & Close Buttons */}

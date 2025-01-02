@@ -11,3 +11,13 @@ export const addCompanyValidationSchema = Yup.object({
     .matches(/[a-zA-Z]/, "Password can only contain letters")
     .matches(/[0-9]/, "Password must contain a number"),
 });
+
+
+export const addBranchValidationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  status: Yup.string().required("Status is required"),
+  address: Yup.string().required("Address is required"),
+  pinLocation: Yup.array()
+    .of(Yup.string().required("Pin Location is required"))
+    .required("Pin Location is required"),
+});

@@ -19,6 +19,7 @@ const Input: React.FC<InputProps> = ({
   iconSVG,
   border = true,
   onKeyDown,
+  readOnly,
   extraClass = "px-3 py-3.5",
   togglePasswordVisibility,
 }) => {
@@ -60,6 +61,7 @@ const Input: React.FC<InputProps> = ({
           value={value}
           onChange={onChange}
           name={name}
+          readOnly={readOnly}
           onKeyDown={onKeyDown}
           className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[20px]"
         />

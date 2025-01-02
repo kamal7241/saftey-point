@@ -1,3 +1,4 @@
+export const runtime = "edge";
 import SingleCompany from "@/components/pages/SingleCompany";
 
 export default async function Page({

@@ -48,11 +48,11 @@ const FilterForm: React.FC<FilterFormProps> = ({
 
   return (
     <div
-      className="flex items-stretch gap-6 justify-between px-4 py-6"
+      className="flex items-stretch justify-between gap-6 px-4 py-6"
       onKeyDown={handleKeyPress}
       role="form"
     >
-      <div className="flex gap-2 w-full justify-between [&>*]:w-full">
+      <div className="flex gap-2 w-full justify-start [&>*]:w-full [&>*]:max-w-[200px]">
         {fields.map((field) => (
           <React.Fragment key={field.name}>
             {field.type === "text" && (

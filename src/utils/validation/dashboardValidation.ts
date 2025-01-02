@@ -17,7 +17,5 @@ export const addBranchValidationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
   status: Yup.string().required("Status is required"),
   address: Yup.string().required("Address is required"),
-  pinLocation: Yup.array()
-    .of(Yup.string().required("Pin Location is required"))
-    .required("Pin Location is required"),
+  pinLocation: Yup.mixed().required("Pin Location is required"),
 });

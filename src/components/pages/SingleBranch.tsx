@@ -1,6 +1,5 @@
 "use client";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -9,39 +8,39 @@ import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
+import LocationTick from "../ui/icons/LocationTick";
 import Lock from "../ui/icons/Lock";
-import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
 // import { Edit2 } from "../ui/icons/Edit2";
 
-interface SingleCompanyProps {
-  companyID: string; // Define the type for companyID
+interface SingleBranchProps {
+  branchID: string; // Define the type for branchID
 }
 
-export default function SingleCompany({ companyID }: SingleCompanyProps) {
+export default function SingleBranch({ branchID }: SingleBranchProps) {
   const t = useTranslations("common");
-//   const [filtersOpen, setFiltersOpen] = useState(false);
+  //   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
 
-  console.log("companyID", companyID);
+  console.log("branchID", branchID);
   console.log("addPopupOpen", addPopupOpen);
-//   const handleExport = () => {
-//     console.log("Exporting data...");
-//   };
+  //   const handleExport = () => {
+  //     console.log("Exporting data...");
+  //   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("company-management"), href: "/dashboard/company-management" },
     {
-      label: t("manage-companies"),
-      href: "/dashboard/company-management/manage-companies",
+      label: t("branch_details"),
+      href: "/dashboard/company-management/branches",
     },
   ];
   return (
     <div className="h-full">
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("company_details")}
+        title={t("branch_details")}
         actions={
           <>
             <Button
@@ -88,29 +87,28 @@ export default function SingleCompany({ companyID }: SingleCompanyProps) {
         }
       />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
-        <h1 className="heading3">{t("company_details")}</h1>
-        <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
-          <Image
-            src="/images/company-profile.png"
-            alt="company-profile"
-            width={80}
-            height={80}
-            className="rounded-full"
-          />
-          <h2 className="heading2">Abernathy - Stoltenberg</h2>
-        </div>
+        <h1 className="heading3">{t("branch_details")}</h1>
         <div className="flex items-center justify-between">
           <GroupInfo
-            label={t("phone_number")}
-            content={"0122939383383"}
-            copyIt
-            icon={<PhoneIcon />}
-          />
-          <GroupInfo
-            label={t("company_email")}
-            content={"bill.sanders@example.com"}
+            label={t("branch_name")}
+            content={"branch sheraton"}
             copyIt
             icon={<Buildings2 />}
+          />
+          <GroupInfo
+            label={t("address")}
+            content={"42 Fairhaven Commons Way, Fairhaven MA 2719"}
+            copyIt
+            icon={<LocationTick />}
+          />
+          <GroupInfo
+            label={t("pin_location")}
+            content={
+              <a href="https://maps.google.com?q=30.033333,31.233334" target="_blank" className="text-blue-400 underline">
+                Go to Map
+              </a>
+            }
+            icon={<LocationTick />}
           />
           <GroupInfo label={t("status")} content={<Status status={"1"} />} />
         </div>

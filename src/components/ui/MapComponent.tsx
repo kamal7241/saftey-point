@@ -1,31 +1,40 @@
-import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
-import { LatLngExpression } from 'leaflet';
-import React, { useState } from 'react';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';  // Import Leaflet to create custom icons
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMapEvent,
+  ZoomControl,
+} from "react-leaflet";
+import { LatLngExpression } from "leaflet";
+import React, { useState, useRef } from "react";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 interface MapComponentProps {
   onLocationSelect: (location: LatLngExpression) => void;
-  initialLocation: LatLngExpression;  // Default pin location
+  initialLocation: LatLngExpression;
 }
 
-const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect, initialLocation }) => {
+const MapComponent: React.FC<MapComponentProps> = ({
+  onLocationSelect,
+  initialLocation,
+}) => {
   const [position, setPosition] = useState<LatLngExpression>(initialLocation);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [zoom, setZoom] = useState<number>(10);
+  const inputRef = useRef<HTMLInputElement>(null); // Create a ref for the input
 
-  // Define custom icon for the marker
   const customIcon = new L.Icon({
-    iconUrl: '/images/icons/custom-marker.png', // Path to your custom icon
-    iconSize: [32, 32],  // Size of the icon
-    iconAnchor: [16, 32],  // Point of the icon which will correspond to the marker's location
-    popupAnchor: [0, -32],  // Point from which the popup should open relative to the iconAnchor
+    iconUrl: "/images/icons/custom-marker.png",
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
   });
 
   const MapClickHandler = () => {
-    useMapEvent('click', (e) => {
+    useMapEvent("click", (e) => {
       setPosition(e.latlng);
-      onLocationSelect(e.latlng);  // Notify parent form of the new location
+      onLocationSelect(e.latlng);
     });
     return null;
   };
@@ -34,44 +43,59 @@ const MapComponent: React.FC<MapComponentProps> = ({ onLocationSelect, initialLo
     if (!searchQuery) return;
 
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchQuery
+        )}`
+      );
       const data = await response.json();
 
       if (data.length > 0) {
-        const { lat, lon } = data[0]; // Get the first result
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+  
         const newPosition: LatLngExpression = [lat, lon];
-        setPosition(newPosition); // Update the position state
-        onLocationSelect(newPosition); // Notify parent form of the new location
-        setZoom(13); // Set zoom level
+        console.log('newPosition',newPosition)
+        setPosition(newPosition);
+        onLocationSelect(newPosition);
+        setZoom(13);
       } else {
-        alert('Location not found');
+        alert("Location not found");
       }
     } catch (error) {
-      console.error('Error fetching location:', error);
-      alert('Error fetching location');
+      console.error("Error fetching location:", error);
+      alert("Error fetching location");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent the default form submission
+      handleSearch();
     }
   };
 
   return (
-    <div>
+    <div className="relative">
       <input
+        ref={inputRef}
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
+        onKeyDown={handleKeyDown} // Add key down event
         placeholder="Search for a location"
-        className="mb-2 p-2 border border-gray-300 rounded"
+        className="absolute left-6 right-6 top-4 z-10 block rounded border border-gray-300 p-2"
       />
-      <button onClick={handleSearch} type='button' className="mb-4 p-2 bg-blue-500 text-white rounded">
-        Search
-      </button>
-      <MapContainer center={position} zoom={zoom} style={{ width: '100%', height: '400px' }}>
+      <MapContainer
+        center={position}
+        zoom={zoom}
+        style={{ width: "100%", height: "234px" }}
+        className="z-[1]"
+        zoomControl={false}
+      >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {/* Use the custom icon for the marker */}
-        <Marker position={position} icon={customIcon}>
-          <Popup>
-            A location marker.
-          </Popup>
-        </Marker>
+        <Marker position={position} icon={customIcon} />
+        <ZoomControl position="bottomright"/>
         <MapClickHandler />
       </MapContainer>
     </div>

@@ -16,8 +16,8 @@ export default function DashboardLayout({
     <>
       <ProtectedRoute>
         <div className="dashboard-layout flex h-svh">
-          <nav className="w-[312px] bg-white shadow-custom px-5 flex-shrink-0 overflow-hidden fixed top-0 start-0 z-40 h-screen transition-transform -translate-x-full sm:translate-x-0">
-            <div className="flex flex-col justify-start h-full w-full">
+          <nav className="fixed start-0 top-0 z-40 h-screen w-[312px] flex-shrink-0 -translate-x-full overflow-hidden bg-white px-5 shadow-custom transition-transform sm:translate-x-0">
+            <div className="flex h-full w-full flex-col justify-start">
               <div className="flex justify-center">
                 <Link href={"/dashboard"}>
                   <Image
@@ -34,14 +34,14 @@ export default function DashboardLayout({
               </div>
             </div>
           </nav>
-          <main className="w-[calc(100vw-312px)] ms-[312px] bg-gray-500 relative pt-[90px] flex-col flex h-full overflow-y-scroll">
+          <main className="relative ms-[312px] flex h-full w-[calc(100vw-312px)] flex-col overflow-y-scroll bg-gray-500 pt-[90px]">
             <div className="absolute left-0 right-0 top-0">
               <Header />
             </div>
-            <div className="px-6 pt-4 flex flex-col items-stretch">
+            <div className="flex flex-col items-stretch px-6 pt-4">
               <div className="h-full">{children}</div>
             </div>
-            <div className="mt-6">
+            <div className="mt-auto pt-6">
               <Footer />
             </div>
           </main>

@@ -20,13 +20,14 @@ interface SingleCompanyProps {
 
 export default function SingleCompany({ companyID }: SingleCompanyProps) {
   const t = useTranslations("common");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+//   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
 
   console.log("companyID", companyID);
-  const handleExport = () => {
-    console.log("Exporting data...");
-  };
+  console.log("addPopupOpen", addPopupOpen);
+//   const handleExport = () => {
+//     console.log("Exporting data...");
+//   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },

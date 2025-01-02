@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+"use client";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import LanguageSwitcher from "./HeaderActions/LanguageSwitcher";
 import Notifications from "./HeaderActions/Notifications";
 import UserMenu from "./HeaderActions/UserMenu";
@@ -10,28 +11,35 @@ const HeaderActions = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const refs = {
-    language: useRef<HTMLDivElement>(null),
-    notifications: useRef<HTMLDivElement>(null),
-    user: useRef<HTMLDivElement>(null),
-  };
+  const languageRef = useRef<HTMLDivElement>(null);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
+
+  const refs = useMemo(
+    () => ({
+      language: languageRef,
+      notifications: notificationsRef,
+      user: userRef,
+    }),
+    [languageRef, notificationsRef, userRef]
+  );
 
   const handleMenuToggle = (menu: MenuType) => {
     setActiveMenu((prev) => (prev === menu ? null : menu));
   };
 
-  const handleOutsideClick = (e: MouseEvent) => {
+  const handleOutsideClick = useCallback((e: MouseEvent) => {
     const isClickOutside = Object.values(refs).every(
       (ref) => !ref.current?.contains(e.target as Node)
     );
 
     if (isClickOutside) setActiveMenu(null);
-  };
+  }, [refs]);
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
-  }, []);
+  }, [handleOutsideClick]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {

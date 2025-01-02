@@ -56,18 +56,16 @@ const Table = <T extends { image?: string | undefined }>({
     pagination?.onPageChange(page);
   };
   const sortedData = React.useMemo(() => {
-    if (sortConfig.key) {
-      return [...data].sort((a, b) => {
-        if (sortConfig.key) {
-          if (a[sortConfig.key] < b[sortConfig.key])
-            return sortConfig.direction === "asc" ? -1 : 1;
-          if (a[sortConfig.key] > b[sortConfig.key])
-            return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
-    }
-    return data;
+    if (!sortConfig.key) return data;
+    
+    return [...data].sort((a, b) => {
+      const aValue = a[sortConfig.key as keyof T];
+      const bValue = b[sortConfig.key as keyof T];
+      
+      if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
   }, [data, sortConfig]);
 
   const paginatedData = useMemo(() => {

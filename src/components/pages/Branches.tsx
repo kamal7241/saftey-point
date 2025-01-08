@@ -32,7 +32,7 @@ const Branches = () => {
   const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
-    const getCompanies = async () => {
+    const getBranches = async () => {
       const response = await fetchBranches();
       const data = await response;
       setBranches(data);
@@ -49,7 +49,7 @@ const Branches = () => {
       setCreatedOptions(formattedDates);
     };
 
-    getCompanies();
+    getBranches();
   }, []);
 
   const filteredBranches = branches.filter((item) => {
@@ -178,16 +178,16 @@ const Branches = () => {
       />
 
       {/* Table */}
-      <div className="mt-6 bg-white rounded-2xl">
-        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
+      <div className="mt-6 rounded-2xl bg-white">
+        <div className="flex flex-wrap-reverse items-center justify-between gap-6 p-4">
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
-          <div className="flex gap-3 justify-between items-stretch flex-wrap">
+          <div className="flex flex-wrap items-stretch justify-between gap-3">
             <Button
               label={t("buttons.add_branch")}
               onClick={() => setAddPopupOpen(true)}
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Add />
                 </span>
               }
@@ -207,7 +207,7 @@ const Branches = () => {
               onClick={handleExport}
               variant="dark"
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Export />
                 </span>
               }
@@ -220,15 +220,15 @@ const Branches = () => {
             fields={[
               {
                 type: "text",
-                label: "Branch Name",
-                name: "id",
+                label: "Name",
+                name: "name",
                 placeholder: "Branch Name",
               },
               {
                 type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
+                label: "location",
+                name: "location_name",
+                placeholder: "Location",
               },
               {
                 type: "select",

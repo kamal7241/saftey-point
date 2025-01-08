@@ -23,6 +23,7 @@ export interface GroupInfo {
     icon?: ReactNode;
     content: ReactNode;
     copyIt?: boolean;
+    block?: boolean;
 }
 
 export interface Company {

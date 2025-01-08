@@ -4,7 +4,7 @@ import React from "react";
 import Copy from "./icons/Copy";
 import { showToast } from "@/utils/toast";
 
-export default function GroupInfo({ icon, label, content, copyIt }: GroupInfo) {
+export default function GroupInfo({ icon, label, content, copyIt, block }: GroupInfo) {
   const handleCopy = () => {
     navigator.clipboard
       .writeText(String(content))
@@ -16,16 +16,16 @@ export default function GroupInfo({ icon, label, content, copyIt }: GroupInfo) {
       });
   };
   return (
-    <div className="w-64 flex flex-col gap-1.5">
-      <div className="flexCenter text-light-400 capitalize">
+    <div className={`flex flex-col gap-1.5 ${block?"w-full":"w-64"}`}>
+      <div className="flexCenter capitalize text-light-400">
         {icon && <span className="w-6">{icon}</span>}
         {label}
       </div>
-      <div className="flex justify-between gap-2 items-center text-dark">
+      <div className="flex items-center justify-between gap-2 whitespace-nowrap text-dark">
         {content}
         {copyIt && (
           <span
-            className="w-[18px] cursor-pointer"
+            className="w-[18px] flex-none cursor-pointer"
             onClick={handleCopy}
             aria-label="Copy to clipboard"
           >

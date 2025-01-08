@@ -15,7 +15,7 @@ const generateRandomString = (length: number): string => {
 
 
 export const fetchCompanies = async () => {
-    const companies = Array.from({ length: 50 }, (_, index) => ({
+    const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,
         name: `Company ${generateRandomString(5)}`,
         location: `Location ${generateRandomString(3)}`,
@@ -26,11 +26,11 @@ export const fetchCompanies = async () => {
         image: `https://loremflickr.com/320/240/business?random`,
     }));
 
-    return companies;
+    return data;
 };
 
 export const fetchBranches = async () => {
-    const companies = Array.from({ length: 50 }, (_, index) => ({
+    const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,
         name: `Branch ${generateRandomString(5)}`,
         location_map: `Location ${generateRandomString(3)}`,
@@ -42,5 +42,22 @@ export const fetchBranches = async () => {
         created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
     }));
 
-    return companies;
+    return data;
+};
+
+export const fetchAdmins = async () => {
+    const data = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `${generateRandomString(4)} ${generateRandomString(4)}`,
+        role: ["Admin", "Company", "Staff", "User"][Math.floor(Math.random() * 4)],
+        permissions: Math.random() < 0.5 
+        ? ["Admin", "Roles & Permissions"] 
+        : Math.random() < 0.5 
+            ? ["Certificates", "Reports"] 
+            : ["Admin", "Roles & Permissions", "Certificates"],
+        status: Math.random() > 0.5 ? "1" : "0",
+        image: `https://loremflickr.com/320/240/business?random`,
+    }));
+
+    return data;
 };

@@ -12,7 +12,7 @@ const Breadcrumb = ({ items }: BreadcrumbProps) => {
           <li key={index} className="flex items-center gap-2.5">
             <a
               href={item.href}
-              className={`text-sm font-normal leading-normal whitespace-nowrap ${
+              className={`text-sm font-normal leading-normal whitespace-nowrap capitalize ${
                 index === items.length - 1 ? "text-gray-200" : "text-gray-300"
               }`}
             >

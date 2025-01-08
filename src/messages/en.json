@@ -23,12 +23,17 @@
     "employees": "employees",
     "address": "address",
     "location": "location",
+    "admin_id": "Admin ID",
+    "role": "Role",
+    "permissions": "Permissions",
     "created": "created"
   },
   "common": {
     "home": "Home",
     "manage-companies": "Manage Companies",
     "company-management": "Company Management",
+    "admin-management": "admin management",
+    "manage-admins": "manage admins",
     "manage-branches": "Manage Branches",
     "company_details": "Company Details",
     "active": "Activate",
@@ -53,6 +58,7 @@
     "buttons":{
       "add_company":"Add Company",
       "add_branch":"Add Branch",
+      "add_role":"Add Role",
       "export":"export",
       "reset":"reset",
       "apply":"apply",

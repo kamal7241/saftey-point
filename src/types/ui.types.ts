@@ -46,3 +46,13 @@ export interface Branch {
     created: string;
     image?: string;
 }
+
+
+export interface User {
+    id: number;
+    name: string;
+    role: string;
+    status: string;
+    permissions: string[];
+    image?: string;
+}

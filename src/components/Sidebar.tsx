@@ -23,7 +23,7 @@ const toTranslationKey = (name: string) =>
 const Sidebar = () => {
   const t = useTranslations("nav");
   const pathname = usePathname() as string;
-  const [openItem, setOpenItem] = useState<string | null>(null);
+  const [openItems, setOpenItems] = useState<string[]>([]);
 
   const translatedSidebarData = sidebarData.map((item: SidebarItem) => ({
     ...item,
@@ -40,11 +40,17 @@ const Sidebar = () => {
     const activeItem = translatedSidebarData.find((item: SidebarItem) =>
       item.children?.some((child) => isActive(child.link))
     );
-    if (activeItem) setOpenItem(activeItem.name);
-  }, [pathname, isActive, translatedSidebarData]);
+    if (activeItem && !openItems.includes(activeItem.name)) {
+      setOpenItems((prev) => [...prev, activeItem.name]);
+    }
+  }, [pathname, isActive, translatedSidebarData, openItems]);
 
   const toggleItem = (itemName: string) => {
-    setOpenItem((prev) => (prev === itemName ? null : itemName));
+    setOpenItems((prev) =>
+      prev.includes(itemName)
+        ? prev.filter((name) => name !== itemName)
+        : [...prev, itemName]
+    );
   };
 
   const renderMenuItem = (
@@ -90,7 +96,7 @@ const Sidebar = () => {
               {renderMenuItem(item, active, isParentActive)}
               <span
                 className={`${
-                  openItem === item.name ? "rotate-180" : ""
+                  openItems.includes(item.name) ? "rotate-180" : ""
                 } ms-auto`}
               >
                 <ArrowDown />
@@ -106,7 +112,7 @@ const Sidebar = () => {
               {renderMenuItem(item, active, isParentActive)}
             </Link>
           )}
-          {item.children && openItem === item.name && (
+          {item.children && openItems.includes(item.name) && (
             <ul className="pl-6">{renderMenu(item.children)}</ul>
           )}
         </li>

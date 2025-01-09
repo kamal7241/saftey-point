@@ -20,7 +20,7 @@ const Input: React.FC<InputProps> = ({
   border = true,
   onKeyDown,
   readOnly,
-  extraClass = "px-3 py-3.5",
+  extraClass = "px-3 py-3.5 h-full",
   togglePasswordVisibility,
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -40,7 +40,7 @@ const Input: React.FC<InputProps> = ({
         </label>
       )}
       <div
-        className={`flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 h-full ${
+        className={`flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 ${
           border ? "border border-gray-200" : ""
         } ${error ? "!border-red-400" : ""} ${extraClass}`}
       >

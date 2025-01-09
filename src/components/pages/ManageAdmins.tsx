@@ -131,10 +131,14 @@ const ManageAdmins = () => {
     </div>
   );
 
+  const handleAddNewRole = () => {
+    console.log("handleAddNewRole");
+    router.push(`/dashboard/admin-management/add-role`);
+  };
+
   const handleView = (id: number) => {
     console.log("Viewing branch with ID:", id);
     router.push(`/dashboard/company-management/admins/${id}`);
-
   };
 
   const handleEdit = (id: number) => {
@@ -147,10 +151,10 @@ const ManageAdmins = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("admin-management"), href: "/admin-management" },
+    { label: t("admin-management"), href: "/dashboard/admin-management" },
     {
       label: t("manage-admins"),
-      href: "/admin-management/manage-companies",
+      href: "/dashboard/admin-management/manage-companies",
     },
   ];
 
@@ -169,7 +173,7 @@ const ManageAdmins = () => {
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
               label={t("buttons.add_role")}
-              onClick={() => setAddPopupOpen(true)}
+              onClick={handleAddNewRole}
               icon={
                 <span className="w-6 inline-block">
                   <Add />

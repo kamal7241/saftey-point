@@ -1,52 +1,47 @@
 "use client";
-import { fetchAdmins } from "@/api/dashboardService";
+import { fetchCertificates } from "@/api/dashboardService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
-import { User } from "@/types/ui.types";
+import { SingleCertificate } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import NewBranchForm from "../forms/NewBranchForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
-import { Add } from "../ui/icons/Add";
-import { Delete } from "../ui/icons/Delete";
-import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
-import Popup from "../ui/Popup";
-import Switcher from "../ui/SmallSwitcher";
 
 
-const ManageAdmins = () => {
+const Certificates = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [addPopupOpen, setAddPopupOpen] = useState(false);
-  const [admins, setAdmins] = useState<User[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+
+  const [certificates, setCertificates] = useState<SingleCertificate[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
 
   useEffect(() => {
-    const getData = async () => {
-      const response = await fetchAdmins();
+    const getCertificates = async () => {
+      const response = await fetchCertificates();
       const data = await response;
-      setAdmins(data);
-
+      setCertificates(data);
     };
 
-    getData();
+    getCertificates();
   }, []);
 
-  const filteredAdmins = admins.filter((item) => {
-    const matchesSearch = item.name
+  const filteredCertificates = certificates.filter((certificate) => {
+    const matchesSearch = certificate.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return item[key as keyof User]
+      return certificate[key as keyof SingleCertificate]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
@@ -54,15 +49,15 @@ const ManageAdmins = () => {
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof User }[] = [
-    { header: "admin_id", accessor: "id" },
-    { header: "name", accessor: "name" },
-    { header: "role", accessor: "role" },
-    { header: "permissions", accessor: "permissions" },
+  const columns: { header: string; accessor: keyof SingleCertificate }[] = [
+    { header: "certificate_id", accessor: "id" },
+    { header: "certificate_name", accessor: "name" },
+    { header: "issue_date", accessor: "issue_date" },
+    { header: "expiry_date", accessor: "expiry_date" },
     { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredAdmins.length / 10);
+  const totalPages = Math.ceil(filteredCertificates.length / 10);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -81,16 +76,18 @@ const ManageAdmins = () => {
         [
           "ID",
           "Name",
-          "Role",
-          "permissions",
           "Status",
+          "issue_date",
+          "expiry_date",
         ],
-        ...filteredAdmins.map((c) => [
+        ...filteredCertificates.map((c) => [
           c.id,
           c.name,
-          c.role,
-          c.permissions,
           c.status,
+          c.issue_date,
+          c.expiry_date,
+          // c.employees,
+          // c.created,
         ]),
       ]
         .map((row) => row.join(","))
@@ -98,15 +95,14 @@ const ManageAdmins = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "companies.csv");
+    link.setAttribute("download", "certificates.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const renderRowActions = (row: User) => (
+  const renderRowActions = (row: SingleCertificate) => (
     <div className="flex gap-2">
-      <Switcher />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -114,47 +110,20 @@ const ManageAdmins = () => {
         noLabel={true}
         onClick={() => handleView(row.id)}
       />
-      <Button
-        icon={<Edit />}
-        noBackground={true}
-        textColor="gray-900"
-        noLabel={true}
-        onClick={() => handleEdit(row.id)}
-      />
-      <Button
-        icon={<Delete />}
-        noBackground={true}
-        textColor="red-500"
-        noLabel={true}
-        onClick={() => handleDelete(row.id)}
-      />
     </div>
   );
 
-  const handleAddNewRole = () => {
-    console.log("handleAddNewRole");
-    router.push(`/dashboard/admin-management/add-role`);
-  };
-
   const handleView = (id: number) => {
-    console.log("Viewing branch with ID:", id);
-    router.push(`/dashboard/admin-management/manage-admins/${id}`);
-  };
+    console.log("Viewing certificate with ID:", id);
+    router.push(`/dashboard/user-management/certificates/${id}`);
 
-  const handleEdit = (id: number) => {
-    console.log("Editing branch with ID:", id);
   };
-
-  const handleDelete = (id: number) => {
-    console.log("Deleting branch with ID:", id);
-  };
-
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("admin-management"), href: "/dashboard/admin-management" },
+    { label: t("user-management"), href: "/dashboard/user-management" },
     {
-      label: t("manage-admins"),
-      href: "/dashboard/admin-management/manage-companies",
+      label: t("certificates"),
+      href: "/dashboard/user-management/certificates",
     },
   ];
 
@@ -162,7 +131,7 @@ const ManageAdmins = () => {
     <div>
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("manage-admins")}
+        title={t("certificates")}
       />
 
       {/* Table */}
@@ -171,16 +140,6 @@ const ManageAdmins = () => {
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
-            <Button
-              label={t("buttons.add_role")}
-              onClick={handleAddNewRole}
-              icon={
-                <span className="w-6 inline-block">
-                  <Add />
-                </span>
-              }
-              variant="primary"
-            />
 
             {/* Filters Button */}
             <Button
@@ -208,9 +167,9 @@ const ManageAdmins = () => {
             fields={[
               {
                 type: "text",
-                label: "Admin ID",
+                label: "Company ID",
                 name: "id",
-                placeholder: "Admin ID",
+                placeholder: "Company ID",
               },
               {
                 type: "text",
@@ -228,13 +187,20 @@ const ManageAdmins = () => {
                   { value: "0", label: "Inactive" },
                 ],
               },
+              {
+                type: "select",
+                label: "Created",
+                placeholder: "Created",
+                name: "created",
+                options: [],
+              },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
           />
         )}
         <Table
-          data={filteredAdmins}
+          data={filteredCertificates}
           columns={columns}
           pagination={{
             currentPage,
@@ -247,15 +213,8 @@ const ManageAdmins = () => {
         />
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-        <NewBranchForm
-          title={t("add_branch")}
-          sub_title={t("add_branch_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
-        />
-      </Popup>
     </div>
   );
 };
 
-export default ManageAdmins;
+export default Certificates;

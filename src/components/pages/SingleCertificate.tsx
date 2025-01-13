@@ -5,78 +5,48 @@ import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
 import Status from "../ui/Status";
-import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
-import Task from "../ui/icons/Task";
 import Suspend from "../ui/icons/Suspend";
+
+import CalendarRemove from "../ui/icons/CalendarRemove";
+import CalendarTick from "../ui/icons/CalendarTick";
+import ClipboardTick from "../ui/icons/ClipboardTick";
+import DocumentText from "../ui/icons/DocumentText";
 import StatusCheck from "../ui/icons/StatusCheck";
-import PermissionForm from "../forms/PermissionForm";
+import Image from "next/image";
 // import { Edit2 } from "../ui/icons/Edit2";
 
-interface SingleBranchProps {
-  adminId: string; // Define the type for adminId
+interface SingleCertificateProps {
+  certificateID: string; // Define the type for certificateID
 }
 
-export default function RoleView({ adminId }: SingleBranchProps) {
+export default function SingleCertificate({
+  certificateID,
+}: SingleCertificateProps) {
   const t = useTranslations("common");
   //   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
 
-  console.log("adminId", adminId);
+  console.log("certificateID", certificateID);
   console.log("addPopupOpen", addPopupOpen);
   //   const handleExport = () => {
   //     console.log("Exporting data...");
   //   };
-  const sections = [
-    {
-      title: "Admin Management",
-      permissions: [
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Company Management",
-      permissions: [
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "User Management",
-      permissions: [
-        { name: "Edit", isActive: true },
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Courses Management",
-      permissions: [
-        { name: "Add", isActive: true },
-        { name: "Edit", isActive: true },
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Documentation",
-      permissions: [
-        { name: "Add", isActive: true },
-      ],
-    },
-  ];
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("admin-management"), href: "/dashboard/admin-management" },
+    { label: t("user-management"), href: "/dashboard/user-management" },
     {
-      label: t("view_role"),
-      href: "/dashboard/admin-management/manage-admins",
+      label: t("view_certificates"),
+      href: "/dashboard/certificate-management/certificates",
     },
   ];
   return (
     <div className="h-full">
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("view_role")}
+        title={t("view_certificates")}
         actions={
           <>
             <Button
@@ -113,23 +83,48 @@ export default function RoleView({ adminId }: SingleBranchProps) {
         }
       />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
-        <h1 className="heading3">{t("role_details")}</h1>
-        <div className="flex items-center justify-between gap-8 flex-wrap">
-          <GroupInfo
-            label={t("name")}
-            content={"Ahmed Ail"}
-            copyIt
-            icon={<Buildings2 />}
+        <h1 className="heading3">{t("view_certificates")}</h1>
+
+        <div className="flex flex-col gap-10">
+          <div className="grid grid-cols-3 gap-6">
+            <GroupInfo
+              label={t("certificate_id")}
+              content={"44973"}
+              icon={<DocumentText />}
+            />
+            <GroupInfo
+              label={t("certificate_name")}
+              content={"Certificate of Appreciation"}
+              copyIt
+              icon={<ClipboardTick />}
+            />
+            <GroupInfo
+              label={t("status")}
+              content={<Status status={"1"} />}
+              icon={<StatusCheck />}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-6">
+            <GroupInfo
+              label={t("issue_date")}
+              content={"2024 / 12 / 11"}
+              icon={<CalendarTick />}
+            />
+            <GroupInfo
+              label={t("expiry_date")}
+              content={"2026 / 12 / 11"}
+              icon={<CalendarRemove />}
+            />
+          </div>
+          <h3 className="heading3">{t("view_certificates")}</h3>
+          <Image
+            src="/images/cert-template.jpg"
+            alt="cert-template"
+            width={853}
+            height={627}
+            className="my-4"
           />
-          <GroupInfo
-            label={t("status")}
-            content={<Status status={"1"} />}
-            icon={<StatusCheck />}
-          />
-          <GroupInfo label={t("role")} content={"Admin"} icon={<Task />} />
         </div>
-        <h3 className="heading3">{t("permissions")}</h3>
-        <PermissionForm title2={t("permissions")} sections={sections} inView />
       </div>
     </div>
   );

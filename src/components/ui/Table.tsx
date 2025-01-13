@@ -25,7 +25,7 @@ interface TableProps<T extends { image?: string }> {
   rowsPerPage?: number;
 }
 
-const Table = <T extends { image?: string | undefined }>({
+const Table = <T extends { image?: string }>({
   data,
   columns,
   renderRowActions,
@@ -153,7 +153,7 @@ const Table = <T extends { image?: string | undefined }>({
                       </span>
                     ) : column.accessor === "name" ? (
                       <div className="flex items-center gap-2 min-w-[200px]">
-                        {row.image ? (
+                        {row.image && row.image ? (
                           <Image
                             src={row.image}
                             alt="Company Logo"
@@ -164,6 +164,8 @@ const Table = <T extends { image?: string | undefined }>({
                         ) : null}
                         <span>{String(row[column.accessor])}</span>
                       </div>
+                    ) : Array.isArray(row[column.accessor]) ? ( // Check if it's an array
+                      (row[column.accessor] as string[]).join(", ") // Join array elements with a comma
                     ) : column.accessor &&
                       row[column.accessor] !== undefined ? (
                       (row[column.accessor] as React.ReactNode)

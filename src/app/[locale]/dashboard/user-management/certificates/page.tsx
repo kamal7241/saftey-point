@@ -1,6 +1,11 @@
 export const runtime = "edge";
+import Certificates from "@/components/pages/Certificates";
 
 export default function Page() {
   
-  return <h1>certificates</h1>
-  }
+  return (
+    <>
+      <Certificates />
+    </>
+  );
+}

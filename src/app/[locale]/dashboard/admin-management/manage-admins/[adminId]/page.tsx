@@ -4,12 +4,12 @@ import RoleView from "@/components/pages/RoleView";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ role: string }>;
+  params: Promise<{ adminId: string }>;
 }) {
-  const role = (await params).role;
+  const adminId = (await params).adminId;
   return (
     <>
-      <RoleView adminId={role} />
+      <RoleView adminId={adminId} />
     </>
   );
 }

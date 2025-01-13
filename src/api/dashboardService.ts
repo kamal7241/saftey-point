@@ -29,6 +29,45 @@ export const fetchCompanies = async () => {
     return data;
 };
 
+
+export const fetchUsers = async () => {
+    const data = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `User ${generateRandomString(5)}`,
+        email: `email${generateRandomString(3)}`,
+        status: Math.random() > 0.5 ? "1" : "0",
+        type: ["Individuals", "Company"][Math.floor(Math.random() * 2)],
+        phone: (Math.floor(Math.random() * 500) + 50).toString(),
+        image: `https://loremflickr.com/320/240/business?random`,
+    }));
+
+    return data;
+};
+
+export const fetchCertificates = async () => {
+    const data = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `User ${generateRandomString(5)}`,
+        status: Math.random() > 0.5 ? "1" : "0",
+        issue_date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+        expiry_date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+    }));
+
+    return data;
+};
+export const fetchExams = async () => {
+    const data = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `Exam ${generateRandomString(5)}`,
+        assigned_to: `assigned to ${generateRandomString(5)}`,
+        status: Math.random() > 0.5 ? "1" : "0",
+        exam_date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+        score: (Math.floor(Math.random() * 500) + 50).toString(),
+    }));
+
+    return data;
+};
+
 export const fetchBranches = async () => {
     const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,

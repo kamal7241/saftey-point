@@ -62,7 +62,7 @@ const FilterForm: React.FC<FilterFormProps> = ({
                 value={formState[field.name] ?? ""}
                 onChange={(e) => handleChange(field.name, e.target.value)}
                 name={field.name}
-                extraClass="w-full px-4 py-3"
+                extraClass="w-full px-4 py-3 h-[48px]"
               />
             )}
             {field.type === "select" && (
@@ -72,6 +72,7 @@ const FilterForm: React.FC<FilterFormProps> = ({
                 options={field.options ?? []}
                 onChange={handleChange}
                 placeholder={field.placeholder ?? ""}
+                extraClass="w-full px-4 py-3 h-[48px]"
               />
             )}
           </React.Fragment>

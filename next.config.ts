@@ -1,5 +1,6 @@
 import createNextIntlPlugin from "next-intl/plugin";
 import { NextConfig } from 'next';
+import { redirects } from "./redirects";
 const withNextIntl = createNextIntlPlugin();
 
 
@@ -24,6 +25,11 @@ const nextConfig: NextConfig = {
       };
     }
     return config;
+  },
+
+
+  async redirects() {
+    return redirects();
   },
 };
 

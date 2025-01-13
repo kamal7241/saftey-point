@@ -1,11 +1,11 @@
 "use client";
-import { fetchAdmins } from "@/api/dashboardService";
+import { fetchUsers } from "@/api/dashboardService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
-import { User } from "@/types/ui.types";
+import { SingleUser } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import NewBranchForm from "../forms/NewBranchForm";
+import NewUserForm from "../forms/NewUserForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -19,34 +19,35 @@ import Popup from "../ui/Popup";
 import Switcher from "../ui/SmallSwitcher";
 
 
-const ManageAdmins = () => {
+const Users = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  const [admins, setAdmins] = useState<User[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+  const [users, setUsers] = useState<SingleUser[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
 
   useEffect(() => {
-    const getData = async () => {
-      const response = await fetchAdmins();
+    const getUsers = async () => {
+      const response = await fetchUsers();
       const data = await response;
-      setAdmins(data);
-
+      setUsers(data);
     };
 
-    getData();
+    getUsers();
   }, []);
 
-  const filteredAdmins = admins.filter((item) => {
-    const matchesSearch = item.name
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = user.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return item[key as keyof User]
+      if (!value) return true; // Ignore empty filter fields
+      return user[key as keyof SingleUser]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
@@ -54,15 +55,16 @@ const ManageAdmins = () => {
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof User }[] = [
-    { header: "admin_id", accessor: "id" },
+  const columns: { header: string; accessor: keyof SingleUser }[] = [
+    { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
-    { header: "role", accessor: "role" },
-    { header: "permissions", accessor: "permissions" },
+    { header: "email", accessor: "email" },
+    { header: "phone_number", accessor: "phone" },
+    { header: "user_type", accessor: "type" },
     { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredAdmins.length / 10);
+  const totalPages = Math.ceil(filteredUsers.length / 10);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -81,16 +83,18 @@ const ManageAdmins = () => {
         [
           "ID",
           "Name",
-          "Role",
-          "permissions",
           "Status",
+          "Email",
+          "Employees",
+          "Created",
         ],
-        ...filteredAdmins.map((c) => [
+        ...filteredUsers.map((c) => [
           c.id,
           c.name,
-          c.role,
-          c.permissions,
           c.status,
+          c.email,
+          // c.employees,
+          // c.created,
         ]),
       ]
         .map((row) => row.join(","))
@@ -98,13 +102,13 @@ const ManageAdmins = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "companies.csv");
+    link.setAttribute("download", "users.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const renderRowActions = (row: User) => (
+  const renderRowActions = (row: SingleUser) => (
     <div className="flex gap-2">
       <Switcher />
       <Button
@@ -131,30 +135,26 @@ const ManageAdmins = () => {
     </div>
   );
 
-  const handleAddNewRole = () => {
-    console.log("handleAddNewRole");
-    router.push(`/dashboard/admin-management/add-role`);
-  };
-
   const handleView = (id: number) => {
-    console.log("Viewing branch with ID:", id);
-    router.push(`/dashboard/admin-management/manage-admins/${id}`);
+    console.log("Viewing user with ID:", id);
+    router.push(`/dashboard/user-management/users/${id}`);
+
   };
 
   const handleEdit = (id: number) => {
-    console.log("Editing branch with ID:", id);
+    console.log("Editing user with ID:", id);
   };
 
   const handleDelete = (id: number) => {
-    console.log("Deleting branch with ID:", id);
+    console.log("Deleting user with ID:", id);
   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("admin-management"), href: "/dashboard/admin-management" },
+    { label: t("user-management"), href: "/user-management" },
     {
-      label: t("manage-admins"),
-      href: "/dashboard/admin-management/manage-companies",
+      label: t("users"),
+      href: "/user-management/users",
     },
   ];
 
@@ -162,7 +162,7 @@ const ManageAdmins = () => {
     <div>
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("manage-admins")}
+        title={t("users")}
       />
 
       {/* Table */}
@@ -172,8 +172,8 @@ const ManageAdmins = () => {
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
-              label={t("buttons.add_role")}
-              onClick={handleAddNewRole}
+              label={t("buttons.add_user")}
+              onClick={() => setAddPopupOpen(true)}
               icon={
                 <span className="w-6 inline-block">
                   <Add />
@@ -208,9 +208,9 @@ const ManageAdmins = () => {
             fields={[
               {
                 type: "text",
-                label: "Admin ID",
+                label: "Company ID",
                 name: "id",
-                placeholder: "Admin ID",
+                placeholder: "Company ID",
               },
               {
                 type: "text",
@@ -228,13 +228,20 @@ const ManageAdmins = () => {
                   { value: "0", label: "Inactive" },
                 ],
               },
+              {
+                type: "select",
+                label: "Created",
+                placeholder: "Created",
+                name: "created",
+                options: [],
+              },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
           />
         )}
         <Table
-          data={filteredAdmins}
+          data={filteredUsers}
           columns={columns}
           pagination={{
             currentPage,
@@ -248,9 +255,9 @@ const ManageAdmins = () => {
       </div>
 
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-        <NewBranchForm
-          title={t("add_branch")}
-          sub_title={t("add_branch_subtitle")}
+        <NewUserForm
+          title={t("add_user")}
+          sub_title={t("form_subtitle")}
           onClose={() => setAddPopupOpen(false)}
         />
       </Popup>
@@ -258,4 +265,4 @@ const ManageAdmins = () => {
   );
 };
 
-export default ManageAdmins;
+export default Users;

@@ -2,6 +2,8 @@ import Image from "next/image";
 import React from "react";
 import Input from "../formsUI/Input";
 import SelectField from "../formsUI/SelectField";
+import Button from "../ui/Button";
+import { useTranslations } from "next-intl";
 
 type Permission = {
   name: string;
@@ -18,6 +20,7 @@ type PermissionFormProps = {
   title?: string;
   title2?: string;
   sub_title?: string;
+  inView?: boolean;
 };
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
@@ -25,12 +28,19 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   title,
   title2,
   sub_title,
+  inView,
 }) => {
+  const t = useTranslations("common");
   const handleChange = (name: string, value: string) => {
     console.log("handleChange", name, value);
   };
+
+  const submitForm = () => {
+    console.log("Form Submitted:");
+    // setIsSubmitted(true);
+  };
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-20">
       {title && <h3 className="heading3">{title}</h3>}
       {sub_title && (
         <p className="textRegular mt-1.5">
@@ -44,28 +54,30 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           ))}
         </p>
       )}
-      <div className="flex gap-2 w-full justify-start [&>*]:w-full [&>*]:max-w-[200px]">
-        <Input
-          type="text"
-          placeholder={"name"}
-          value={""}
-          onChange={(e) => handleChange("name", e.target.value)}
-          name={"name"}
-          label={"name"}
-          extraClass="w-full px-4 py-3 h-[48px]"
-        />
-        <SelectField
-          name={"status"}
-          value={""}
-          options={[
-            { value: "1", label: "Active" },
-            { value: "0", label: "Inactive" },
-          ]}
-          onChange={handleChange}
-          placeholder={"status"}
-          label={"status"}
-        />
-      </div>
+      {!inView && (
+        <div className="flex gap-2 w-full justify-start [&>*]:w-full [&>*]:max-w-[200px]">
+          <Input
+            type="text"
+            placeholder={"name"}
+            value={""}
+            onChange={(e) => handleChange("name", e.target.value)}
+            name={"name"}
+            label={"name"}
+            extraClass="w-full px-4 py-3 h-[48px]"
+          />
+          <SelectField
+            name={"status"}
+            value={""}
+            options={[
+              { value: "1", label: "Active" },
+              { value: "0", label: "Inactive" },
+            ]}
+            onChange={handleChange}
+            placeholder={"status"}
+            label={"status"}
+          />
+        </div>
+      )}
       {title && <h3 className="heading3">{title2}</h3>}
       <div className="flex-col justify-start items-start gap-6 inline-flex">
         {sections.map((section, sectionIndex) => (
@@ -82,12 +94,13 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                   <label
                     key={permissionIndex}
                     htmlFor={`permission-${permissionIndex}-${sectionIndex}`}
-                    className="flex items-center gap-2 cursor-pointer"
+                    className={`flex items-center gap-2 cursor-pointer ${inView?"pointer-events-none":""}`}
                   >
                     <input
                       type="checkbox"
                       id={`permission-${permissionIndex}-${sectionIndex}`}
                       className="peer hidden"
+                      defaultChecked={permission.isActive}
                     />
                     <Image
                       src="/images/icons/checkbox.svg"
@@ -113,6 +126,23 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           </div>
         ))}
       </div>
+      {!inView && (
+        <div className="flex justify-end gap-4 col-span-4">
+          <Button
+            label={t("buttons.close")}
+            href={"/dashboard/admin-management"}
+            variant="transparent"
+            padding="py-3 px-4"
+          />
+          <Button
+            label={t("buttons.submit")}
+            onClick={submitForm}
+            type="submit"
+            variant="primary"
+            padding="py-3 px-4"
+          />
+        </div>
+      )}
     </div>
   );
 };

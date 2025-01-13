@@ -36,6 +36,23 @@ export interface Company {
     created: string;
     image?: string;
 }
+export interface SingleUser {
+    id: number;
+    name: string;
+    email: string;
+    type: string;
+    phone: string;
+    image?: string;
+    status: string;
+}
+export interface SingleCertificate {
+    id: number;
+    name: string;
+    issue_date: string;
+    expiry_date: string;
+    status: string;
+    image?: string;
+}
 
 export interface Branch {
     id: number;
@@ -55,5 +72,15 @@ export interface User {
     role: string;
     status: string;
     permissions: string[];
+    image?: string;
+}
+
+export interface SingleExam {
+    id: number;
+    name: string;
+    assigned_to: string;
+    exam_date: string;
+    score: string;
+    status: string;
     image?: string;
 }

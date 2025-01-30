@@ -44,6 +44,20 @@ export const fetchUsers = async () => {
     return data;
 };
 
+export const fetchStaffManagement = async () => {
+    const data = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `User ${generateRandomString(5)}`,
+        email: `email${generateRandomString(3)}`,
+        phone: (Math.floor(Math.random() * 500) + 50).toString(),
+        status: Math.random() > 0.5 ? "1" : "0",
+        role: ["Admin", "Company", "Staff", "User"][Math.floor(Math.random() * 4)],
+        image: `https://loremflickr.com/320/240/business?random`,
+    }));
+
+    return data;
+};
+
 export const fetchCertificates = async () => {
     const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,

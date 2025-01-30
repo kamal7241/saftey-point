@@ -1,6 +1,11 @@
 export const runtime = "edge";
+import StaffManagement from "@/components/pages/StaffManagement";
+
 
 export default function Page() {
-  
-  return <h1>staff-management</h1>
-  }
+  return (
+    <div>
+      <StaffManagement />
+    </div>
+  );
+}

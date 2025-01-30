@@ -84,3 +84,13 @@ export interface SingleExam {
     status: string;
     image?: string;
 }
+
+export interface SingleStaff {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    role: string;
+    status: string;
+    image?: string;
+}

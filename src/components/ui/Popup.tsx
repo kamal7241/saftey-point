@@ -26,7 +26,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
     >
       <div
         ref={popupRef}
-        className="bg-white p-6 rounded-lg max-w-[640px] w-full relative"
+        className="bg-white p-6 rounded-lg max-w-[640px] w-full relative max-h-screen overflow-auto"
         onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from bubbling to overlay
       >
         <div>{children}</div>

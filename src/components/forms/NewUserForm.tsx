@@ -1,6 +1,6 @@
 "use client";
 import Input from "@/components/formsUI/Input";
-import { addCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
+import { addUserValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -21,7 +21,14 @@ interface FormValues {
   email: string;
   phoneNumber: string;
   password: string;
+  nationalId: string;
+  nationalIdExpiry: string;
+  identityType: string;
+  nationality: string;
+  birthday: string;
   file: File | null;
+  nationalIdFront: File | null;
+  nationalIdBack: File | null;
 }
 
 export default function NewUserForm({
@@ -38,13 +45,75 @@ export default function NewUserForm({
     const randomPassword = Math.random().toString(36).slice(-8);
     setFieldValue("password", randomPassword);
   };
+  const [apiErrors, setApiErrors] = useState<string | null>(null); // New state for API errors
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (values: FormValues) => {
+  // const handleSubmit = (values: FormValues) => {
+  //   console.log("Form Submitted:", values);
+  //   setIsSubmitted(true);
+  // };
+  const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-    setIsSubmitted(true);
+  
+    const toBase64 = (file: File | null) => {
+      return new Promise<string | null>((resolve, reject) => {
+        if (!file) return resolve(null);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+      });
+    };
+  
+    // Convert files to Base64
+    const nationalIdFrontBase64 = await toBase64(values.nationalIdFront);
+    const nationalIdBackBase64 = await toBase64(values.nationalIdBack);
+  
+    const apiData = {
+      identityType: values.identityType.toUpperCase(),
+      nationalId: values.nationalId,
+      nationalIdExpiry: values.nationalIdExpiry,
+      nationalIdFront: nationalIdFrontBase64, // Now a string
+      nationalIdBack: nationalIdBackBase64,   // Now a string
+      nationality: values.nationality,
+      birthday: values.birthday,
+      user: {
+        firstName: values.userName,
+        lastName: "",
+        avatar: "avatar.png",
+        email: values.email,
+        phone: values.phoneNumber,
+        address: "123 Main St",
+        password: values.password,
+        isVerified: false,
+      },
+    };
+  
+    try {
+      const response = await fetch(
+        "https://api.imtyaaz.com/safety-point-academy/api/v1/individual",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(apiData),
+        }
+      );
+      const result = await response.json();
+      console.log("API Response:", result);
+      if (result.success) {
+        setIsSubmitted(true);
+        setApiErrors(null);
+      } else {
+        setApiErrors(result.message);
+      }
+    } catch (error) {
+      console.error("Error calling API:", error);
+    }
   };
+  
 
   if (isSubmitted) {
     return (
@@ -81,14 +150,22 @@ export default function NewUserForm({
           status: "",
           email: "",
           phoneNumber: "",
+          nationalId: "",
+          identityType: "national_id",
           password: "",
           file: null,
+          nationalIdExpiry: "2025-01-01",
+          nationality: "",
+          birthday: "",
+          nationalIdFront: null,
+          nationalIdBack: null,
         }}
-        validationSchema={addCompanyValidationSchema}
+        validationSchema={addUserValidationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue, submitForm }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+            {apiErrors && <div className="text-red-500">{apiErrors}</div>}
             <div className="col-span-4">
               <FileUploader
                 onChange={(file) => setFieldValue("file", file)}
@@ -96,8 +173,6 @@ export default function NewUserForm({
                 note={t("fileuploader_note")}
               />
             </div>
-
-
             <div className="col-span-4">
               <Input
                 label="Full Name"
@@ -113,7 +188,6 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-
             {/* type */}
             <div className="col-span-2">
               <SelectField
@@ -133,7 +207,6 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-
             {/* Status */}
             <div className="col-span-2">
               <SelectField
@@ -156,15 +229,144 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-
-
-
+            {/* Company Name */}
+            {values.type === "company" && (
+              <div className="col-span-4">
+                <SelectField
+                  label={tTable("company_name")}
+                  name="type"
+                  value={values.type}
+                  onChange={(name, value) => setFieldValue(name, value)}
+                  options={[
+                    { value: "comapny_1", label: t("user_type.comapny_1") },
+                    { value: "comapny_2", label: t("user_type.comapny_2") },
+                  ]}
+                  customDropdown
+                />
+                <ErrorMessage
+                  name="type"
+                  component="div"
+                  className="text-xs text-red-500"
+                />
+              </div>
+            )}
+            {/* Identity Type */}
+            {values.type && (
+              <div className="col-span-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Identity Type
+                </label>
+                <div className="flex gap-4 mt-2">
+                  <label>
+                    <input
+                      type="radio"
+                      name="identityType"
+                      value="national_id"
+                      checked={values.identityType === "national_id"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    National ID
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="identityType"
+                      value="passport"
+                      checked={values.identityType === "passport"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    Passport
+                  </label>
+                </div>
+                <ErrorMessage
+                  name="identityType"
+                  component="div"
+                  className="text-xs text-red-500"
+                />
+              </div>
+            )}
+            {/* National ID */}
+            <div className="col-span-4">
+              <Input
+                label="National ID"
+                type="text"
+                placeholder="Enter National ID"
+                value={values.nationalId}
+                onChange={handleChange}
+                name="nationalId"
+              />
+              <ErrorMessage
+                name="nationalId"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            {/* National ID Front */}
+            <div className="col-span-4">
+              <FileUploader
+                onChange={(file) => setFieldValue("nationalIdFront", file)}
+                label="National ID Front"
+                note="Upload the National ID Front image."
+              />
+              <ErrorMessage
+                name="nationalIdFront"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            {/* National ID Back */}
+            <div className="col-span-4">
+              <FileUploader
+                onChange={(file) => setFieldValue("nationalIdBack", file)}
+                label="National ID Back"
+                note="Upload the National ID Back image."
+              />
+              <ErrorMessage
+                name="nationalIdBack"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            {/* Nationality */}
+            <div className="col-span-4">
+              <Input
+                label="Nationality"
+                type="text"
+                placeholder="Enter Nationality"
+                value={values.nationality}
+                onChange={handleChange}
+                name="nationality"
+              />
+              <ErrorMessage
+                name="nationality"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            {/* Birthday */}
+            <div className="col-span-4">
+              <Input
+                label="Birthday"
+                type="date"
+                placeholder="Enter Birthday"
+                value={values.birthday}
+                onChange={handleChange}
+                name="birthday"
+              />
+              <ErrorMessage
+                name="birthday"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
             <div className="col-span-4">
               <Input
                 label="Job Title"
                 type="text"
                 placeholder="Job Title"
-                value={values.userName}
+                value={values.jobTitle}
                 onChange={handleChange}
                 name="jobTitle"
               />
@@ -190,7 +392,6 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-
             {/* Phone Number */}
             <div className="col-span-2">
               <Input
@@ -207,7 +408,6 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-
             <div className="col-span-3">
               <Input
                 label="Password"

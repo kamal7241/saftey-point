@@ -1,5 +1,7 @@
 // import axios from 'axios';
 
+import { SingleCourse } from "@/types/ui.types";
+
 // Access the API URL from the environment variable
 // const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -43,6 +45,24 @@ export const fetchUsers = async () => {
 
     return data;
 };
+export const fetchCourses = async (): Promise<SingleCourse[]> => {
+    const generateRandomString = (length: number) =>
+        Math.random().toString(36).substring(2, 2 + length);
+
+    const data: SingleCourse[] = Array.from({ length: 50 }, (_, index) => ({
+        id: index + 1,
+        name: `Course ${generateRandomString(5)}`,
+        language: ["English", "Spanish", "French", "German"][Math.floor(Math.random() * 4)],
+        enrollments: Math.floor(Math.random() * 500) + 1,
+        sessions: Math.floor(Math.random() * 20) + 1,
+        level: Math.floor(Math.random() * 5) + 1, // Level 1-5
+        status: Math.random() > 0.5 ? "1" : "0",
+        image: `https://loremflickr.com/320/240/education?random=${index + 1}`,
+    }));
+
+    return data;
+};
+
 
 export const fetchStaffManagement = async () => {
     const data = Array.from({ length: 50 }, (_, index) => ({

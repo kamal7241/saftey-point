@@ -44,6 +44,18 @@
       ],
       "icon": "/images/icons/navbar/user-management.svg",
       "activeIcon": "/images/icons/navbar/user-management-active.svg"
+    },
+    {
+      "name": "Courses Management",
+      "link": "/dashboard/courses-management",
+      "children": [
+        { "name": "Courses List", "link": "/dashboard/courses-management/list" },
+        { "name": "Manage Certificates", "link": "/dashboard/courses-management/certificates" },
+        { "name": "Exams", "link": "/dashboard/courses-management/exams" },
+        { "name": "Rewards", "link": "/dashboard/courses-management/rewards" }
+      ],
+      "icon": "/images/icons/navbar/user-management.svg",
+      "activeIcon": "/images/icons/navbar/user-management-active.svg"
     }
   ]
   

@@ -94,3 +94,14 @@ export interface SingleStaff {
     status: string;
     image?: string;
 }
+
+export interface SingleCourse {
+    id: number;
+    name: string;
+    language: string;
+    enrollments: number;
+    sessions: number;
+    level: number;
+    status: string;
+    image?: string;
+}

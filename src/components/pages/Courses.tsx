@@ -1,0 +1,180 @@
+"use client";
+import { fetchCourses } from "@/api/dashboardService";
+import Table from "@/components/ui/Table";
+import { useRouter } from "@/i18n/routing";
+import { SingleCourse } from "@/types/ui.types";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+// import NewCourseForm from "../forms/NewCourseForm";
+import SearchForm from "../formsUI/SearchForm";
+import PageHeader from "../global/PageHeader";
+import Button from "../ui/Button";
+import FilterForm from "../ui/FilterForm";
+import { Add } from "../ui/icons/Add";
+import { Delete } from "../ui/icons/Delete";
+import { Edit } from "../ui/icons/Edit";
+import { Export } from "../ui/icons/Export";
+import Eye from "../ui/icons/Eye";
+import Popup from "../ui/Popup";
+import Switcher from "../ui/SmallSwitcher";
+
+const Courses = () => {
+  const t = useTranslations("common");
+  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [courses, setCourses] = useState<SingleCourse[]>([]);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
+
+  useEffect(() => {
+    const getCourses = async () => {
+      const response = await fetchCourses();
+      setCourses(response);
+    };
+    getCourses();
+  }, []);
+
+  const filteredCourses = courses.filter((course) => {
+    const matchesSearch = course.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesFilters = Object.entries(filters).every(([key, value]) => {
+      if (!value) return true;
+      return course[key as keyof SingleCourse]
+        ?.toString()
+        .toLowerCase()
+        .includes(value.toLowerCase());
+    });
+    return matchesSearch && matchesFilters;
+  });
+
+  const columns: { header: string; accessor: keyof SingleCourse }[] = [
+    { header: "course_id", accessor: "id" },
+    { header: "name", accessor: "name" },
+    { header: "language", accessor: "language" },
+    { header: "enrollments", accessor: "enrollments" },
+    { header: "sessions", accessor: "sessions" },
+    { header: "level", accessor: "level" },
+    { header: "status", accessor: "status" },
+  ];
+
+  const totalPages = Math.ceil(filteredCourses.length / 10);
+
+  const handlePageChange = (page: number) => setCurrentPage(page);
+  const handleApplyFilters = (appliedFilters: { [key: string]: string }) =>
+    setFilters(appliedFilters);
+  const handleResetFilters = () => setFilters({});
+
+  const handleView = (id: number) => router.push(`/dashboard/courses/${id}`);
+  const handleEdit = (id: number) => console.log("Editing course with ID:", id);
+  const handleDelete = (id: number) =>
+    console.log("Deleting course with ID:", id);
+
+  const breadcrumbItems = [
+    { label: t("home"), href: "/" },
+    { label: t("course-management"), href: "/course-management" },
+    { label: t("courses_list"), href: "/course-management/list" },
+  ];
+
+  return (
+    <div>
+      <PageHeader breadcrumbItems={breadcrumbItems} title={t("courses_list")} />
+
+      <div className="mt-6 bg-white rounded-2xl">
+        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
+          <SearchForm onSearch={setSearchTerm} />
+          <div className="flex gap-3">
+            <Button
+              label={t("buttons.add_course")}
+              onClick={() => setAddPopupOpen(true)}
+              icon={
+                <span className="w-6 inline-block">
+                  <Add />
+                </span>
+              }
+              variant="primary"
+            />
+            <Button
+              label={t("buttons.filters")}
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              variant={!filtersOpen ? "transparent" : "selected"}
+            />
+            <Button
+              label={t("buttons.export")}
+              onClick={() => console.log("Exporting courses...")}
+              variant="dark"
+              icon={
+                <span className="w-6 inline-block">
+                  <Export />
+                </span>
+              }
+            />
+          </div>
+        </div>
+
+        {filtersOpen && (
+          <FilterForm
+            fields={[
+              {
+                type: "text",
+                label: "Title",
+                name: "title",
+                placeholder: "Title",
+              },
+            ]}
+            onApply={handleApplyFilters}
+            onReset={handleResetFilters}
+          />
+        )}
+        <Table
+          data={filteredCourses}
+          columns={columns}
+          pagination={{
+            currentPage,
+            totalPages,
+            onPageChange: handlePageChange,
+          }}
+          sortable
+          rowsPerPage={10}
+          renderRowActions={(row) => (
+            <div className="flex gap-2">
+              <Switcher />
+              <Button
+                icon={<Eye />}
+                noBackground
+                textColor="blue-400"
+                noLabel
+                onClick={() => handleView(row.id)}
+              />
+              <Button
+                icon={<Edit />}
+                noBackground
+                textColor="gray-900"
+                noLabel
+                onClick={() => handleEdit(row.id)}
+              />
+              <Button
+                icon={<Delete />}
+                noBackground
+                textColor="red-500"
+                noLabel
+                onClick={() => handleDelete(row.id)}
+              />
+            </div>
+          )}
+        />
+      </div>
+
+      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+        Course Form
+        {/* <NewCourseForm title={t("add_course")} sub_title={t("form_subtitle")} onClose={() => setAddPopupOpen(false)} /> */}
+      </Popup>
+    </div>
+  );
+};
+
+export default Courses;

@@ -102,10 +102,17 @@
     "company_email": "Company Email",
     "status": "status",
     "add_user": "Add User",
+    "edit_user": "Edit User",
     "add_staff": "Add Staff",
     "logo_user": "User Photo",
     "exams": "Exams",
+    "email": "Email",
+    "id_expiry": "ID Expiry",
+    "nationalId": "National ID",
+    "userBOD": "User birthday",
+    "user_nationality": "User nationality",
     "exam_details": "Exam Details",
+    "are_you_sure_delete": "Are you sure delete",
     "company_status": {
       "active": "Active",
       "inactive": "Inactive",
@@ -122,6 +129,7 @@
     },
     "user_type": {
       "individuals": "Individuals",
+      "individual": "Individual",
       "company": "Company"
     },
     "user_role": {
@@ -145,6 +153,8 @@
       "submit": "submit",
       "edit": "Edit",
       "suspend": "Suspend",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
       "reset_password": "Reset Password",
       "generate": "generate",
       "filters": "Filters"

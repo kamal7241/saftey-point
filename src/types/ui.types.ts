@@ -75,7 +75,7 @@ export interface User {
     image?: string;
 }
 export interface Individual {
-    id: number;
+    id?: number;
     identityType: string;
     nationalId: string;
     nationalIdExpiry: string;
@@ -86,13 +86,14 @@ export interface Individual {
     status: string;
     userType: string;
     user: {
-        id: number;
+        id?: number;
         firstName: string;
         lastName: string;
         avatar: string;
         email: string;
         phone: string;
         isVerified: boolean;
+        jobTitle?: string;
     };
 }
 

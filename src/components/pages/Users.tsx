@@ -46,7 +46,7 @@ const Users = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true; // Ignore empty filter fields
+      if (!value) return true;
       return user[key as keyof SingleUser]
         ?.toString()
         .toLowerCase()
@@ -166,16 +166,16 @@ const Users = () => {
       />
 
       {/* Table */}
-      <div className="mt-6 bg-white rounded-2xl">
-        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
+      <div className="mt-6 rounded-2xl bg-white">
+        <div className="flex flex-wrap-reverse items-center justify-between gap-6 p-4">
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
-          <div className="flex gap-3 justify-between items-stretch flex-wrap">
+          <div className="flex flex-wrap items-stretch justify-between gap-3">
             <Button
               label={t("buttons.add_user")}
               onClick={() => setAddPopupOpen(true)}
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Add />
                 </span>
               }
@@ -195,7 +195,7 @@ const Users = () => {
               onClick={handleExport}
               variant="dark"
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Export />
                 </span>
               }

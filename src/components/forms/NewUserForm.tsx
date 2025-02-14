@@ -1,6 +1,9 @@
 "use client";
 import Input from "@/components/formsUI/Input";
-import { addUserValidationSchema } from "@/utils/validation/dashboardValidation";
+import {
+  addUserValidationSchema,
+  editUserValidationSchema,
+} from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -10,94 +13,126 @@ import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
 import RadioField from "../formsUI/RadioField";
+import { submitIndividual, updateIndividual } from "@/api/dashboardService";
+import { Individual } from "@/types/ui.types";
 
 interface NewUserFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  userData?: Individual | null;
 }
 interface FormValues {
-  userName: string;
+  firstName: string;
+  lastName: string;
   status: string;
   email: string;
+  type: string;
   phoneNumber: string;
   password: string;
   nationalId: string;
   nationalIdExpiry: string;
   identityType: string;
+  jobTitle: string;
   nationality: string;
   birthday: string;
-  file: File | null;
-  nationalIdFront: File | null;
-  nationalIdBack: File | null;
+  avatar: string;
+  nationalIdFront: string;
+  nationalIdBack: string;
 }
 
 export default function NewUserForm({
   title,
   sub_title,
   onClose,
+  userData,
 }: NewUserFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
 
+  const initialValues: FormValues = userData
+    ? {
+        firstName: userData.user.firstName,
+        lastName: userData.user.lastName || "",
+        jobTitle: userData.user.jobTitle || "",
+        type: userData.userType.toLowerCase(),
+        status: userData.user.isVerified ? "active" : "inactive",
+        email: userData.user.email,
+        phoneNumber: userData.user.phone || "",
+        nationalId: userData.nationalId,
+        identityType: userData.identityType.toLowerCase() || "national_id",
+        password: "",
+        avatar: userData.user.avatar || "avatar.png",
+        nationalIdExpiry: userData.nationalIdExpiry || "2025-01-01",
+        nationality: userData.nationality || "",
+        birthday: userData.birthday || "",
+        nationalIdFront: userData.nationalIdFront || "",
+        nationalIdBack: userData.nationalIdBack || "",
+      }
+    : {
+        firstName: "",
+        lastName: "",
+        jobTitle: "",
+        type: "",
+        status: "",
+        email: "",
+        phoneNumber: "",
+        nationalId: "",
+        identityType: "national_id",
+        password: "",
+        avatar: "",
+        nationalIdExpiry: "2025-01-01",
+        nationality: "",
+        birthday: "",
+        nationalIdFront: "",
+        nationalIdBack: "",
+      };
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
   ) => {
     const randomPassword = Math.random().toString(36).slice(-8);
     setFieldValue("password", randomPassword);
   };
-  const [apiErrors, setApiErrors] = useState<string | null>(null); // New state for API errors
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // const handleSubmit = (values: FormValues) => {
-  //   console.log("Form Submitted:", values);
-  //   setIsSubmitted(true);
-  // };
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
 
-    const apiData = {
-      identityType: values.identityType.toUpperCase(),
+    const mappedValues: Individual = {
+      identityType: values.identityType,
       nationalId: values.nationalId,
       nationalIdExpiry: values.nationalIdExpiry,
       nationalIdFront: values.nationalIdFront,
       nationalIdBack: values.nationalIdBack,
       nationality: values.nationality,
       birthday: values.birthday,
+      status: values.status || "pending",
+      userType: values.type,
       user: {
-        firstName: values.userName,
-        lastName: "",
-        avatar: "avatar.png",
+        id: userData ? userData.user.id : 0,
+        firstName: values.firstName,
+        lastName: values.lastName || "",
+        avatar: values.avatar || "avatar.png",
         email: values.email,
         phone: values.phoneNumber,
-        address: "123 Main St",
-        password: values.password,
         isVerified: false,
       },
     };
 
-    try {
-      const response = await fetch(
-        "https://api.imtyaaz.com/safety-point-academy/api/v1/individual",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(apiData),
-        }
-      );
-      const result = await response.json();
-      console.log("API Response:", result);
-      if (result.success) {
-        setIsSubmitted(true);
-        setApiErrors(null);
-      } else {
-        setApiErrors(result.message);
-      }
-    } catch (error) {
-      console.error("Error calling API:", error);
+    let result;
+    if (userData && userData.id) {
+      result = await updateIndividual(userData.id, mappedValues);
+    } else {
+      result = await submitIndividual(mappedValues);
+    }
+
+    if (result.success === true) {
+      setIsSubmitted(true);
+      setApiErrors(null);
+    } else {
+      setApiErrors(result.error || null);
     }
   };
 
@@ -128,48 +163,52 @@ export default function NewUserForm({
         </p>
       )}
 
-      <Formik
-        initialValues={{
-          userName: "",
-          jobTitle: "",
-          type: "",
-          status: "",
-          email: "",
-          phoneNumber: "",
-          nationalId: "",
-          identityType: "national_id",
-          password: "",
-          file: null,
-          nationalIdExpiry: "2025-01-01",
-          nationality: "",
-          birthday: "",
-          nationalIdFront: null,
-          nationalIdBack: null,
-        }}
-        validationSchema={addUserValidationSchema}
+      <Formik<FormValues>
+        initialValues={initialValues}
+        validationSchema={
+          userData && userData.id
+            ? editUserValidationSchema
+            : addUserValidationSchema
+        }
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue, submitForm }) => (
-          <Form className="w-full gap-4 grid grid-cols-4 mt-4">
-            {apiErrors && <div className="text-red-500">{apiErrors}</div>}
+          <Form className="mt-4 grid w-full grid-cols-4 gap-4">
+            {apiErrors && <div className="col-span-4"><div className="text-red-500">{apiErrors}</div></div>}
             <div className="col-span-4">
               <FileUploader
-                onChange={(file) => setFieldValue("file", file)}
+                onChange={(file) => setFieldValue("avatar", file)}
                 label={t("logo_user")}
                 note={t("fileuploader_note")}
+                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`}
               />
             </div>
-            <div className="col-span-4">
+            <div className="col-span-2">
               <Input
-                label="Full Name"
+                label="First Name"
                 type="text"
-                placeholder="Full Name"
-                value={values.userName}
+                placeholder="First Name"
+                value={values.firstName}
                 onChange={handleChange}
-                name="userName"
+                name="firstName"
               />
               <ErrorMessage
-                name="userName"
+                name="firstName"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            <div className="col-span-2">
+              <Input
+                label="Last Name"
+                type="text"
+                placeholder="Last Name"
+                value={values.lastName}
+                onChange={handleChange}
+                name="lastName"
+              />
+              <ErrorMessage
+                name="lastName"
                 component="div"
                 className="text-xs text-red-500"
               />
@@ -182,7 +221,7 @@ export default function NewUserForm({
                 value={values.type}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
-                  { value: "individuals", label: t("user_type.individuals") },
+                  { value: "individual", label: t("user_type.individual") },
                   { value: "company", label: t("user_type.company") },
                 ]}
                 customDropdown
@@ -280,6 +319,7 @@ export default function NewUserForm({
                 note="Upload the National ID Front image."
                 subdirName="user"
                 small
+                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`}
               />
               <ErrorMessage
                 name="nationalIdFront"
@@ -295,6 +335,7 @@ export default function NewUserForm({
                 note="Upload the National ID Back image."
                 subdirName="user"
                 small
+                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`}
               />
               <ErrorMessage
                 name="nationalIdBack"
@@ -303,7 +344,7 @@ export default function NewUserForm({
               />
             </div>
             {/* Nationality */}
-            <div className="col-span-4">
+            <div className="col-span-2">
               <Input
                 label="Nationality"
                 type="text"
@@ -318,7 +359,22 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-            {/* Birthday */}
+            <div className="col-span-2">
+              <Input
+                label={tTable("expiry_date")}
+                type="date"
+                placeholder="Enter Expiry Date"
+                value={values.nationalIdExpiry}
+                onChange={handleChange}
+                name="nationalIdExpiry"
+              />
+              <ErrorMessage
+                name="nationalIdExpiry"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+
             <div className="col-span-4">
               <Input
                 label="Birthday"
@@ -342,6 +398,7 @@ export default function NewUserForm({
                 value={values.jobTitle}
                 onChange={handleChange}
                 name="jobTitle"
+                required={false}
               />
               <ErrorMessage
                 name="jobTitle"
@@ -381,33 +438,37 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-            <div className="col-span-3">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
-                onChange={handleChange}
-                name="password"
-                extraClass="p-3"
-              />
-            </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
-            <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
-            </div>
-            <div className="flex justify-end gap-4 col-span-4">
+            {!userData && (
+              <>
+                <div className="col-span-3">
+                  <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter password or generate one"
+                    value={values.password}
+                    onChange={handleChange}
+                    name="password"
+                    extraClass="p-3"
+                  />
+                </div>
+                <div className="col-span-1 self-end">
+                  <Button
+                    label={t("buttons.generate")}
+                    onClick={() => handleGeneratePassword(setFieldValue)}
+                    type="button"
+                    variant="dark"
+                    padding="px-4 py-2.5"
+                    textSize="text-base w-full"
+                  />
+                </div>
+                <div className="col-span-4">
+                  <ErrorMessage name="password">
+                    {(msg) => <ErrorMessageWrappers msg={msg} />}
+                  </ErrorMessage>
+                </div>
+              </>
+            )}
+            <div className="col-span-4 flex justify-end gap-4">
               <Button
                 label={t("buttons.close")}
                 onClick={onClose}
@@ -420,7 +481,6 @@ export default function NewUserForm({
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"
-                // disabled={isSubmitting}
               />
             </div>
           </Form>

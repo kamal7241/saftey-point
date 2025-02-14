@@ -1,9 +1,4 @@
-// import axios from 'axios';
-
 import { Individual, SingleCourse } from "@/types/ui.types";
-
-// Access the API URL from the environment variable
-// const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 
 const generateRandomString = (length: number): string => {
@@ -31,10 +26,133 @@ export const fetchCompanies = async () => {
     return data;
 };
 
+export const submitIndividual = async (values: Individual) => {
+    const apiData = {
+        identityType: values.identityType.toUpperCase(),
+        nationalId: values.nationalId,
+        nationalIdExpiry: values.nationalIdExpiry,
+        nationalIdFront: values.nationalIdFront,
+        nationalIdBack: values.nationalIdBack,
+        nationality: values.nationality,
+        birthday: values.birthday,
+        user: {
+            firstName: values.user.firstName,
+            lastName: values.user.lastName || "",
+            avatar: values.user.avatar || "avatar.png",
+            email: values.user.email,
+            phone: values.user.phone,
+            address: "123 Main St",
+            password: "",
+            isVerified: values.user.isVerified || false,
+        },
+    };
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(apiData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to submit individual");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error submitting individual:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const updateIndividual = async (id: number, values: Individual) => {
+    const apiData = {
+        identityType: values.identityType.toUpperCase(),
+        nationalId: values.nationalId,
+        nationalIdExpiry: values.nationalIdExpiry,
+        nationalIdFront: values.nationalIdFront,
+        nationalIdBack: values.nationalIdBack,
+        nationality: values.nationality,
+        birthday: values.birthday,
+        user: {
+            firstName: values.user.firstName,
+            lastName: values.user.lastName || "",
+            avatar: values.user.avatar || "avatar.png",
+            email: values.user.email,
+            phone: values.user.phone,
+            address: "123 Main St", // You can replace this if needed
+            password: "", // Typically, you won't send the password unless it's changing
+            isVerified: values.user.isVerified || false,
+        },
+    };
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(apiData),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update individual");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating individual:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const deleteIndividual = async (id: number) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete individual");
+      }
+  
+      return { success: true, data: result };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error deleting individual:", error);
+        return { success: false, error: error.message };
+      } else {
+        console.error("Unexpected error:", error);
+        return { success: false, error: "An unexpected error occurred" };
+      }
+    }
+  };
+  
 
 export const fetchUsers = async () => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}v1/individual`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual`);
         const result = await response.json();
 
         if (!result.success) {
@@ -53,6 +171,36 @@ export const fetchUsers = async () => {
     } catch (error) {
         console.error("Error fetching users:", error);
         return [];
+    }
+};
+
+export const fetchUserById = async (userID: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${userID}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to fetch user details");
+        }
+
+        const individual = result.innerData.individual;
+        return individual;
+        // return {
+        //     id: individual.id,
+        //     name: `${individual.user.firstName} ${individual.user.lastName}`,
+        //     email: individual.user.email,
+        //     status: individual.status,
+        //     type: individual.userType,
+        //     phone: individual.user.phone,
+        //     avatar: `${process.env.NEXT_PUBLIC_URL}/${individual.user.avatar}`,
+        //     nationality: individual.nationality,
+        //     birthday: individual.birthday,
+        //     nationalId: individual.nationalId,
+        //     nationalIdExpiry: individual.nationalIdExpiry,
+        // };
+    } catch (error) {
+        console.error("Error fetching user by ID:", error);
+        return null;
     }
 };
 

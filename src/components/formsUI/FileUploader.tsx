@@ -13,6 +13,7 @@ interface FileUploaderProps {
   note?: string;
   onChange?: (filePath: string | null) => void;
   small?: boolean;
+  initialImageUrl?: string | null; 
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
@@ -21,11 +22,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   onChange,
   subdirName = "common",
   small,
+  initialImageUrl = null,
 }) => {
   const t = useTranslations("common");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [fileUrl, setFileUrl] = useState<string | null>(null); // Store uploaded file URL
+  const [fileUrl, setFileUrl] = useState<string | null>(initialImageUrl);
   const [loading, setLoading] = useState(false);
 
   const BASE_URL = "https://api.imtyaaz.com/safety-point-academy";
@@ -46,7 +48,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       console.log("Upload response:", result);
 
       if (response.ok && result.success && result.innerData?.fileName) {
-        const fullFileUrl = `${BASE_URL}${result.innerData.fileName}`; // Ensure absolute URL
+        const fullFileUrl = `${BASE_URL}${result.innerData.fileName}`;
         setFileUrl(fullFileUrl);
         if (onChange) {
           onChange(result.innerData?.fileName);
@@ -105,19 +107,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     >
       {small ? (
         <div
-          className="flex items-center justify-between gap-2 overflow-hidden h-full cursor-pointer"
+          className="flex h-full cursor-pointer items-center justify-between gap-2 overflow-hidden"
           onClick={triggerFileInput}
         >
-          <span className="absolute bottom-full inputLabel start-0">
+          <span className="inputLabel absolute bottom-full start-0">
             {label}
           </span>
           {fileUrl ? (
-            <div className="relative w-10 h-10 flex-none overflow-hidden -m-2">
+            <div className="relative h-7 w-7 flex-none overflow-hidden">
               <Image
                 src={`${fileUrl}`}
                 alt="Safety Image Uploaded file"
                 fill
-                className="w-full h-full rounded-full object-cover cursor-pointer"
+                className="h-full w-full cursor-pointer rounded-full object-cover"
                 onClick={triggerFileInput}
               />
             </div>
@@ -133,11 +135,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           {fileUrl && (
             <div className="ms-auto">
               <Button
-                label={t("buttons.delete")}
                 onClick={handleDelete}
                 type="button"
                 icon={
-                  <span className="w-4 inline-block h-4">
+                  <span className="inline-block h-4 w-4">
                     <Trash />
                   </span>
                 }
@@ -151,18 +152,18 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       ) : (
         <div className="flex items-center gap-3">
           {fileUrl ? (
-            <div className="relative w-20 h-20 flex-none overflow-hidden">
+            <div className="relative h-20 w-20 flex-none overflow-hidden">
               <Image
                 src={`${fileUrl}`}
                 alt="Safety Image Uploaded file"
                 fill
-                className="w-full h-full rounded-full object-cover cursor-pointer"
+                className="h-full w-full cursor-pointer rounded-full object-cover"
                 onClick={triggerFileInput}
               />
             </div>
           ) : (
             <div
-              className="w-20 h-20 bg-light-300 rounded-full flex items-center justify-center cursor-pointer flex-none"
+              className="flex h-20 w-20 flex-none cursor-pointer items-center justify-center rounded-full bg-light-300"
               onClick={triggerFileInput}
             >
               {loading ? <Spinner /> : <UploadImg />}
@@ -171,10 +172,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
           {/* Text Content */}
           <div className="max-w-[335px]">
-            <p className="text-sm font-medium text-gray-600 leading-normal">
+            <p className="text-sm font-medium leading-normal text-gray-600">
               {label}
             </p>
-            <p className="text-sm font-normal text-dark leading-normal mt-1">
+            <p className="mt-1 text-sm font-normal leading-normal text-dark">
               {note}
             </p>
           </div>
@@ -185,7 +186,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 onClick={handleDelete}
                 type="button"
                 icon={
-                  <span className="w-6 inline-block h-6">
+                  <span className="inline-block h-6 w-6">
                     <Trash />
                   </span>
                 }

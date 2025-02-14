@@ -180,7 +180,7 @@ export default function NewUserForm({
                 onChange={(file) => setFieldValue("avatar", file)}
                 label={t("logo_user")}
                 note={t("fileuploader_note")}
-                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`}
+                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`: null}
               />
             </div>
             <div className="col-span-2">
@@ -319,7 +319,7 @@ export default function NewUserForm({
                 note="Upload the National ID Front image."
                 subdirName="user"
                 small
-                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`}
+                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`: null}
               />
               <ErrorMessage
                 name="nationalIdFront"
@@ -335,7 +335,7 @@ export default function NewUserForm({
                 note="Upload the National ID Back image."
                 subdirName="user"
                 small
-                initialImageUrl={`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`}
+                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`: null}
               />
               <ErrorMessage
                 name="nationalIdBack"

@@ -1,6 +1,6 @@
 // import axios from 'axios';
 
-import { SingleCourse } from "@/types/ui.types";
+import { Individual, SingleCourse } from "@/types/ui.types";
 
 // Access the API URL from the environment variable
 // const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -33,18 +33,29 @@ export const fetchCompanies = async () => {
 
 
 export const fetchUsers = async () => {
-    const data = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `User ${generateRandomString(5)}`,
-        email: `email${generateRandomString(3)}`,
-        status: Math.random() > 0.5 ? "1" : "0",
-        type: ["Individuals", "Company"][Math.floor(Math.random() * 2)],
-        phone: (Math.floor(Math.random() * 500) + 50).toString(),
-        image: `https://loremflickr.com/320/240/business?random`,
-    }));
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}v1/individual`);
+        const result = await response.json();
 
-    return data;
+        if (!result.success) {
+            throw new Error("Failed to fetch users");
+        }
+
+        return result.innerData.individuals.map((individual: Individual) => ({
+            id: individual.id,
+            name: `${individual.user.firstName} ${individual.user.lastName}`,
+            email: individual.user.email,
+            status: individual.status === "ACTIVE" ? "1" : "0",
+            type: individual.userType,
+            phone: individual.user.phone,
+            image: `${process.env.NEXT_PUBLIC_URL}/${individual.user.avatar}`,
+        }));
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+    }
 };
+
 export const fetchCourses = async (): Promise<SingleCourse[]> => {
     const generateRandomString = (length: number) =>
         Math.random().toString(36).substring(2, 2 + length);
@@ -123,11 +134,11 @@ export const fetchAdmins = async () => {
         id: index + 1,
         name: `${generateRandomString(4)} ${generateRandomString(4)}`,
         role: ["Admin", "Company", "Staff", "User"][Math.floor(Math.random() * 4)],
-        permissions: Math.random() < 0.5 
-        ? ["Admin", "Roles & Permissions"] 
-        : Math.random() < 0.5 
-            ? ["Certificates", "Reports"] 
-            : ["Admin", "Roles & Permissions", "Certificates"],
+        permissions: Math.random() < 0.5
+            ? ["Admin", "Roles & Permissions"]
+            : Math.random() < 0.5
+                ? ["Certificates", "Reports"]
+                : ["Admin", "Roles & Permissions", "Certificates"],
         status: Math.random() > 0.5 ? "1" : "0",
         image: `https://loremflickr.com/320/240/business?random`,
     }));

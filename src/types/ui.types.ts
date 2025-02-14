@@ -74,6 +74,27 @@ export interface User {
     permissions: string[];
     image?: string;
 }
+export interface Individual {
+    id: number;
+    identityType: string;
+    nationalId: string;
+    nationalIdExpiry: string;
+    nationalIdFront: string;
+    nationalIdBack: string;
+    nationality: string;
+    birthday: string;
+    status: string;
+    userType: string;
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        isVerified: boolean;
+    };
+}
 
 export interface SingleExam {
     id: number;

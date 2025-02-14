@@ -9,6 +9,7 @@ import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
+import RadioField from "../formsUI/RadioField";
 
 interface NewUserFormProps {
   title?: string;
@@ -55,27 +56,13 @@ export default function NewUserForm({
   // };
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-  
-    const toBase64 = (file: File | null) => {
-      return new Promise<string | null>((resolve, reject) => {
-        if (!file) return resolve(null);
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = (error) => reject(error);
-      });
-    };
-  
-    // Convert files to Base64
-    const nationalIdFrontBase64 = await toBase64(values.nationalIdFront);
-    const nationalIdBackBase64 = await toBase64(values.nationalIdBack);
-  
+
     const apiData = {
       identityType: values.identityType.toUpperCase(),
       nationalId: values.nationalId,
       nationalIdExpiry: values.nationalIdExpiry,
-      nationalIdFront: nationalIdFrontBase64, // Now a string
-      nationalIdBack: nationalIdBackBase64,   // Now a string
+      nationalIdFront: values.nationalIdFront,
+      nationalIdBack: values.nationalIdBack,
       nationality: values.nationality,
       birthday: values.birthday,
       user: {
@@ -89,7 +76,7 @@ export default function NewUserForm({
         isVerified: false,
       },
     };
-  
+
     try {
       const response = await fetch(
         "https://api.imtyaaz.com/safety-point-academy/api/v1/individual",
@@ -113,7 +100,6 @@ export default function NewUserForm({
       console.error("Error calling API:", error);
     }
   };
-  
 
   if (isSubmitted) {
     return (
@@ -253,33 +239,16 @@ export default function NewUserForm({
             {/* Identity Type */}
             {values.type && (
               <div className="col-span-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Identity Type
-                </label>
-                <div className="flex gap-4 mt-2">
-                  <label>
-                    <input
-                      type="radio"
-                      name="identityType"
-                      value="national_id"
-                      checked={values.identityType === "national_id"}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    National ID
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="identityType"
-                      value="passport"
-                      checked={values.identityType === "passport"}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    Passport
-                  </label>
-                </div>
+                <RadioField
+                  label="Identity Type"
+                  name="identityType"
+                  options={[
+                    { value: "national_id", label: "National ID" },
+                    { value: "passport", label: "Passport" },
+                  ]}
+                  selectedValue={values.identityType}
+                  onChange={handleChange}
+                />
                 <ErrorMessage
                   name="identityType"
                   component="div"
@@ -304,11 +273,13 @@ export default function NewUserForm({
               />
             </div>
             {/* National ID Front */}
-            <div className="col-span-4">
+            <div className="col-span-2">
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdFront", file)}
                 label="National ID Front"
                 note="Upload the National ID Front image."
+                subdirName="user"
+                small
               />
               <ErrorMessage
                 name="nationalIdFront"
@@ -317,11 +288,13 @@ export default function NewUserForm({
               />
             </div>
             {/* National ID Back */}
-            <div className="col-span-4">
+            <div className="col-span-2">
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdBack", file)}
                 label="National ID Back"
                 note="Upload the National ID Back image."
+                subdirName="user"
+                small
               />
               <ErrorMessage
                 name="nationalIdBack"

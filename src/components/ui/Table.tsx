@@ -1,9 +1,9 @@
 // components/Table.tsx
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
-import Status from "./Status";
-import Image from "next/image";
 import { KeyboardArrowLeft } from "./icons/KeyboardArrowLeft";
+import ImageWithFallback from "./ImageWithFallback";
+import Status from "./Status";
 
 const formatDate = (date: string): string => {
   const parsedDate = new Date(date);
@@ -57,11 +57,11 @@ const Table = <T extends { image?: string }>({
   };
   const sortedData = React.useMemo(() => {
     if (!sortConfig.key) return data;
-    
+
     return [...data].sort((a, b) => {
       const aValue = a[sortConfig.key as keyof T];
       const bValue = b[sortConfig.key as keyof T];
-      
+
       if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
       if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
       return 0;
@@ -153,15 +153,12 @@ const Table = <T extends { image?: string }>({
                       </span>
                     ) : column.accessor === "name" ? (
                       <div className="flex items-center gap-2 min-w-[200px]">
-                        {row.image && row.image ? (
-                          <Image
+                        {row.image && (
+                          <ImageWithFallback
                             src={row.image}
                             alt="Company Logo"
-                            className="w-10 h-10 object-cover rounded-full"
-                            width={30}
-                            height={30}
                           />
-                        ) : null}
+                        )}
                         <span>{String(row[column.accessor])}</span>
                       </div>
                     ) : Array.isArray(row[column.accessor]) ? ( // Check if it's an array

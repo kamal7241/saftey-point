@@ -9,13 +9,19 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "loremflickr.com", // Allow images from this domain
+        hostname: "loremflickr.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "api.imtyaaz.com",
         port: "",
         pathname: "/**",
       },
     ],
   },
-  reactStrictMode: true,
+  // reactStrictMode: true,
   webpack(config, { isServer }) {
     if (!isServer) {
       // Set fallback for async_hooks only on the client side
@@ -30,6 +36,14 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return redirects();
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/upload",
+        destination: "https://api.imtyaaz.com/safety-point-academy/api/v1/upload",
+      },
+    ];
   },
 };
 

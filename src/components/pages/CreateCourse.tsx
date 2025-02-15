@@ -6,10 +6,17 @@ import CourseInfo from "@/components/forms/course-steps/CourseInfo";
 import Pricing from "@/components/forms/course-steps/Pricing";
 import Certificate from "@/components/forms/course-steps/Certificate";
 import { CourseFormValues } from "@/types/forms.types";
-
-const steps = ["Course Info", "Pricing", "Certificate"];
+import PageHeader from "../global/PageHeader";
+import { useTranslations } from "next-intl";
+import StepNavigation from "../forms/course-steps/StepNavigation";
+import InfoCircle from "../ui/icons/InfoCircle";
+import Moneys from "../ui/icons/Moneys";
+import Award from "../ui/icons/Award";
+import TaskSquare from "../ui/icons/TaskSquare";
+import Session from "../ui/icons/Session";
 
 export default function CreateCourse() {
+  const t = useTranslations("common");
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
     courseName: "",
@@ -32,7 +39,13 @@ export default function CreateCourse() {
       certificate: Yup.string().required("Please select an option"),
     }),
   ];
-
+  const steps = [
+    { label: "Course Info", icon: <InfoCircle /> },
+    { label: "Pricing", icon: <Moneys /> },
+    { label: "Certificate", icon: <Award /> },
+    { label: "Exam", icon: <TaskSquare /> },
+    { label: "Session", icon: <Session /> },
+  ];
   const nextStep = (values: FormikValues) => {
     setFormData((prev) => ({ ...prev, ...values }));
     if (currentStep < steps.length - 1) {
@@ -48,58 +61,66 @@ export default function CreateCourse() {
     setFormData(values);
     console.log("Final Form Data:", values);
     alert("Form submitted successfully!");
-    // API call example: 
+    // API call example:
     // await fetch("/api/create-course", { method: "POST", body: JSON.stringify(values) });
   };
 
   const CurrentStepComponent = StepComponents[currentStep];
 
+  const breadcrumbItems = [
+    { label: t("home"), href: "/" },
+    { label: t("courses-management"), href: "/dashboard/courses-management" },
+    { label: t("courses_list"), href: "/dashboard/courses-management/list" },
+  ];
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      {/* Step Navigation */}
-      <div className="flex justify-between items-center mb-6">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className={`flex-1 text-center p-2 border-b-2 ${
-              index === currentStep ? "border-red-500 font-bold" : "border-gray-300"
-            }`}
+    <div>
+      <PageHeader breadcrumbItems={breadcrumbItems} title={t("courses_list")} />
+      <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
+        <div className="flex flex-col gap-6 pb-20">
+          <h3 className="heading3">{t("add_course")}</h3>
+          <p className="textRegular mt-1.5">{t("form_subtitle")}</p>
+          {/* Step Navigation */}
+          <StepNavigation steps={steps} currentStep={0} />
+
+          {/* Formik Wrapper */}
+          <Formik
+            initialValues={formData}
+            validationSchema={validationSchemas[currentStep]}
+            onSubmit={
+              currentStep === steps.length - 1 ? handleSubmit : nextStep
+            }
           >
-            {step}
-          </div>
-        ))}
+            {({ values, handleChange, handleBlur, errors }) => (
+              <Form className="rounded-lg border p-6 shadow-md">
+                <CurrentStepComponent
+                  values={values}
+                  handleChange={handleChange}
+                  handleBlur={handleBlur}
+                  errors={errors}
+                />
+
+                {/* Navigation Buttons */}
+                <div className="mt-6 flex justify-between">
+                  <button
+                    type="button"
+                    className="rounded bg-gray-300 px-4 py-2 disabled:opacity-50"
+                    onClick={prevStep}
+                    disabled={currentStep === 0}
+                  >
+                    Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded bg-red-500 px-4 py-2 text-white disabled:opacity-50"
+                  >
+                    {currentStep === steps.length - 1 ? "Submit" : "Next"}
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
       </div>
-
-      {/* Formik Wrapper */}
-      <Formik
-        initialValues={formData}
-        validationSchema={validationSchemas[currentStep]}
-        onSubmit={currentStep === steps.length - 1 ? handleSubmit : nextStep}
-      >
-        {({ values, handleChange, handleBlur, errors }) => (
-          <Form className="p-6 border rounded-lg shadow-md">
-            <CurrentStepComponent values={values} handleChange={handleChange} handleBlur={handleBlur} errors={errors} />
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mt-6">
-              <button
-                type="button"
-                className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-              >
-                Back
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-red-500 text-white rounded disabled:opacity-50"
-              >
-                {currentStep === steps.length - 1 ? "Submit" : "Next"}
-              </button>
-            </div>
-          </Form>
-        )}
-      </Formik>
     </div>
   );
 }

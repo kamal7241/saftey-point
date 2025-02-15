@@ -55,3 +55,24 @@ export const addBranchValidationSchema = Yup.object({
   address: Yup.string().required("Address is required"),
   pinLocation: Yup.mixed().required("Pin Location is required"),
 });
+
+
+export const getCourseInfoValidationSchema = (t: (key: string) => string) => {
+  return Yup.object({
+    courseTitle: Yup.string().required(t("validation.courseTitle.required")),
+    status: Yup.string().required(t("validation.status.required")),
+    prerequisites: Yup.string().required(t("validation.prerequisites.required")),
+    validity: Yup.date()
+      .required(t("validation.validity.required"))
+      .min(new Date(), t("validation.validity.futureDate")),
+    courseCover: Yup.string().required(t("validation.courseCover.required")),
+    level: Yup.string().required(t("validation.level.required")),
+    language: Yup.string().required(t("validation.language.required")),
+    maxAttendees: Yup.number()
+      .required(t("validation.maxAttendees.required"))
+      .positive(t("validation.maxAttendees.positive"))
+      .integer(t("validation.maxAttendees.integer")),
+    medicalTest: Yup.string().required(t("validation.medicalTest.required")),
+    description: Yup.string().required(t("validation.description.required")),
+  });
+};

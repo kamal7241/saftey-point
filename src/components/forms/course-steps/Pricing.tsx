@@ -3,14 +3,9 @@ import { Field, ErrorMessage, FormikProps, FormikValues } from "formik";
 interface PricingProps {
   values: FormikValues;
   handleChange: FormikProps<FormikValues>["handleChange"];
-  handleBlur: FormikProps<FormikValues>["handleBlur"];
 }
 
-export default function Pricing({
-  values,
-  handleChange,
-  handleBlur,
-}: PricingProps) {
+export default function Pricing({ values, handleChange }: PricingProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Pricing</h2>
@@ -21,7 +16,6 @@ export default function Pricing({
           name="price"
           className="w-full p-2 border rounded"
           onChange={handleChange}
-          onBlur={handleBlur}
           value={values.price}
         />
         <ErrorMessage

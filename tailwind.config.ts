@@ -24,6 +24,7 @@ export default {
           600: "#4A4F55",
           800: "#484B50",
           900: "#787C84",
+          901: "#6E7277",
         },
         light: {
           100: "#F5F5F5",
@@ -72,6 +73,7 @@ export default {
   safelist: [
     'text-blue-400',
     'text-gray-900',
+    'after:bg-primary'
   ],
   plugins: [],
 } satisfies Config;

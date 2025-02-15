@@ -1,6 +1,7 @@
 export interface CourseFormValues {
-    courseName: string;
+    courseTitle: string;
     description: string;
+    status: string;
     price: string;
     certificate: string;
 }

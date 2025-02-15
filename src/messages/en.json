@@ -116,6 +116,31 @@
     "exam_details": "Exam Details",
     "are_you_sure_delete": "Are you sure delete",
     "course_details": "Course Details",
+    "validity": "Validity",
+    "yes": "Yes",
+    "no": "No",
+    "description": "Description",
+    "maxAttendees": "Max # Attendees",
+    "medicalTestLabel": "Please add option for required medical test?",
+    "prerequisites": {
+      "name": "Prerequisites",
+      "none": "None",
+      "assessment_required": "Assessment Required",
+      "department_approval": "Department Approval",
+      "level_requirement": "Level Requirement"
+    },
+    "level": {
+      "name": "level",
+      "advanced": "Advanced",
+      "basic": "Basic",
+      "intermediate": "Intermediate"
+    },
+    "language": {
+      "name": "language",
+      "en": "English",
+      "ar": "Arabic",
+      "fr": "France"
+    },
     "company_status": {
       "active": "Active",
       "inactive": "Inactive",
@@ -168,6 +193,51 @@
       "exam": "Exam",
       "certificate": "Certificate",
       "sessions": "Sessions"
+    }
+  },
+  "validation": {
+    "courseName": {
+      "required": "Course Name is required"
+    },
+    "status": {
+      "required": "Status is required"
+    },
+    "description": {
+      "required": "Description is required"
+    },
+    "price": {
+      "required": "Price is required",
+      "positive": "Price must be a positive number"
+    },
+    "certificate": {
+      "required": "Please select an option"
+    },
+    "courseTitle": {
+      "required": "Course Title is required"
+    },
+    "prerequisites": {
+      "required": "Prerequisites are required"
+    },
+    "validity": {
+      "required": "Validity date is required",
+      "futureDate": "Validity date must be in the future"
+    },
+    "courseCover": {
+      "required": "Course cover is required"
+    },
+    "level": {
+      "required": "Level is required"
+    },
+    "language": {
+      "required": "Language is required"
+    },
+    "maxAttendees": {
+      "required": "Maximum attendees is required",
+      "positive": "Maximum attendees must be a positive number",
+      "integer": "Maximum attendees must be an integer"
+    },
+    "medicalTest": {
+      "required": "Medical test option is required"
     }
   }
 }

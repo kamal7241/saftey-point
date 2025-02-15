@@ -1,3 +1,4 @@
+import TickCircle from "@/components/ui/icons/TickCircle";
 import React from "react";
 
 interface StepNavigationProps {
@@ -10,34 +11,46 @@ export default function StepNavigation({
   currentStep,
 }: StepNavigationProps) {
   return (
-    <div className="relative h-[92px] w-[1032px]">
-      {/* Main progress bar */}
-      {/* <div className="absolute left-[109px] top-[29px] h-[0px] w-[822px] border border-[#6e7277]"></div>
-      <div className="absolute left-[109px] top-[29px] h-[0px] w-[200px] border border-primary"></div> */}
-
+    <div className="relative flex items-center justify-between px-10">
       {steps.map((step, index) => {
         const isActive = index === currentStep;
+        const isPass = index < currentStep;
         return (
           <div
             key={index}
-            className={`inline-flex flex-col items-center justify-start gap-3 py-2`}
+            className={`flex items-start w-full ${
+              index === steps.length - 1
+                ? "after:hidden"
+                : "after:content-[''] after:w-full after:h-[1px] after:inline-block after:mt-5"
+            } ${isActive ? "after:bg-primary" : "after:bg-gray-901"}`}
           >
-            <div className="relative h-10 w-10">
-              <div
-                className={`w-10 h-10 left-0 top-0 absolute rounded-full ${
-                  isActive ? "bg-priborder-primary" : "bg-[#6e7277]"
-                }`}
-              />
-              <div data-svg-wrapper className="absolute left-[8px] top-[8px]">
-                {step.icon}
+            <div className="flex flex-col gap-3 items-center justify-center w-10">
+              <div className="relative">
+                <div
+                  className={`rounded-full size-10 flex items-center justify-center ${
+                    isActive
+                      ? "bg-primary"
+                      : isPass
+                      ? "bg-green-400"
+                      : "bg-gray-901"
+                  }`}
+                >
+                  <div data-svg-wrapper className="m-auto">
+                    {isPass ? <TickCircle /> : step.icon}
+                  </div>
+                </div>
               </div>
-            </div>
-            {/* Step Label */}
-            <div
-              className="h-6 self-stretch text-center font-['Jost'] text-base font-semibold leading-normal"
-              style={{ color: isActive ? "#aa2d41" : "#6e7277" }}
-            >
-              {step.label}
+              <span
+                className={`font-semibold whitespace-nowrap ${
+                  isActive
+                    ? "text-primary"
+                    : isPass
+                    ? "text-green-400"
+                    : "text-gray-901"
+                }`}
+              >
+                {step.label}
+              </span>
             </div>
           </div>
         );

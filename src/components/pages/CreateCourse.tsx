@@ -14,13 +14,15 @@ import Moneys from "../ui/icons/Moneys";
 import Award from "../ui/icons/Award";
 import TaskSquare from "../ui/icons/TaskSquare";
 import Session from "../ui/icons/Session";
+import { getCourseInfoValidationSchema } from "@/utils/validation/dashboardValidation";
 
 export default function CreateCourse() {
-  const t = useTranslations("common");
+  const t = useTranslations();
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
-    courseName: "",
+    courseTitle: "",
     description: "",
+    status: "",
     price: "",
     certificate: "",
   });
@@ -28,17 +30,17 @@ export default function CreateCourse() {
   const StepComponents = [CourseInfo, Pricing, Certificate];
 
   const validationSchemas = [
+    getCourseInfoValidationSchema(t),
     Yup.object({
-      courseName: Yup.string().required("Course Name is required"),
-      description: Yup.string().required("Description is required"),
+      price: Yup.number()
+        .positive(t("validation.price.positive"))
+        .required(t("validation.price.required")),
     }),
     Yup.object({
-      price: Yup.number().positive().required("Price is required"),
-    }),
-    Yup.object({
-      certificate: Yup.string().required("Please select an option"),
+      certificate: Yup.string().required(t("validation.certificate.required")),
     }),
   ];
+
   const steps = [
     { label: "Course Info", icon: <InfoCircle /> },
     { label: "Pricing", icon: <Moneys /> },
@@ -68,19 +70,28 @@ export default function CreateCourse() {
   const CurrentStepComponent = StepComponents[currentStep];
 
   const breadcrumbItems = [
-    { label: t("home"), href: "/" },
-    { label: t("courses-management"), href: "/dashboard/courses-management" },
-    { label: t("courses_list"), href: "/dashboard/courses-management/list" },
+    { label: t("common.home"), href: "/" },
+    {
+      label: t("common.courses-management"),
+      href: "/dashboard/courses-management",
+    },
+    {
+      label: t("common.courses_list"),
+      href: "/dashboard/courses-management/list",
+    },
   ];
   return (
     <div>
-      <PageHeader breadcrumbItems={breadcrumbItems} title={t("courses_list")} />
+      <PageHeader
+        breadcrumbItems={breadcrumbItems}
+        title={t("common.courses_list")}
+      />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
         <div className="flex flex-col gap-6 pb-20">
-          <h3 className="heading3">{t("add_course")}</h3>
-          <p className="textRegular mt-1.5">{t("form_subtitle")}</p>
+          <h3 className="heading3">{t("common.add_course")}</h3>
+          <p className="textRegular mt-1.5">{t("common.form_subtitle")}</p>
           {/* Step Navigation */}
-          <StepNavigation steps={steps} currentStep={0} />
+          <StepNavigation steps={steps} currentStep={currentStep} />
 
           {/* Formik Wrapper */}
           <Formik
@@ -90,13 +101,13 @@ export default function CreateCourse() {
               currentStep === steps.length - 1 ? handleSubmit : nextStep
             }
           >
-            {({ values, handleChange, handleBlur, errors }) => (
-              <Form className="rounded-lg border p-6 shadow-md">
+            {({ values, handleChange, errors, setFieldValue }) => (
+              <Form className="">
                 <CurrentStepComponent
                   values={values}
                   handleChange={handleChange}
-                  handleBlur={handleBlur}
                   errors={errors}
+                  setFieldValue={setFieldValue}
                 />
 
                 {/* Navigation Buttons */}

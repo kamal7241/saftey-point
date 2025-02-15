@@ -10,5 +10,10 @@ export const redirects = async () => {
         destination: '/dashboard/user-management/users',
         permanent: true,
       },
+      {
+        source: '/dashboard/courses-management',
+        destination: '/dashboard/courses-management/list',
+        permanent: true,
+      },
     ];
   };

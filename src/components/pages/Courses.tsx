@@ -76,8 +76,8 @@ const Courses = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("course-management"), href: "/course-management" },
-    { label: t("courses_list"), href: "/course-management/list" },
+    { label: t("courses-management"), href: "/dashboard/courses-management" },
+    { label: t("courses_list"), href: "/dashboard/courses-management/list" },
   ];
 
   return (
@@ -90,7 +90,7 @@ const Courses = () => {
           <div className="flex gap-3">
             <Button
               label={t("buttons.add_course")}
-              onClick={() => setAddPopupOpen(true)}
+              href="/dashboard/courses-management/new"
               icon={
                 <span className="inline-block w-6">
                   <Add />

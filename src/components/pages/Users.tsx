@@ -143,10 +143,12 @@ const Users = () => {
 
   const handleEdit = (id: number) => {
     console.log("Editing user with ID:", id);
+    router.push(`/dashboard/user-management/users/${id}`);
   };
 
   const handleDelete = (id: number) => {
     console.log("Deleting user with ID:", id);
+    router.push(`/dashboard/user-management/users/${id}`);
   };
 
   const breadcrumbItems = [

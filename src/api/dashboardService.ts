@@ -1,4 +1,4 @@
-import { Individual, SingleCourse } from "@/types/ui.types";
+import { Company, Individual, SingleCourse } from "@/types/ui.types";
 
 
 const generateRandomString = (length: number): string => {
@@ -25,6 +25,31 @@ export const fetchCompanies = async () => {
 
     return data;
 };
+
+// export const fetchCompanies = async () => {
+//     try {
+//         const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company`);
+//         const result = await response.json();
+
+//         if (!result.success) {
+//             throw new Error("Failed to fetch users");
+//         }
+
+//         return result.innerData.companies.map((company: Company) => ({
+//             id: company.id,
+//             name: `${company.user.firstName} ${individual.user.lastName}`,
+//             email: individual.user.email,
+//             status: individual.status === "ACTIVE" ? "1" : "0",
+//             type: individual.userType,
+//             phone: individual.user.phone,
+//             image: `${process.env.NEXT_PUBLIC_URL}/${individual.user.avatar}`,
+//         }));
+//     } catch (error) {
+//         console.error("Error fetching users:", error);
+//         return [];
+//     }
+// };
+
 
 export const submitIndividual = async (values: Individual) => {
     const apiData = {
@@ -124,31 +149,31 @@ export const updateIndividual = async (id: number, values: Individual) => {
 
 export const deleteIndividual = async (id: number) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to delete individual");
-      }
-  
-      return { success: true, data: result };
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to delete individual");
+        }
+
+        return { success: true, data: result };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error deleting individual:", error);
-        return { success: false, error: error.message };
-      } else {
-        console.error("Unexpected error:", error);
-        return { success: false, error: "An unexpected error occurred" };
-      }
+        if (error instanceof Error) {
+            console.error("Error deleting individual:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
     }
-  };
-  
+};
+
 
 export const fetchUsers = async () => {
     try {
@@ -185,19 +210,6 @@ export const fetchUserById = async (userID: number) => {
 
         const individual = result.innerData.individual;
         return individual;
-        // return {
-        //     id: individual.id,
-        //     name: `${individual.user.firstName} ${individual.user.lastName}`,
-        //     email: individual.user.email,
-        //     status: individual.status,
-        //     type: individual.userType,
-        //     phone: individual.user.phone,
-        //     avatar: `${process.env.NEXT_PUBLIC_URL}/${individual.user.avatar}`,
-        //     nationality: individual.nationality,
-        //     birthday: individual.birthday,
-        //     nationalId: individual.nationalId,
-        //     nationalIdExpiry: individual.nationalIdExpiry,
-        // };
     } catch (error) {
         console.error("Error fetching user by ID:", error);
         return null;
@@ -205,21 +217,43 @@ export const fetchUserById = async (userID: number) => {
 };
 
 export const fetchCourses = async (): Promise<SingleCourse[]> => {
-    const generateRandomString = (length: number) =>
-        Math.random().toString(36).substring(2, 2 + length);
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/courses`);
+        const result = await response.json();
 
-    const data: SingleCourse[] = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `Course ${generateRandomString(5)}`,
-        language: ["English", "Spanish", "French", "German"][Math.floor(Math.random() * 4)],
-        enrollments: Math.floor(Math.random() * 500) + 1,
-        sessions: Math.floor(Math.random() * 20) + 1,
-        level: Math.floor(Math.random() * 5) + 1, // Level 1-5
-        status: Math.random() > 0.5 ? "1" : "0",
-        image: `https://loremflickr.com/320/240/education?random=${index + 1}`,
-    }));
+        if (!result.success) {
+            throw new Error("Failed to fetch courses");
+        }
 
-    return data;
+        return result.innerData.items.map((course: SingleCourse) => ({
+            id: course.id,
+            title: course.title,
+            language: course.language,
+            enrollments: course.maxAttendees,
+            sessions: course.sessions,
+            level: course.level,
+            status: course.status === "ACTIVE" ? "1" : "0",
+        }));
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        return [];
+    }
+};
+export const fetchCourseById = async (courseID: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/courses/${courseID}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to fetch course details");
+        }
+
+        const course = result.innerData;
+        return course;
+    } catch (error) {
+        console.error("Error fetching course by ID:", error);
+        return null;
+    }
 };
 
 

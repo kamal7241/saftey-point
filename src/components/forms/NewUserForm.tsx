@@ -180,6 +180,7 @@ export default function NewUserForm({
                 onChange={(file) => setFieldValue("avatar", file)}
                 label={t("logo_user")}
                 note={t("fileuploader_note")}
+                subdirName="user"
                 initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`: null}
               />
             </div>
@@ -316,7 +317,6 @@ export default function NewUserForm({
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdFront", file)}
                 label="National ID Front"
-                note="Upload the National ID Front image."
                 subdirName="user"
                 small
                 initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`: null}
@@ -332,7 +332,6 @@ export default function NewUserForm({
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdBack", file)}
                 label="National ID Back"
-                note="Upload the National ID Back image."
                 subdirName="user"
                 small
                 initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`: null}

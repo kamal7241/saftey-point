@@ -113,6 +113,7 @@
     "user_nationality": "User nationality",
     "exam_details": "Exam Details",
     "are_you_sure_delete": "Are you sure delete",
+    "course_details": "Course Details",
     "company_status": {
       "active": "Active",
       "inactive": "Inactive",
@@ -158,6 +159,13 @@
       "reset_password": "Reset Password",
       "generate": "generate",
       "filters": "Filters"
+    },
+    "tab": {
+      "course_info": "Course Info",
+      "pricing": "Pricing",
+      "exam": "Exam",
+      "certificate": "Certificate",
+      "sessions": "Sessions"
     }
   }
 }

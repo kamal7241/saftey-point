@@ -119,9 +119,10 @@ export interface SingleStaff {
 
 export interface SingleCourse {
     id: number;
-    name: string;
+    title: string;
     language: string;
-    enrollments: number;
+    enrollments?: number;
+    maxAttendees?: number;
     sessions: number;
     level: number;
     status: string;

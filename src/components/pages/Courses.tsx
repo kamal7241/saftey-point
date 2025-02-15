@@ -39,7 +39,7 @@ const Courses = () => {
   }, []);
 
   const filteredCourses = courses.filter((course) => {
-    const matchesSearch = course.name
+    const matchesSearch = course.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
@@ -54,7 +54,7 @@ const Courses = () => {
 
   const columns: { header: string; accessor: keyof SingleCourse }[] = [
     { header: "course_id", accessor: "id" },
-    { header: "name", accessor: "name" },
+    { header: "name", accessor: "title" },
     { header: "language", accessor: "language" },
     { header: "enrollments", accessor: "enrollments" },
     { header: "sessions", accessor: "sessions" },
@@ -69,7 +69,7 @@ const Courses = () => {
     setFilters(appliedFilters);
   const handleResetFilters = () => setFilters({});
 
-  const handleView = (id: number) => router.push(`/dashboard/courses/${id}`);
+  const handleView = (id: number) => router.push(`/dashboard/courses-management/list/${id}`);
   const handleEdit = (id: number) => console.log("Editing course with ID:", id);
   const handleDelete = (id: number) =>
     console.log("Deleting course with ID:", id);
@@ -84,15 +84,15 @@ const Courses = () => {
     <div>
       <PageHeader breadcrumbItems={breadcrumbItems} title={t("courses_list")} />
 
-      <div className="mt-6 bg-white rounded-2xl">
-        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
+      <div className="mt-6 rounded-2xl bg-white">
+        <div className="flex flex-wrap-reverse items-center justify-between gap-6 p-4">
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3">
             <Button
               label={t("buttons.add_course")}
               onClick={() => setAddPopupOpen(true)}
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Add />
                 </span>
               }
@@ -108,7 +108,7 @@ const Courses = () => {
               onClick={() => console.log("Exporting courses...")}
               variant="dark"
               icon={
-                <span className="w-6 inline-block">
+                <span className="inline-block w-6">
                   <Export />
                 </span>
               }

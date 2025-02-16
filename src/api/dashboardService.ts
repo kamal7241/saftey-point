@@ -1,4 +1,4 @@
-import { Company, Individual, SingleCourse } from "@/types/ui.types";
+import { Individual, SingleCourse } from "@/types/ui.types";
 
 
 const generateRandomString = (length: number): string => {

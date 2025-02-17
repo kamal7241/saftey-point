@@ -21,6 +21,8 @@ import UserSquare from "../ui/icons/UserSquare";
 import Popup from "../ui/Popup";
 import NewUserForm from "../forms/NewUserForm";
 import { useRouter } from "@/i18n/routing";
+import ImagePopup from "../ui/ImagePopup";
+import ImageWithFallback from "../ui/ImageWithFallback";
 
 interface SingleUserProps {
   userID: string;
@@ -60,7 +62,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
   const handleDelete = async () => {
     const result = await deleteIndividual(Number(userID));
     if (result.success) {
-      router.push('/dashboard/user-management/users');
+      router.push("/dashboard/user-management/users");
     } else {
       setError(result.error || "Failed to delete user.");
     }
@@ -94,7 +96,9 @@ export default function SingleUser({ userID }: SingleUserProps) {
       {showDeleteConfirm && (
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
           <div>
-            <p className="p-5 text-center text-2xl">{t("are_you_sure_delete")}</p>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
             <div className="flex items-center justify-center gap-4">
               <Button onClick={handleDelete} label={t("buttons.confirm")} />
               <Button
@@ -157,12 +161,12 @@ export default function SingleUser({ userID }: SingleUserProps) {
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
         <h1 className="heading3">{t("user_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
-          <Image
+          <ImageWithFallback
             src={`${process.env.NEXT_PUBLIC_URL}/${userData?.user.avatar}`}
             alt="user-profile"
             width={80}
             height={80}
-            className="rounded-full"
+            className="rounded-full object-cover w-20 h-20"
           />
           <h2 className="heading2">
             {userData?.user.firstName} {userData?.user.lastName}
@@ -241,14 +245,12 @@ export default function SingleUser({ userID }: SingleUserProps) {
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
               label={t("front_id")}
-              content={userData?.nationalIdFront}
-              copyIt
+              content={<ImagePopup imagePath={userData?.nationalIdFront} />}
               icon={<AttachCircle />}
             />
             <GroupInfo
               label={t("back_id")}
-              content={userData?.nationalIdBack}
-              copyIt
+              content={<ImagePopup imagePath={userData?.nationalIdBack} />}
               icon={<AttachCircle />}
             />
           </div>

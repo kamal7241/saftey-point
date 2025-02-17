@@ -25,21 +25,28 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [users, setUsers] = useState<SingleUser[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
 
+  const limit = 10;
   useEffect(() => {
     const getUsers = async () => {
-      const response = await fetchUsers();
-      const data = await response;
-      setUsers(data);
+      setLoading(true);
+      const offset = (currentPage - 1) * limit;
+      const response = await fetchUsers(offset, limit);
+      console.log("Fetched Users:", response.users); 
+      setUsers(response.users);
+      setTotalCount(response.totalCount);
+      setLoading(false);
     };
 
     getUsers();
-  }, []);
+  }, [currentPage]);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch = user.name
@@ -64,11 +71,6 @@ const Users = () => {
     { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredUsers.length / 10);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -247,12 +249,14 @@ const Users = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
-            onPageChange: handlePageChange,
+            totalPages: Math.ceil(totalCount / limit),
+            onPageChange: (page) => setCurrentPage(page),
+  
           }}
-          sortable={true}
-          rowsPerPage={10}
+          // sortable={true}
+          rowsPerPage={limit}
           renderRowActions={renderRowActions}
+          isLoading={loading}
         />
       </div>
 

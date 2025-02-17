@@ -99,7 +99,7 @@ export default function NewUserForm({
 
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-
+  
     const mappedValues: Individual = {
       identityType: values.identityType,
       nationalId: values.nationalId,
@@ -120,21 +120,24 @@ export default function NewUserForm({
         isVerified: false,
       },
     };
-
+  
     let result;
     if (userData && userData.id) {
-      result = await updateIndividual(userData.id, mappedValues);
+      result = await updateIndividual(userData.id, mappedValues, userData);
     } else {
       result = await submitIndividual(mappedValues);
     }
-
-    if (result.success === true) {
+  
+    console.log('ressult>>>',result)
+    if (result && result.success === true) {
       setIsSubmitted(true);
       setApiErrors(null);
     } else {
-      setApiErrors(result.error || null);
+      setIsSubmitted(false); // Ensure the form doesn't proceed on failure
+      setApiErrors(result?.error || "An error occurred");
     }
   };
+  
 
   if (isSubmitted) {
     return (
@@ -172,16 +175,24 @@ export default function NewUserForm({
         }
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, setFieldValue, submitForm }) => (
+        {({ values, handleChange, setFieldValue }) => (
           <Form className="mt-4 grid w-full grid-cols-4 gap-4">
-            {apiErrors && <div className="col-span-4"><div className="text-red-500">{apiErrors}</div></div>}
+            {apiErrors && (
+              <div className="col-span-4">
+                <div className="text-red-500">{apiErrors}</div>
+              </div>
+            )}
             <div className="col-span-4">
               <FileUploader
                 onChange={(file) => setFieldValue("avatar", file)}
                 label={t("logo_user")}
                 note={t("fileuploader_note")}
                 subdirName="user"
-                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`: null}
+                initialImageUrl={
+                  userData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`
+                    : null
+                }
               />
             </div>
             <div className="col-span-2">
@@ -319,7 +330,11 @@ export default function NewUserForm({
                 label="National ID Front"
                 subdirName="user"
                 small
-                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`: null}
+                initialImageUrl={
+                  userData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdFront}`
+                    : null
+                }
               />
               <ErrorMessage
                 name="nationalIdFront"
@@ -334,7 +349,11 @@ export default function NewUserForm({
                 label="National ID Back"
                 subdirName="user"
                 small
-                initialImageUrl={userData?`${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`: null}
+                initialImageUrl={
+                  userData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`
+                    : null
+                }
               />
               <ErrorMessage
                 name="nationalIdBack"
@@ -476,7 +495,6 @@ export default function NewUserForm({
               />
               <Button
                 label={t("buttons.submit")}
-                onClick={submitForm}
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"

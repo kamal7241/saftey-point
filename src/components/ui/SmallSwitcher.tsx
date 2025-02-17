@@ -17,13 +17,13 @@ const Switcher = () => {
           className="sr-only"
         />
         <span
-          className={`flex h-3 w-[15px] items-center rounded-full p-1 duration-200 ${
+          className={`flex h-6 w-[36px] items-center rounded-full px-1 py-2 duration-200 ${
             isChecked ? "bg-black-400" : "bg-gray-900"
           }`}
         >
           <span
-            className={`w-3/4 aspect-square rounded-full bg-white duration-200 ${
-              isChecked ? "translate-x-1/2" : ""
+            className={`w-2/4 aspect-square rounded-full bg-white duration-200 ${
+              isChecked ? "translate-x-full" : ""
             }`}
           ></span>
         </span>

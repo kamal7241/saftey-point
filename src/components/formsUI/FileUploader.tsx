@@ -13,7 +13,7 @@ interface FileUploaderProps {
   note?: string;
   onChange?: (filePath: string | null) => void;
   small?: boolean;
-  initialImageUrl?: string | null; 
+  initialImageUrl?: string | null;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
@@ -30,7 +30,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [fileUrl, setFileUrl] = useState<string | null>(initialImageUrl);
   const [loading, setLoading] = useState(false);
 
-  const BASE_URL = "https://api.imtyaaz.com/safety-point-academy";
+  const BASE_URL = process.env.NEXT_PUBLIC_URL || "";
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -48,7 +48,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       console.log("Upload response:", result);
 
       if (response.ok && result.success && result.innerData?.fileName) {
-        const fullFileUrl = `${BASE_URL}${result.innerData.fileName}`;
+        const fullFileUrl = `${BASE_URL}${
+          result.innerData.fileName?.startsWith("/") ? "" : "/"
+        }${result.innerData.fileName}`;
         setFileUrl(fullFileUrl);
         if (onChange) {
           onChange(result.innerData?.fileName);
@@ -91,7 +93,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     <div
       className={`relative ${
         small
-          ? "rounded-lg text-gray-300 border border-gray-200 px-3 py-3.5 mt-5"
+          ? "rounded-lg text-gray-300 border border-gray-200 px-3 py-2.5 mt-5"
           : "rounded-lg border border-dashed border-opacity-30 border-gray-300 p-4"
       } ${
         dragging
@@ -125,10 +127,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             </div>
           ) : (
             <>
-              {label}
-              <span className="w-4">
-                <AttachCircle />
-              </span>
+              {!loading && (
+                <>
+                  {label}
+                  <span className="w-4">
+                    <AttachCircle />
+                  </span>
+                </>
+              )}
             </>
           )}
           {loading ? <Spinner /> : ""}

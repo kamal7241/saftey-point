@@ -10,7 +10,7 @@ const Textarea: React.FC<TextareaProps> = ({
   name,
   error,
   required = true,
-  extraClass = "px-3 py-3.5 h-full",
+  extraClass = "px-3 py-0 leading-[50px] h-full",
 }) => {
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e);
@@ -24,7 +24,7 @@ const Textarea: React.FC<TextareaProps> = ({
         value={value}
         onChange={handleChange}
         name={name}
-        className={`w-full outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[20px] flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 border border-gray-200  px-3 py-3.5 h-full ${
+        className={`w-full outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px] flex items-center justify-start gap-2 overflow-hidden rounded-lg text-gray-300 border border-gray-200  px-3 py-0 leading-[50px] h-full ${
           error ? "!border-red-400" : ""
         } ${extraClass}`}
       />

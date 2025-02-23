@@ -26,7 +26,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   options,
   onChange,
   placeholder = label,
-  extraClass = "px-3 py-3.5",
+  extraClass = "px-3 py-0 leading-[50px]",
   customDropdown = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,7 +44,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       <div className="relative">
         {customDropdown ? (
           <div
-            className={`border rounded-lg w-full ${extraClass} cursor-pointer max-h-[50px]`}
+            className={`border rounded-lg w-full ${extraClass} cursor-pointer`}
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <div className="flex justify-between items-center">

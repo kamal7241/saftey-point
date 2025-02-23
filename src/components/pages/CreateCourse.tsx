@@ -15,6 +15,8 @@ import Award from "../ui/icons/Award";
 import TaskSquare from "../ui/icons/TaskSquare";
 import Session from "../ui/icons/Session";
 import { getCourseInfoValidationSchema } from "@/utils/validation/dashboardValidation";
+import Exam from "../forms/course-steps/Exam";
+import SessionStep from "../forms/course-steps/SessionStep";
 
 export default function CreateCourse() {
   const t = useTranslations();
@@ -27,7 +29,7 @@ export default function CreateCourse() {
     certificate: "",
   });
 
-  const StepComponents = [CourseInfo, Pricing, Certificate];
+  const StepComponents = [CourseInfo, Pricing, Certificate, Exam, SessionStep];
 
   const validationSchemas = [
     getCourseInfoValidationSchema(t),

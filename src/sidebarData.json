@@ -56,6 +56,20 @@
       ],
       "icon": "/images/icons/navbar/user-management.svg",
       "activeIcon": "/images/icons/navbar/user-management-active.svg"
+    },
+    {
+      "name": "Presets",
+      "link": "/dashboard/presets",
+      "children": [
+        { "name": "Branches", "link": "/dashboard/presets/branches" },
+        { "name": "Discounts", "link": "/dashboard/presets/discounts" },
+        { "name": "Facility", "link": "/dashboard/presets/facility" },
+        { "name": "Currencies", "link": "/dashboard/presets/currencies" },
+        { "name": "Locations", "link": "/dashboard/presets/locations" },
+        { "name": "Cancellations - Refunds", "link": "/dashboard/presets/cancellations-refunds" }
+      ],
+      "icon": "/images/icons/navbar/user-management.svg",
+      "activeIcon": "/images/icons/navbar/user-management-active.svg"
     }
   ]
   

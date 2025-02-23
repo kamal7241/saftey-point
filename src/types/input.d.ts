@@ -13,6 +13,7 @@ export interface InputProps {
   iconSVG?: React.ReactNode;
   extraClass?: string;
   border?: boolean;
+  iconEnd?: boolean;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void; // Add this line
   togglePasswordVisibility?: () => void;
 }

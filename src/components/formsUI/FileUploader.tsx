@@ -93,7 +93,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     <div
       className={`relative ${
         small
-          ? "rounded-lg text-gray-300 border border-gray-200 px-3 py-2.5 mt-5"
+          ? "rounded-lg text-gray-300 border border-gray-200 px-3 py-auto mt-[26px] leading-[50px]"
           : "rounded-lg border border-dashed border-opacity-30 border-gray-300 p-4"
       } ${
         dragging

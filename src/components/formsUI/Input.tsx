@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { InputProps } from "@/types/input";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
@@ -14,7 +14,7 @@ type TimeRange = { from: Date | null; to: Date | null };
 type CustomInputProps = InputProps & { 
   range?: boolean; 
   timeRange?: boolean;
-  onChange?: (value: string | DateRange | TimeRange) => void 
+  onChange?: (value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange) => void;
 };
 
 const Input: React.FC<CustomInputProps> = ({

@@ -60,7 +60,13 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             type="text"
             placeholder={"name"}
             value={""}
-            onChange={(e) => handleChange("name", e.target.value)}
+            onChange={(e) => {
+              if (typeof e === "string") {
+                handleChange("name", e);
+              } else if ("target" in e) {
+                handleChange("name", e.target.value);
+              }
+            }}
             name={"name"}
             label={"name"}
             extraClass="w-full px-4 py-3 h-[48px]"
@@ -94,7 +100,9 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                   <label
                     key={permissionIndex}
                     htmlFor={`permission-${permissionIndex}-${sectionIndex}`}
-                    className={`flex items-center gap-2 cursor-pointer ${inView?"pointer-events-none":""}`}
+                    className={`flex items-center gap-2 cursor-pointer ${
+                      inView ? "pointer-events-none" : ""
+                    }`}
                   >
                     <input
                       type="checkbox"

@@ -37,10 +37,19 @@ const SearchForm = ({ onSearch }: SearchFormProps) => {
             placeholder="Search..."
             value={values.search}
             iconSVG={<SearchNormal />}
+            // onChange={(e) => {
+            //   setFieldValue("search", e.target.value);
+            //   submitForm();
+            // }}
             onChange={(e) => {
-              setFieldValue("search", e.target.value);
+              if (typeof e === "string") {
+                setFieldValue("search", e);
+              } else if (e && "target" in e) {
+                setFieldValue("search", e.target.value);
+              }
               submitForm();
             }}
+            
             name="search"
             onKeyDown={(e) => handleKeyPress(e, submitForm)}
           />

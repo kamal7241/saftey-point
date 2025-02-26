@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import Input from "../formsUI/Input";
 import Button from "./Button";
 import { useTranslations } from "next-intl";
@@ -27,8 +27,37 @@ const FilterForm: React.FC<FilterFormProps> = ({
   const t = useTranslations("common");
   const [formState, setFormState] = useState<{ [key: string]: string }>({});
 
-  const handleChange = (name: string, value: string) => {
-    setFormState((prev) => ({ ...prev, [name]: value }));
+  // const handleChange = (name: string, value: string | ChangeEvent<HTMLInputElement>) => {
+  //   const newValue = typeof value === "string" ? value : value.target.value;
+  //   setFormState((prev) => ({ ...prev, [name]: newValue }));
+  // };
+
+  type DateRange = [Date | null, Date | null];
+  type TimeRange = { from: Date | null; to: Date | null };
+
+  const handleChange = (
+    name: string,
+    value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange
+  ) => {
+    if (typeof value === "string") {
+      setFormState((prev) => ({ ...prev, [name]: value }));
+    } else if ("target" in value) {
+      setFormState((prev) => ({ ...prev, [name]: value.target.value }));
+    } else if (Array.isArray(value)) {
+      // Handle DateRange
+      setFormState((prev) => ({
+        ...prev,
+        [name]: value.map((date) => date?.toISOString() || "").join(" - "),
+      }));
+    } else {
+      // Handle TimeRange
+      setFormState((prev) => ({
+        ...prev,
+        [name]: `${value.from?.toISOString() || ""} - ${
+          value.to?.toISOString() || ""
+        }`,
+      }));
+    }
   };
 
   const handleApply = () => {
@@ -60,7 +89,7 @@ const FilterForm: React.FC<FilterFormProps> = ({
                 type="text"
                 placeholder={field.placeholder ?? ""}
                 value={formState[field.name] ?? ""}
-                onChange={(e) => handleChange(field.name, e.target.value)}
+                onChange={(e) => handleChange(field.name, e)}
                 name={field.name}
                 extraClass="w-full px-4 py-3 h-[48px]"
               />
@@ -70,7 +99,9 @@ const FilterForm: React.FC<FilterFormProps> = ({
                 name={field.name}
                 value={formState[field.name] ?? ""}
                 options={field.options ?? []}
-                onChange={handleChange}
+                onChange={(selectedValue) =>
+                  handleChange(field.name, selectedValue)
+                }
                 placeholder={field.placeholder ?? ""}
                 extraClass="w-full px-4 py-3 h-[48px]"
               />

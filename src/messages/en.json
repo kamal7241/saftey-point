@@ -15,6 +15,12 @@
     "users": "users",
     "certificates": "certificates",
     "exams": "exams",
+    "presets": "Presets",
+    "discounts": "Discounts",
+    "facility": "Facility",
+    "currencies": "Currencies",
+    "locations": "Locations",
+    "cancellations-refunds": "Cancellations and Refunds",
     "rewards": "rewards"
   },
   "tables": {

@@ -46,7 +46,7 @@ export default function LoginForm() {
               type="email"
               placeholder="Email"
               value={values.email}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
               name="email"
               error={errors.email}
             />
@@ -61,7 +61,7 @@ export default function LoginForm() {
               type="password"
               placeholder="Password"
               value={values.password}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
               name="password"
               error={errors.password}
               togglePasswordVisibility={() => {}}

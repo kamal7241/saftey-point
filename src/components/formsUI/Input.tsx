@@ -125,7 +125,7 @@ const Input: React.FC<CustomInputProps> = ({
             placeholder={placeholder}
             required={required}
             value={value}
-            onChange={(e) => onChange?.(e.target.value)}
+            onChange={(e) => onChange?.(e)}
             name={name}
             readOnly={readOnly}
             onKeyDown={onKeyDown}

@@ -106,10 +106,11 @@ export interface Country {
 }
 
 export interface SingleStaff {
-    id: number;
+    id?: number;
     status: string;
     userType: string;
     image?: string;
+    resume?: string;
     user: {
         id: number;
         firstName: string;
@@ -117,6 +118,7 @@ export interface SingleStaff {
         avatar: string;
         email: string;
         phone: string;
+        password?: string;
         isVerified: boolean;
     };
 }

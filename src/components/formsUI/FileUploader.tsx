@@ -109,51 +109,56 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     >
       {small ? (
         <div
-          className="flex h-full cursor-pointer items-center justify-between gap-2 overflow-hidden"
+          className="flex h-full cursor-pointer items-center justify-between gap-2 overflow-hidden min-h-[50px]"
           onClick={triggerFileInput}
         >
           <span className="inputLabel absolute bottom-full start-0">
             {label}
           </span>
           {fileUrl ? (
-            <div className="relative h-7 w-7 flex-none overflow-hidden">
-              <Image
-                src={`${fileUrl}`}
-                alt="Safety Image Uploaded file"
-                fill
-                className="h-full w-full cursor-pointer rounded-full object-cover"
-                onClick={triggerFileInput}
-              />
+            <div className="w-full flex items-center justify-center h-[50px]">
+              <div className="relative h-7 w-7 flex-none overflow-hidden">
+                <Image
+                  src={`${fileUrl}`}
+                  alt="Safety Image Uploaded file"
+                  fill
+                  className="h-full w-full cursor-pointer rounded-full object-cover"
+                  onClick={triggerFileInput}
+                />
+              </div>
+
+              <div className="ms-auto">
+                <Button
+                  onClick={handleDelete}
+                  type="button"
+                  icon={
+                    <span className="inline-block h-4 w-4">
+                      <Trash />
+                    </span>
+                  }
+                  variant="danger"
+                  padding="p-1"
+                  textSize="text-sm"
+                />
+              </div>
             </div>
           ) : (
             <>
               {!loading && (
-                <>
+                <div className="flex items-center justify-between gap-2 w-full">
                   {label}
-                  <span className="w-4">
+                  <span className="w-4 inline-block">
                     <AttachCircle />
                   </span>
-                </>
+                </div>
               )}
             </>
           )}
-          {loading ? <Spinner /> : ""}
-          {fileUrl && (
-            <div className="ms-auto">
-              <Button
-                onClick={handleDelete}
-                type="button"
-                icon={
-                  <span className="inline-block h-4 w-4">
-                    <Trash />
-                  </span>
-                }
-                variant="danger"
-                padding="p-1"
-                textSize="text-sm"
-              />
-            </div>
-          )}
+          {loading ? 
+          <div className="ms-auto">
+          <Spinner />
+          </div>
+           : ""}
         </div>
       ) : (
         <div className="flex items-center gap-3">

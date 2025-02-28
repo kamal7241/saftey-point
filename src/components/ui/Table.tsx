@@ -160,7 +160,7 @@ const Table = <T extends { image?: string }>({
                   {columns.map((column) => (
                     <td
                       key={column.header}
-                      className="px-4 py-2 text-start border-b border-light-100"
+                      className="px-4 py-2 text-start border-b border-light-100 capitalize"
                       data-column={column.accessor}
                     >
                       {column.accessor === "status" ? (

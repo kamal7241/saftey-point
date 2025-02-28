@@ -62,11 +62,6 @@ const StaffManagement = () => {
     { header: "status", accessor: "status" },
   ];
 
-  // const totalPages = Math.ceil(filteredStaffManagement.length / 10);
-
-  // const handlePageChange = (page: number) => {
-  //   setCurrentPage(page);
-  // };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -120,7 +115,7 @@ const StaffManagement = () => {
   );
 
   const handleView = (id: number) => {
-    router.push(`/dashboard/user-management/staffManagement/${id}`);
+    router.push(`/dashboard/staff-management/${id}`);
 
   };
   const breadcrumbItems = [

@@ -33,6 +33,25 @@ export const addUserValidationSchema = Yup.object({
   nationalIdBack: Yup.mixed().required("National ID Back is required"),
 });
 
+export const addStaffValidationSchema = Yup.object({
+  firstName: Yup.string().required("First Name is required"),
+  lastName: Yup.string().required("Last Name is required"),
+  status: Yup.string().required("Status is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  role: Yup.string().required("Role is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[a-zA-Z]/, "Password must contain at least one letter")
+    .matches(/[0-9]/, "Password must contain at least one number"),
+  resume: Yup.mixed().required("Resume is required"),
+  avatar: Yup.mixed().required("Avatar is required"),
+});
+
+
 export const editUserValidationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),

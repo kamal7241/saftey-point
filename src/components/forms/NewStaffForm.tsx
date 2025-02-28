@@ -1,6 +1,8 @@
 "use client";
+import { submitStaff, updateStaff } from "@/api/dashboardService";
 import Input from "@/components/formsUI/Input";
-import { addCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
+import { SingleStaff } from "@/types/ui.types";
+import { addStaffValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -14,23 +16,53 @@ interface NewStaffFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  userData?: SingleStaff | null;
 }
+
 interface FormValues {
-  userName: string;
+  firstName: string;
+  lastName: string;
   status: string;
   email: string;
+  role: string;
   phoneNumber: string;
   password: string;
-  file: File | null;
+  resume: string | null;
+  avatar: string;
 }
 
 export default function NewStaffForm({
   title,
   sub_title,
   onClose,
+  userData,
 }: NewStaffFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
+
+  const initialValues: FormValues = userData
+    ? {
+        firstName: userData.user.firstName,
+        lastName: userData.user.lastName || "",
+        status: userData.status || "pending",
+        email: userData.user.email,
+        phoneNumber: userData.user.phone || "",
+        password: "",
+        resume: null,
+        role: "",
+        avatar: userData.user.avatar,
+      }
+    : {
+        firstName: "",
+        lastName: "",
+        status: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
+        resume: null,
+        role: "",
+        avatar: null,
+      };
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
@@ -40,10 +72,43 @@ export default function NewStaffForm({
   };
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = (values: FormValues) => {
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
+  const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-    setIsSubmitted(true);
+  
+    const mappedValues: SingleStaff = {
+      resume: values.resume
+        ? `uploads/staff/${values.resume.name}`
+        : "avatar.png",
+      status: values.status || "pending",
+      userType: "ADMIN",
+      user: {
+        id: userData ? userData.user.id : 0,
+        firstName: values.firstName,
+        lastName: values.lastName || "",
+        avatar: values.avatar,
+        email: values.email,
+        phone: values.phoneNumber,
+        password: values.password,
+        isVerified: false,
+      },
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let result:any;
+    if (userData && userData.id) {
+      result = await updateStaff(userData.id, mappedValues, userData);
+    } else {
+      result = await submitStaff(mappedValues);
+    }
+  
+    console.log("result>>>", result);
+    if (result && result.success === true) {
+      setIsSubmitted(true);
+      setApiErrors(null);
+    } else {
+      setIsSubmitted(false);
+      setApiErrors(result?.message);
+    }
   };
 
   if (isSubmitted) {
@@ -57,6 +122,7 @@ export default function NewStaffForm({
       </div>
     );
   }
+
   return (
     <div>
       {title && <h3 className="heading3">{title}</h3>}
@@ -74,47 +140,67 @@ export default function NewStaffForm({
       )}
 
       <Formik
-        initialValues={{
-          userName: "",
-          jobTitle: "",
-          role: "",
-          status: "",
-          email: "",
-          phoneNumber: "",
-          password: "",
-          file: null,
-        }}
-        validationSchema={addCompanyValidationSchema}
+        initialValues={initialValues}
+        validationSchema={addStaffValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, setFieldValue, submitForm }) => (
+        {({ values, handleChange, setFieldValue }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+            {apiErrors && (
+              <div className="col-span-4">
+                <div className="text-red-500">{apiErrors}</div>
+              </div>
+            )}
             <div className="col-span-4">
               <FileUploader
-                onChange={(file) => setFieldValue("file", file)}
+                onChange={(file) => setFieldValue("avatar", file)}
                 label={t("logo_user")}
                 note={t("fileuploader_note")}
-              />
-            </div>
-
-
-            <div className="col-span-4">
-              <Input
-                label="Full Name"
-                type="text"
-                placeholder="Full Name"
-                value={values.userName}
-                onChange={handleChange}
-                name="userName"
+                subdirName="staff"
+                initialImageUrl={
+                  userData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`
+                    : null
+                }
               />
               <ErrorMessage
-                name="userName"
+                name="avatar"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
 
-            {/* role */}
+            <div className="col-span-2">
+              <Input
+                label="First Name"
+                type="text"
+                placeholder="First Name"
+                value={values.firstName}
+                onChange={handleChange}
+                name="firstName"
+              />
+              <ErrorMessage
+                name="firstName"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+            <div className="col-span-2">
+              <Input
+                label="Last Name"
+                type="text"
+                placeholder="Last Name"
+                value={values.lastName}
+                onChange={handleChange}
+                name="lastName"
+              />
+              <ErrorMessage
+                name="lastName"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
+
             <div className="col-span-2">
               <SelectField
                 label={tTable("role")}
@@ -135,7 +221,6 @@ export default function NewStaffForm({
                 className="text-xs text-red-500"
               />
             </div>
-
             {/* Status */}
             <div className="col-span-2">
               <SelectField
@@ -158,24 +243,25 @@ export default function NewStaffForm({
                 className="text-xs text-red-500"
               />
             </div>
-
-
-
             <div className="col-span-4">
-              <Input
-                label="Job Title"
-                type="text"
-                placeholder="Job Title"
-                value={values.userName}
-                onChange={handleChange}
-                name="jobTitle"
+              <FileUploader
+                onChange={(file) => setFieldValue("resume", file)}
+                label="Attach Resume"
+                subdirName="user"
+                small
+                initialImageUrl={
+                  userData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.resume}`
+                    : null
+                }
               />
               <ErrorMessage
-                name="jobTitle"
+                name="resume"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
+
             {/* Email */}
             <div className="col-span-2">
               <Input
@@ -218,7 +304,6 @@ export default function NewStaffForm({
                 value={values.password}
                 onChange={handleChange}
                 name="password"
-                extraClass="p-3"
               />
             </div>
             <div className="col-span-1 self-end">
@@ -245,11 +330,9 @@ export default function NewStaffForm({
               />
               <Button
                 label={t("buttons.submit")}
-                onClick={submitForm}
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"
-                // disabled={isSubmitting}
               />
             </div>
           </Form>

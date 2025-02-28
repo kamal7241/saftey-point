@@ -19,7 +19,7 @@ export const login = async (email: string, password: string) => {
         },
       }
     );
-    return response.data;  // Return the response data (user and tokens)
+    return response.data.innerData;  // Return the response data (user and tokens)
   } catch (error) {
     console.error('Login failed:', error);
     throw new Error('Login failed. Please check your credentials.');

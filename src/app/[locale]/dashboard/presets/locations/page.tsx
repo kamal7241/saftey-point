@@ -1,5 +1,7 @@
+import Countries from "@/components/pages/Countries";
+
 export const runtime = "edge";
 
 export default function Page() {
-  return <h1>locations</h1>;
+  return <Countries />;
 }

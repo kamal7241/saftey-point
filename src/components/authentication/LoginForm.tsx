@@ -15,13 +15,13 @@ export default function LoginForm() {
   const handleLogin = async (values: { email: string; password: string }) => {
     try {
       const response = await login(values.email, values.password);
-      // Extract user and tokens from response
-      const { user, tokens } = response;
-      Cookies.set("accessToken", tokens.access, {
+      console.log("response>>", response);
+      const { user, accessToken, refreshToken } = response;
+      Cookies.set("accessToken", accessToken, {
         secure: true,
         httpOnly: false,
       }); // Set secure to true in production
-      Cookies.set("refreshToken", tokens.refresh, {
+      Cookies.set("refreshToken", refreshToken, {
         secure: true,
         httpOnly: false,
       });
@@ -38,7 +38,7 @@ export default function LoginForm() {
       validationSchema={loginValidationSchema}
       onSubmit={handleLogin}
     >
-      {({ values, handleChange, isSubmitting,errors }) => (
+      {({ values, handleChange, isSubmitting, errors }) => (
         <Form className="flex w-full flex-col gap-4">
           <div>
             <Input
@@ -67,15 +67,11 @@ export default function LoginForm() {
               togglePasswordVisibility={() => {}}
             />
             <ErrorMessage name="password">
-              {(msg) => (
-                <ErrorMessageWrappers msg={msg} />
-              )}
+              {(msg) => <ErrorMessageWrappers msg={msg} />}
             </ErrorMessage>
           </div>
 
-          {loginError && (
-            <ErrorMessageWrappers msg={loginError} />
-          )}
+          {loginError && <ErrorMessageWrappers msg={loginError} />}
           <div className="flex justify-between">
             <label
               htmlFor="remember-me"

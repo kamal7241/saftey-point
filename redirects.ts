@@ -1,6 +1,11 @@
 export const redirects = async () => {
     return [
       {
+        source: '/dashboard',
+        destination: '/dashboard/company-management/companies',
+        permanent: true,
+      },
+      {
         source: '/dashboard/admin-management',
         destination: '/dashboard/admin-management/manage-admins',
         permanent: true,

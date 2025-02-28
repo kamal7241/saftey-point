@@ -97,6 +97,14 @@ export interface Individual {
     };
 }
 
+export interface Country {
+    code: string;
+    name: string;
+    phoneCode: string;
+    emoji: string;
+    image?: string; 
+}
+
 export interface SingleExam {
     id: number;
     name: string;

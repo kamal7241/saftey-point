@@ -15,5 +15,10 @@ export const redirects = async () => {
         destination: '/dashboard/courses-management/list',
         permanent: true,
       },
+      {
+        source: '/dashboard/presets',
+        destination: '/dashboard/presets/branches',
+        permanent: true,
+      },
     ];
   };

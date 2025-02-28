@@ -53,7 +53,7 @@ const StaffManagement = () => {
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof SingleStaffUI | ((staff: SingleStaffUI) => string) }[] = [
+  const columns: { header: string; accessor: keyof SingleStaffUI }[] = [
     { header: "users_id", accessor: "id" },
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },

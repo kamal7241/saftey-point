@@ -1,4 +1,4 @@
-import { Individual, SingleCourse } from "@/types/ui.types";
+import { Individual, SingleCourse, SingleStaff } from "@/types/ui.types";
 
 
 const generateRandomString = (length: number): string => {
@@ -294,18 +294,31 @@ export const fetchCourseById = async (courseID: number) => {
 };
 
 
-export const fetchStaffManagement = async () => {
-    const data = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `User ${generateRandomString(5)}`,
-        email: `email${generateRandomString(3)}`,
-        phone: (Math.floor(Math.random() * 500) + 50).toString(),
-        status: Math.random() > 0.5 ? "1" : "0",
-        role: ["Admin", "Company", "Staff", "User"][Math.floor(Math.random() * 4)],
-        image: `https://loremflickr.com/320/240/business?random`,
-    }));
+export const fetchStaffManagement = async (offset: number = 0, limit: number = 10) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/staff?offset=${offset}&limit=${limit}`);
+        const result = await response.json();
 
-    return data;
+        if (!result.success) {
+            throw new Error("Failed to fetch users");
+        }
+
+        return {
+            users: result.innerData.staff.map((staff: SingleStaff) => ({
+                id: staff.id,
+                name: `${staff.user.firstName} ${staff.user.lastName}`,
+                email: `${staff.user.email}`,
+                status: staff.status === "ACTIVE" ? "1" : "0",
+                type: staff.userType,
+                phone: staff.user.phone,
+                image: `${process.env.NEXT_PUBLIC_URL}/${staff.user.avatar}`,
+            })),
+            totalCount: result.innerData.count
+        };
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return { users: [], totalCount: 0 };
+    }
 };
 
 export const fetchCertificates = async () => {

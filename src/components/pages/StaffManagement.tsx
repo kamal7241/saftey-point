@@ -2,7 +2,7 @@
 import { fetchStaffManagement } from "@/api/dashboardService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
-import { SingleStaff } from "@/types/ui.types";
+import { SingleStaffUI } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
@@ -24,49 +24,50 @@ const StaffManagement = () => {
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const [staffManagement, setStaffManagement] = useState<SingleStaff[]>([]);
+  const [staffManagement, setStaffManagement] = useState<SingleStaffUI[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
-
+  const limit = 10;
   useEffect(() => {
     const getStaffManagement = async () => {
       const response = await fetchStaffManagement();
       const data = await response;
-      setStaffManagement(data);
+      setStaffManagement(data.users);
+      setTotalCount(response.totalCount);
     };
 
     getStaffManagement();
   }, []);
 
-  const filteredStaffManagement = staffManagement.filter((certificate) => {
-    const matchesSearch = certificate.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const filteredStaffManagement = staffManagement.filter((staff: SingleStaffUI) => {
+    const matchesSearch = staff.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return certificate[key as keyof SingleStaff]
+      return staff[key as keyof SingleStaffUI]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
     });
     return matchesSearch && matchesFilters;
   });
+  type ColumnAccessor = keyof SingleStaffUI | ((staff: SingleStaffUI) => string);
 
-  const columns: { header: string; accessor: keyof SingleStaff }[] = [
+  const columns: { header: string; accessor: ColumnAccessor }[] = [
     { header: "users_id", accessor: "id" },
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone", accessor: "phone" },
-    { header: "role", accessor: "role" },
+    { header: "role", accessor: "type" },
     { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredStaffManagement.length / 10);
+  // const totalPages = Math.ceil(filteredStaffManagement.length / 10);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page);
+  // };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -90,9 +91,9 @@ const StaffManagement = () => {
         ...filteredStaffManagement.map((c) => [
           c.id,
           c.name,
-          c.email,
-          c.phone,
-          c.role,
+          c.user.email,
+          c.user.phone,
+          c.userType,
           c.status,
         ]),
       ]
@@ -107,7 +108,7 @@ const StaffManagement = () => {
     document.body.removeChild(link);
   };
 
-  const renderRowActions = (row: SingleStaff) => (
+  const renderRowActions = (row: SingleStaffUI) => (
     <div className="flex gap-2">
       <Button
         icon={<Eye />}
@@ -218,8 +219,9 @@ const StaffManagement = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
-            onPageChange: handlePageChange,
+            totalPages: Math.ceil(totalCount / limit),
+            onPageChange: (page) => setCurrentPage(page),
+  
           }}
           sortable={true}
           rowsPerPage={10}

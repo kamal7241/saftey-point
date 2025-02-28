@@ -102,7 +102,34 @@ export interface Country {
     name: string;
     phoneCode: string;
     emoji: string;
-    image?: string; 
+    image?: string;
+}
+
+export interface SingleStaff {
+    id: number;
+    status: string;
+    userType: string;
+    image?: string;
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        isVerified: boolean;
+    };
+}
+export interface SingleStaffUI {
+    id: number;
+    status: string;
+    type: string;
+    image?: string;
+    name?:string;
+    email?:string;
+    phone?:string;
+    isVerified: boolean;
+    avatar: string;
 }
 
 export interface SingleExam {
@@ -111,16 +138,6 @@ export interface SingleExam {
     assigned_to: string;
     exam_date: string;
     score: string;
-    status: string;
-    image?: string;
-}
-
-export interface SingleStaff {
-    id: number;
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
     status: string;
     image?: string;
 }

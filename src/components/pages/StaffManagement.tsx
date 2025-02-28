@@ -52,9 +52,8 @@ const StaffManagement = () => {
     });
     return matchesSearch && matchesFilters;
   });
-  type ColumnAccessor = keyof SingleStaffUI | ((staff: SingleStaffUI) => string);
 
-  const columns: { header: string; accessor: ColumnAccessor }[] = [
+  const columns: { header: string; accessor: keyof SingleStaffUI | ((staff: SingleStaffUI) => string) }[] = [
     { header: "users_id", accessor: "id" },
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
@@ -91,9 +90,9 @@ const StaffManagement = () => {
         ...filteredStaffManagement.map((c) => [
           c.id,
           c.name,
-          c.user.email,
-          c.user.phone,
-          c.userType,
+          c.email,
+          c.phone,
+          c.type,
           c.status,
         ]),
       ]

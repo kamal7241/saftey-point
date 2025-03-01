@@ -1,15 +1,12 @@
 "use client";
-import { deleteStaff, fetchStaffById } from "@/api/dashboardService";
+import { deleteStaff } from "@/api/dashboardService";
 import { useRouter } from "@/i18n/routing";
-import { Individual } from "@/types/ui.types";
+import type { SingleStaff } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
-import NewUserForm from "../forms/NewUserForm";
+import { useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import AttachCircle from "../ui/icons/AttachCircle";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
@@ -17,49 +14,28 @@ import Lock from "../ui/icons/Lock";
 import PhoneIcon from "../ui/icons/PhoneIcon";
 import StatusCheck from "../ui/icons/StatusCheck";
 import Suspend from "../ui/icons/Suspend";
-import UserSquare from "../ui/icons/UserSquare";
-import ImagePopup from "../ui/ImagePopup";
+import MedalStar from "../ui/icons/MedalStar";
 import ImageWithFallback from "../ui/ImageWithFallback";
 import Popup from "../ui/Popup";
 import Status from "../ui/Status";
+import Note from "../ui/icons/Note";
+import Teacher from "../ui/icons/Teacher";
+import NewStaffForm from "../forms/NewStaffForm";
 
-interface SinglStaffProps {
-  staffID: string;
+interface SingleStaffProps {
+  staffData: SingleStaff;
 }
 
-export default function SinglStaff({ staffID }: SinglStaffProps) {
+export default function SingleStaff({ staffData }: SingleStaffProps) {
   const t = useTranslations("common");
-  const [userData, setUserData] = useState<Individual>();
-  const [loading, setLoading] = useState(true);
+  const [userData] = useState<SingleStaff>(staffData);
   const [error, setError] = useState<string | null>(null);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const router = useRouter();
 
-  const getUserData = useCallback(async () => {
-    setLoading(true);
-    const data = await fetchStaffById(Number(staffID));
-    if (data) {
-      setUserData(data);
-      setLoading(false);
-    } else {
-      setError("Failed to fetch staff data.");
-      setLoading(false);
-    }
-  }, [staffID]);
-
-  useEffect(() => {
-    getUserData();
-  }, [getUserData]);
-
-  useEffect(() => {
-    if (!addPopupOpen) {
-      getUserData();
-    }
-  }, [addPopupOpen, getUserData]);
-
   const handleDelete = async () => {
-    const result = await deleteStaff(Number(staffID));
+    const result = await deleteStaff(Number(userData?.id));
     if (result.success) {
       router.push("/dashboard/staff-management/users");
     } else {
@@ -71,7 +47,6 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
   };
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   const breadcrumbItems = [
@@ -82,15 +57,18 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
       href: "/dashboard/staff-management/users",
     },
   ];
+
+  if (!userData) return <div>{t("error_loading_data")}</div>;
   return (
     <div className="h-full">
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-        <NewUserForm
-          title={t("edit_user")}
+        <NewStaffForm
+          title={t("edit_staff")}
           sub_title={t("form_subtitle")}
           onClose={() => setAddPopupOpen(false)}
           userData={userData}
         />
+        Staff FORM EDIT
       </Popup>
       {showDeleteConfirm && (
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
@@ -111,7 +89,7 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
       )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("user_details")}
+        title={t("staff_details")}
         actions={
           <>
             <Button
@@ -158,7 +136,7 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
         }
       />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
-        <h1 className="heading3">{t("user_details")}</h1>
+        <h1 className="heading3">{t("staff_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
           <ImageWithFallback
             src={`${process.env.NEXT_PUBLIC_URL}/${userData?.user.avatar}`}
@@ -174,6 +152,11 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
         <div className="flex flex-col gap-10">
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
+              label={t("role")}
+              content={t(`user_role.${userData?.userType.toLowerCase()}`)}
+              icon={<MedalStar />}
+            />
+            <GroupInfo
               label={t("phone_number")}
               content={userData?.user.phone}
               copyIt
@@ -188,29 +171,10 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
           </div>
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("userType")}
-              content={userData?.userType}
-              icon={<UserSquare />}
+              label={t("resume")}
+              content={"missing from API"}
+              icon={<Note />}
             />
-            {userData?.userType !== "INDIVIDUAL" && (
-              <GroupInfo
-                label={t("company_name")}
-                content={
-                  <span>
-                    <Image
-                      src="/images/company-profile.png"
-                      alt="staff-profile"
-                      width={24}
-                      height={24}
-                      className="me-2 inline-block rounded-full align-middle"
-                    />
-                    {userData?.userType}
-                  </span>
-                }
-                copyIt
-                icon={<Buildings2 />}
-              />
-            )}
             <GroupInfo
               label={t("status")}
               content={
@@ -222,44 +186,10 @@ export default function SinglStaff({ staffID }: SinglStaffProps) {
               }
               icon={<StatusCheck />}
             />
-          </div>
-
-          <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("userBOD")}
-              content={userData?.birthday}
-              icon={<UserSquare />}
-            />
-            <GroupInfo
-              label={t("user_nationality")}
-              content={userData?.nationality}
-              icon={<UserSquare />}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-6">
-            <GroupInfo
-              label={t("front_id")}
-              content={<ImagePopup imagePath={userData?.nationalIdFront} />}
-              icon={<AttachCircle />}
-            />
-            <GroupInfo
-              label={t("back_id")}
-              content={<ImagePopup imagePath={userData?.nationalIdBack} />}
-              icon={<AttachCircle />}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-6">
-            <GroupInfo
-              label={t("nationalId")}
-              content={userData?.nationalId}
-              copyIt
-              icon={<AttachCircle />}
-            />
-            <GroupInfo
-              label={t("id_expiry")}
-              content={userData?.nationalIdExpiry}
-              copyIt
-              icon={<AttachCircle />}
+              label={t("certificates")}
+              content={"missing from API"}
+              icon={<Teacher />}
             />
           </div>
         </div>

@@ -28,7 +28,7 @@ interface FormValues {
   phoneNumber: string;
   password: string;
   resume: string | null;
-  avatar: string;
+  avatar: string | null;
 }
 
 export default function NewStaffForm({
@@ -75,18 +75,16 @@ export default function NewStaffForm({
   const [apiErrors, setApiErrors] = useState<string | null>(null);
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-  
+
     const mappedValues: SingleStaff = {
-      resume: values.resume
-        ? `uploads/staff/${values.resume.name}`
-        : "avatar.png",
+      resume: values.resume ? `uploads/staff/${values.resume}` : "",
       status: values.status || "pending",
       userType: "ADMIN",
       user: {
         id: userData ? userData.user.id : 0,
         firstName: values.firstName,
         lastName: values.lastName || "",
-        avatar: values.avatar,
+        avatar: values.avatar || "",
         email: values.email,
         phone: values.phoneNumber,
         password: values.password,
@@ -94,13 +92,13 @@ export default function NewStaffForm({
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let result:any;
+    let result: any;
     if (userData && userData.id) {
       result = await updateStaff(userData.id, mappedValues, userData);
     } else {
       result = await submitStaff(mappedValues);
     }
-  
+
     console.log("result>>>", result);
     if (result && result.success === true) {
       setIsSubmitted(true);

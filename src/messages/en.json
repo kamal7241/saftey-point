@@ -154,6 +154,8 @@
     "trainer": "Trainer",
     "assistant": "Assistant",
     "assessor": "Assessor",
+    "staff_details": "Staff Details",
+    "resume": "Resume",
     "session_time": "Time (From & To)",
     "prerequisites": {
       "name": "Prerequisites",

@@ -1,11 +1,14 @@
 export const runtime = "edge";
-import SingleUser from "@/components/pages/SingleUser";
+import SingleStaff from "@/components/pages/SingleStaff";
+import { fetchStaffById } from "@/api/dashboardService";
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ userID: string }>;
+  params: { staffID: string };
 }) {
-  const userID = (await params).userID;
-  return <SingleUser userID={userID} />;
+  const { staffID } = await params;
+  const staffData = await fetchStaffById(Number(staffID));
+
+  return <SingleStaff staffData={staffData} />;
 }

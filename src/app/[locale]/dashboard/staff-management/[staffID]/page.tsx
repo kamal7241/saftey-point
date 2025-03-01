@@ -9,7 +9,7 @@ interface PageProps {
 }
 
 export default async function Page({ params }: PageProps) {
-  const { staffID } = params;
+  const { staffID } = params as { staffID: string };
   const staffData = await fetchStaffById(Number(staffID));
 
   return <SingleStaff staffData={staffData} />;

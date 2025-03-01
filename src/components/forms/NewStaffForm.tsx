@@ -77,7 +77,7 @@ export default function NewStaffForm({
     console.log("Form Submitted:", values);
 
     const mappedValues: SingleStaff = {
-      resume: values.resume ? `uploads/staff/${values.resume}` : "",
+      resume: values.resume ?? "",
       status: values.status || "pending",
       userType: "ADMIN",
       user: {
@@ -143,7 +143,7 @@ export default function NewStaffForm({
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue }) => (
-          <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+          <Form className="mt-4 grid w-full grid-cols-4 gap-4">
             {apiErrors && (
               <div className="col-span-4">
                 <div className="text-red-500">{apiErrors}</div>
@@ -319,7 +319,7 @@ export default function NewStaffForm({
                 {(msg) => <ErrorMessageWrappers msg={msg} />}
               </ErrorMessage>
             </div>
-            <div className="flex justify-end gap-4 col-span-4">
+            <div className="col-span-4 flex justify-end gap-4">
               <Button
                 label={t("buttons.close")}
                 onClick={onClose}

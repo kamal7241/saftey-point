@@ -109,14 +109,14 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     >
       {small ? (
         <div
-          className="flex h-full cursor-pointer items-center justify-between gap-2 overflow-hidden min-h-[50px]"
+          className="flex h-full min-h-[50px] cursor-pointer items-center justify-between gap-2 overflow-hidden"
           onClick={triggerFileInput}
         >
           <span className="inputLabel absolute bottom-full start-0">
             {label}
           </span>
           {fileUrl ? (
-            <div className="w-full flex items-center justify-center h-[50px]">
+            <div className="flex h-[50px] w-full items-center justify-center">
               <div className="relative h-7 w-7 flex-none overflow-hidden">
                 <Image
                   src={`${fileUrl}`}
@@ -145,20 +145,22 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           ) : (
             <>
               {!loading && (
-                <div className="flex items-center justify-between gap-2 w-full">
+                <div className="flex w-full items-center justify-between gap-2">
                   {label}
-                  <span className="w-4 inline-block">
+                  <span className="inline-block w-4">
                     <AttachCircle />
                   </span>
                 </div>
               )}
             </>
           )}
-          {loading ? 
-          <div className="ms-auto">
-          <Spinner />
-          </div>
-           : ""}
+          {loading ? (
+            <div className="ms-auto">
+              <Spinner />
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       ) : (
         <div className="flex items-center gap-3">
@@ -209,12 +211,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           )}
         </div>
       )}
-
       <input
         type="file"
         ref={inputRef}
         className="hidden"
-        accept="image/jpeg, image/png"
+        accept="image/*,application/pdf"
         onChange={handleFileChange}
       />
     </div>

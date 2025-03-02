@@ -1,10 +1,11 @@
 "use client";
+import type { SingleCompany } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
+import ImageWithFallback from "../ui/ImageWithFallback";
 import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
@@ -12,22 +13,41 @@ import Edit2 from "../ui/icons/Edit2";
 import Lock from "../ui/icons/Lock";
 import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
-// import { Edit2 } from "../ui/icons/Edit2";
+import StatusCheck from "../ui/icons/StatusCheck";
+import { useRouter } from "@/i18n/routing";
+import { deleteCompany } from "@/api/companiesService";
+import Popup from "../ui/Popup";
 
 interface SingleCompanyProps {
-  companyID: string; // Define the type for companyID
+  companyData: SingleCompany;
 }
 
-export default function SingleCompany({ companyID }: SingleCompanyProps) {
+export default function SingleCompany({ companyData }: SingleCompanyProps) {
   const t = useTranslations("common");
-//   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [userData] = useState<SingleCompany>(companyData);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-
-  console.log("companyID", companyID);
+  const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const router = useRouter();
+  console.log("companyData", companyData);
   console.log("addPopupOpen", addPopupOpen);
-//   const handleExport = () => {
-//     console.log("Exporting data...");
-//   };
+
+  const handleDelete = async () => {
+    const result = await deleteCompany(Number(userData?.id));
+    if (result.success) {
+      router.push("/dashboard/company-management/companies");
+    } else {
+      setError(result.error || "Failed to delete staff.");
+    }
+    setShowDeleteConfirm(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+  };
+  //   const handleExport = () => {
+  //     console.log("Exporting data...");
+  //   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -37,8 +57,28 @@ export default function SingleCompany({ companyID }: SingleCompanyProps) {
       href: "/dashboard/company-management/manage-companies",
     },
   ];
+
+  if (!userData) return <div>{t("error_loading_data")}</div>;
+  if (error) return <div>{error}</div>;
   return (
     <div className="h-full">
+    {showDeleteConfirm && (
+      <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+        <div>
+          <p className="p-5 text-center text-2xl">
+            {t("are_you_sure_delete")}
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Button onClick={handleDelete} label={t("buttons.confirm")} />
+            <Button
+              onClick={handleDeleteCancel}
+              label={t("buttons.cancel")}
+              variant="dark"
+            />
+          </div>
+        </div>
+      </Popup>
+    )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("company_details")}
@@ -76,7 +116,7 @@ export default function SingleCompany({ companyID }: SingleCompanyProps) {
             />
             <Button
               label={t("buttons.delete")}
-              onClick={() => setAddPopupOpen(true)}
+              onClick={() => setShowDeleteConfirm(true)}
               icon={
                 <span className="inline-block w-6">
                   <Delete />
@@ -90,29 +130,41 @@ export default function SingleCompany({ companyID }: SingleCompanyProps) {
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
         <h1 className="heading3">{t("company_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
-          <Image
-            src="/images/company-profile.png"
-            alt="company-profile"
+          <ImageWithFallback
+            src={`${process.env.NEXT_PUBLIC_URL}/${userData?.user.avatar}`}
+            alt="staff-profile"
             width={80}
             height={80}
-            className="rounded-full"
+            className="rounded-full object-cover w-20 h-20"
           />
-          <h2 className="heading2">Abernathy - Stoltenberg</h2>
+          <h2 className="heading2">
+            {userData?.user.firstName} {userData?.user.lastName}
+          </h2>
         </div>
         <div className="flex items-center justify-between">
           <GroupInfo
             label={t("phone_number")}
-            content={"0122939383383"}
+            content={userData?.user.phone}
             copyIt
             icon={<PhoneIcon />}
           />
           <GroupInfo
             label={t("company_email")}
-            content={"bill.sanders@example.com"}
+            content={userData?.user.email}
             copyIt
             icon={<Buildings2 />}
           />
-          <GroupInfo label={t("status")} content={<Status status={"1"} />} />
+          <GroupInfo
+            label={t("status")}
+            content={
+              userData?.status === "ACTIVE" ? (
+                <Status status={"1"} />
+              ) : (
+                <Status status={"0"} />
+              )
+            }
+            icon={<StatusCheck />}
+          />
         </div>
       </div>
     </div>

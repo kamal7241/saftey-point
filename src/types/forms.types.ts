@@ -5,3 +5,20 @@ export interface CourseFormValues {
     price: string;
     certificate: string;
 }
+
+
+export interface CompanyData {
+    id?: string;
+    name: string;
+    status: string;
+    userType: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        avatar: string | null;
+        email: string;
+        phone: string;
+        password: string;
+        isVerified: boolean;
+    };
+}

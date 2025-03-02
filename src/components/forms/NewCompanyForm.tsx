@@ -9,19 +9,21 @@ import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
+import { submitCompany } from "@/api/companiesService";
 
 interface NewCompanyFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
 }
+
 interface FormValues {
   companyName: string;
   status: string;
   email: string;
   phoneNumber: string;
   password: string;
-  file: File | null;
+  file: string | null;
 }
 
 export default function NewCompanyForm({
@@ -40,10 +42,35 @@ export default function NewCompanyForm({
   };
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
 
-  const handleSubmit = (values: FormValues) => {
-    console.log("Form Submitted:", values);
-    setIsSubmitted(true);
+  const handleSubmit = async (values: FormValues) => {
+    const apiData = {
+      name: values.companyName,
+      status: values.status.toUpperCase(),
+      userType: "COMPANY",
+      user: {
+        firstName: values.companyName,
+        lastName: "COMPANY",
+        avatar: values.file ?? "avatar.png",
+        email: values.email,
+        phone: values.phoneNumber,
+        password: values.password,
+        isVerified: true,
+      },
+    };
+
+    try {
+      const result = await submitCompany(apiData);
+      if (result.success) {
+        setIsSubmitted(true);
+        setApiErrors(null);
+      } else {
+        setApiErrors(result.error || "An error occurred");
+      }
+    } catch {
+      setApiErrors("An unexpected error occurred");
+    }
   };
 
   if (isSubmitted) {
@@ -51,12 +78,13 @@ export default function NewCompanyForm({
       <div className="py-10">
         <SuccessMessage
           title={"Successfully Added"}
-          msg={"Thank you for filling out your information! ."}
+          msg={"Thank you for filling out your information!"}
           bigger
         />
       </div>
     );
   }
+
   return (
     <div>
       {title && <h3 className="heading3">{title}</h3>}
@@ -85,8 +113,13 @@ export default function NewCompanyForm({
         validationSchema={addCompanyValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, setFieldValue, submitForm }) => (
+        {({ values, handleChange, setFieldValue }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+            {apiErrors && (
+              <div className="col-span-4">
+                <div className="text-red-500">{apiErrors}</div>
+              </div>
+            )}
             <div className="col-span-4">
               <FileUploader
                 onChange={(file) => setFieldValue("file", file)}
@@ -177,7 +210,6 @@ export default function NewCompanyForm({
                 value={values.password}
                 onChange={handleChange}
                 name="password"
-                extraClass="p-3"
               />
             </div>
             <div className="col-span-1 self-end">
@@ -204,11 +236,9 @@ export default function NewCompanyForm({
               />
               <Button
                 label={t("buttons.submit")}
-                onClick={submitForm}
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"
-                // disabled={isSubmitting}
               />
             </div>
           </Form>

@@ -11,20 +11,20 @@ const generateRandomString = (length: number): string => {
 };
 
 
-export const fetchCompanies = async () => {
-    const data = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `Company ${generateRandomString(5)}`,
-        location: `Location ${generateRandomString(3)}`,
-        status: Math.random() > 0.5 ? "1" : "0",
-        branches: Math.floor(Math.random() * 10) + 1,
-        employees: Math.floor(Math.random() * 500) + 50,
-        created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-        image: `https://loremflickr.com/320/240/business?random`,
-    }));
+// export const fetchCompanies = async () => {
+//     const data = Array.from({ length: 50 }, (_, index) => ({
+//         id: index + 1,
+//         name: `Company ${generateRandomString(5)}`,
+//         location: `Location ${generateRandomString(3)}`,
+//         status: Math.random() > 0.5 ? "1" : "0",
+//         branches: Math.floor(Math.random() * 10) + 1,
+//         employees: Math.floor(Math.random() * 500) + 50,
+//         created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
+//         image: `https://loremflickr.com/320/240/business?random`,
+//     }));
 
-    return data;
-};
+//     return data;
+// };
 
 export const submitIndividual = async (values: Individual) => {
     const apiData = {

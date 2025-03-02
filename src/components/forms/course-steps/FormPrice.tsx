@@ -177,7 +177,7 @@ export default function FormPrice({
                 value={values.password}
                 onChange={handleChange}
                 name="password"
-                extraClass="p-3"
+                // extraClass="p-3"
               />
             </div>
             <div className="col-span-1 self-end">

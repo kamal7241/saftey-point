@@ -33,7 +33,7 @@ export interface Company {
     status: string;
     branches: number;
     employees: number;
-    created: string;
+    created?: string;
     image?: string;
 }
 export interface SingleUser {
@@ -154,4 +154,24 @@ export interface SingleCourse {
     level: number;
     status: string;
     image?: string;
+}
+
+
+
+export interface SingleCompany {
+    id?: number;
+    status: string;
+    userType: string;
+    image?: string;
+    resume?: string;
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        password?: string;
+        isVerified: boolean;
+    };
 }

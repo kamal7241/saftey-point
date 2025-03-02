@@ -1,0 +1,102 @@
+import { CompanyData } from "@/types/forms.types";
+
+export const submitCompany = async (values: CompanyData) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to submit company");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error submitting company:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const fetchCompanies = async (offset: number = 0, limit: number = 10) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company?offset=${offset}&limit=${limit}`);
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch users");
+        }
+
+        return {
+            companies: result.innerData.companies.map((company: CompanyData) => ({
+                id: company.id,
+                name: `${company.user.firstName} ${company.user.lastName}`,
+                email: company.user.email,
+                status: company.status === "ACTIVE" ? "1" : "0",
+                type: company.userType,
+                phone: company.user.phone,
+                image: `${process.env.NEXT_PUBLIC_URL}/${company.user.avatar}`,
+            })),
+            totalCount: result.innerData.count
+        };
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return { users: [], totalCount: 0 };
+    }
+};
+
+
+
+export const fetchComapnyById = async (comapnyID: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company/${comapnyID}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to fetch company details");
+        }
+
+        const company = result.innerData.company;
+        return company;
+    } catch (error) {
+        console.error("Error fetching company by ID:", error);
+        return null;
+    }
+};
+
+export const deleteCompany = async (id: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to delete company");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error deleting company:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};

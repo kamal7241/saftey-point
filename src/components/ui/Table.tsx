@@ -167,7 +167,11 @@ const Table = <T extends { image?: string }>({
                         <Status status={String(row[column.accessor])} />
                       ) : column.accessor === "created" ? (
                         <span className="whitespace-nowrap">
-                          {formatDate(String(row[column.accessor]))}
+                          {isNaN(
+                            new Date(String(row[column.accessor])).getTime()
+                          )
+                            ? "Invalid Date"
+                            : formatDate(String(row[column.accessor]))}
                         </span>
                       ) : column.accessor === "name" ? (
                         <div className="flex items-center gap-2 min-w-[200px]">

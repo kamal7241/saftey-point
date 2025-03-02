@@ -10,14 +10,14 @@ import Eye from "../ui/icons/Eye";
 import { Edit } from "../ui/icons/Edit";
 import { Delete } from "../ui/icons/Delete";
 import SearchForm from "../formsUI/SearchForm";
-import { fetchCompanies } from "@/api/dashboardService";
 import Switcher from "../ui/SmallSwitcher";
 import FilterForm from "../ui/FilterForm";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import NewCompanyForm from "../forms/NewCompanyForm";
 import PageHeader from "../global/PageHeader";
 import { useRouter } from "@/i18n/routing";
 import { Company } from "@/types/ui.types";
+import { fetchCompanies } from "@/api/companiesService";
 
 
 const Companies = () => {
@@ -26,37 +26,53 @@ const Companies = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
-  const [createdOptions, setCreatedOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  // const [createdOptions, setCreatedOptions] = useState<
+  //   { value: string; label: string }[]
+  // >([]);
 
+  // useEffect(() => {
+  //   const getCompanies = async () => {
+  //     const response = await fetchCompanies();
+  //     const data = await response;
+  //     setCompanies(data);
+  //     // Extract unique created dates
+
+  //     // Extract unique dates and format them
+  //     const uniqueDates = Array.from(
+  //       new Set(data.map((company) => company.created))
+  //     );
+
+  //     const formattedDates = uniqueDates.map((date) => {
+  //       const formattedDate = format(new Date(date), "yyyy / MM / dd");
+  //       return { value: date, label: formattedDate };
+  //     });
+
+  //     setCreatedOptions(formattedDates);
+  //   };
+
+  //   getCompanies();
+  // }, []);
+
+  const limit = 10;
   useEffect(() => {
-    const getCompanies = async () => {
-      const response = await fetchCompanies();
-      const data = await response;
-      setCompanies(data);
-      // Extract unique created dates
-
-      // Extract unique dates and format them
-      const uniqueDates = Array.from(
-        new Set(data.map((company) => company.created))
-      );
-
-      const formattedDates = uniqueDates.map((date) => {
-        const formattedDate = format(new Date(date), "yyyy / MM / dd");
-        return { value: date, label: formattedDate };
-      });
-
-      setCreatedOptions(formattedDates);
+    const getUsers = async () => {
+      setLoading(true);
+      const offset = (currentPage - 1) * limit;
+      const response = await fetchCompanies(offset, limit);
+      setCompanies(response.companies);
+      setTotalCount(response.totalCount);
+      setLoading(false);
     };
 
-    getCompanies();
-  }, []);
+    getUsers();
+  }, [currentPage]);
 
   const filteredCompanies = companies.filter((company) => {
     const matchesSearch = company.name
@@ -81,11 +97,6 @@ const Companies = () => {
     { header: "created", accessor: "created" },
   ];
 
-  const totalPages = Math.ceil(filteredCompanies.length / 10);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -247,13 +258,13 @@ const Companies = () => {
                   { value: "0", label: "Inactive" },
                 ],
               },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: createdOptions,
-              },
+              // {
+              //   type: "select",
+              //   label: "Created",
+              //   placeholder: "Created",
+              //   name: "created",
+              //   options: createdOptions,
+              // },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
@@ -264,12 +275,14 @@ const Companies = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
-            onPageChange: handlePageChange,
+            totalPages: Math.ceil(totalCount / limit),
+            onPageChange: (page) => setCurrentPage(page),
+  
           }}
           sortable={true}
-          rowsPerPage={10}
+          rowsPerPage={limit}
           renderRowActions={renderRowActions}
+          isLoading={loading}
         />
       </div>
 

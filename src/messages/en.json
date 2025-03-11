@@ -146,6 +146,8 @@
     "validate_date_interval": "Validate Date Interval (from - to)",
     "displayScore": "Display Score",
     "watermark": "Watermark",
+    "examType": "Exam Type",
+    "examDuration": "Exam Duration",
     "examName": "Exam Name",
     "passMarks": "Pass Marks",
     "totalMarks": "Total Marks",
@@ -158,11 +160,11 @@
     "resume": "Resume",
     "edit_company": "Edit Company",
     "session_time": "Time (From & To)",
-    "new_password":"New Password",
-    "enter_new_password":"Enter New Password",
-    "confirm_password":"Confirm Password",
-    "password_reset_success":"Password reset successfully!",
-    "confirm_new_password":"Confirm New Password",
+    "new_password": "New Password",
+    "enter_new_password": "Enter New Password",
+    "confirm_password": "Confirm Password",
+    "password_reset_success": "Password reset successfully!",
+    "confirm_new_password": "Confirm New Password",
     "prerequisites": {
       "name": "Prerequisites",
       "none": "None",
@@ -194,12 +196,21 @@
       "inactive": "Inactive",
       "pending": "Pending",
       "suspended": "Suspended",
-      "expired": "Expired"
+      "expired": "Expired",
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived",
+      "in_review": "In Review"
     },
     "user_type": {
       "individuals": "Individuals",
       "individual": "Individual",
       "company": "Company"
+    },
+    "exam_type": {
+      "written": "Written",
+      "practical": "Practical", 
+      "online": "Online"
     },
     "user_role": {
       "admin": "Admin",
@@ -239,6 +250,22 @@
     }
   },
   "validation": {
+    "discount": {
+      "min": "Discount cannot be less than 0",
+      "max": "Discount cannot exceed 100"
+    },
+    "country": {
+      "required": "Country is required"
+    },
+    "theoreticalOnly": {
+      "required": "Please select whether theoretical only option is allowed"
+    },
+    "priceType": {
+      "required": "Price type is required"
+    },
+    "companyPremises": {
+      "required": "Please select whether training on company premises is allowed"
+    },
     "required": "This field is required.",
     "password_min_length": "Password must be at least 8 characters long.",
     "passwords_must_match": "Passwords must match.",
@@ -256,7 +283,22 @@
       "positive": "Price must be a positive number"
     },
     "certificate": {
-      "required": "Please select an option"
+      "required": "Please select an option",
+      "name": {
+        "required": "Certificate name is required"
+      },
+      "date_interval": {
+        "required": "Date interval is required"
+      },
+      "issue_date": {
+        "required": "Issue date is required"
+      },
+      "display_score": {
+        "required": "Display score option is required"
+      },
+      "watermark": {
+        "required": "Watermark is required"
+      }
     },
     "courseTitle": {
       "required": "Course Title is required"
@@ -285,5 +327,8 @@
     "medicalTest": {
       "required": "Medical test option is required"
     }
+  },
+  "messages": {
+    "error_creating_course": "error_creating_course"
   }
 }

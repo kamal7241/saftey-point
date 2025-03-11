@@ -124,7 +124,7 @@ const Input: React.FC<CustomInputProps> = ({
             type={isPasswordVisible && type === "password" ? "text" : type}
             placeholder={placeholder}
             required={required}
-            value={value}
+            value={value ?? ""}
             onChange={(e) => onChange?.(e)}
             name={name}
             readOnly={readOnly}

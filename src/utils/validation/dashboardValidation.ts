@@ -102,3 +102,58 @@ export const getCourseInfoValidationSchema = (t: (key: string) => string) => {
     description: Yup.string().required(t("validation.description.required")),
   });
 };
+
+export const getPricingValidationSchema = (t: (key: string) => string) => {
+  return Yup.object().shape({
+    // Validate first pricing set (required)
+    country_0: Yup.string()
+      .required(t("validation.country.required")),
+    price_0: Yup.number()
+      .required(t("validation.price.required"))
+      .positive(t("validation.price.positive")),
+    discount_0: Yup.number()
+      .nullable()
+      .transform((value) => (isNaN(value) ? null : value))
+      .min(0, t("validation.discount.min"))
+      .max(100, t("validation.discount.max")),
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...Array(10).reduce((acc: Record<string, Yup.ObjectSchema<any>>, _, index) => {
+      if (index === 0) return acc;
+      return {
+        ...acc,
+        [`country_${index}`]: Yup.string()
+          .when(`price_${index}`, {
+            is: (val: string | number | undefined) => val !== undefined && val !== '',
+            then: (schema) => schema.required(t("validation.country.required")),
+          }),
+        [`price_${index}`]: Yup.number()
+          .transform((value) => (isNaN(value) ? undefined : value))
+          .when(`country_${index}`, {
+            is: (val: string | undefined) => val !== undefined && val !== '',
+            then: (schema) => schema
+              .required(t("validation.price.required"))
+              .positive(t("validation.price.positive")),
+          }),
+        [`discount_${index}`]: Yup.number()
+          .nullable()
+          .transform((value) => (isNaN(value) ? null : value))
+          .min(0, t("validation.discount.min"))
+          .max(100, t("validation.discount.max")),
+      };
+    }, {}),
+
+    // Radio button selections
+    theoreticalOnly: Yup.string()
+      .required(t("validation.theoreticalOnly.required"))
+      .oneOf(["yes", "no"]),
+    
+    priceType: Yup.string()
+      .required(t("validation.priceType.required"))
+      .oneOf(["theoretical", "practical"]),
+    
+    companyPremises: Yup.string()
+      .required(t("validation.companyPremises.required"))
+      .oneOf(["yes", "no"]),
+  });
+};

@@ -14,35 +14,55 @@ import Moneys from "../ui/icons/Moneys";
 import Award from "../ui/icons/Award";
 import TaskSquare from "../ui/icons/TaskSquare";
 import Session from "../ui/icons/Session";
-import { getCourseInfoValidationSchema } from "@/utils/validation/dashboardValidation";
+import { getCourseInfoValidationSchema, getPricingValidationSchema } from "@/utils/validation/dashboardValidation";
 import Exam from "../forms/course-steps/Exam";
 import SessionStep from "../forms/course-steps/SessionStep";
+import { submitCertificate, submitCourse, submitExam } from "@/api/courseService";
+import { toast } from "react-hot-toast";
 
 export default function CreateCourse() {
   const t = useTranslations();
   const [currentStep, setCurrentStep] = useState(0);
+  const [courseId, setCourseId] = useState<string | null>(null);
+  const [certificateId, setCertificateId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     courseTitle: "",
     description: "",
-    status: "",
+    status: "DRAFT",
+    prerequisites: "NONE",
+    validity: "",
+    courseCover: "",
+    level: "BASIC",
+    language: "en",
+    maxAttendees: "",
+    medicalTest: "no",
     price: "",
     certificate: "",
+    certificateName: "",
+    validate_date_interval: ["", ""],
+    issue_date: "",
+    displayScore: "no",
+    watermark: "no",
   });
-
+console.log('courseId>>',courseId)
+console.log('certificateId>>',certificateId)
   const StepComponents = [CourseInfo, Pricing, Certificate, Exam, SessionStep];
 
   const validationSchemas = [
     getCourseInfoValidationSchema(t),
+    getPricingValidationSchema(t),
     Yup.object({
-      price: Yup.number()
-        .positive(t("validation.price.positive"))
-        .required(t("validation.price.required")),
-    }),
-    Yup.object({
-      certificate: Yup.string().required(t("validation.certificate.required")),
+      certificateName: Yup.string().required(t("validation.certificate.name.required")),
+      validate_date_interval: Yup.array()
+        .of(Yup.string().required())
+        .min(2)
+        .required(t("validation.certificate.date_interval.required")),
+      issue_date: Yup.string().required(t("validation.certificate.issue_date.required")),
+      displayScore: Yup.string().required(t("validation.certificate.display_score.required")),
+      watermark: Yup.string().required(t("validation.certificate.watermark.required")),
     }),
   ];
-
+  
   const steps = [
     { label: "Course Info", icon: <InfoCircle /> },
     { label: "Pricing", icon: <Moneys /> },
@@ -50,23 +70,63 @@ export default function CreateCourse() {
     { label: "Exam", icon: <TaskSquare /> },
     { label: "Session", icon: <Session /> },
   ];
-  const nextStep = (values: FormikValues) => {
-    setFormData((prev) => ({ ...prev, ...values }));
-    if (currentStep < steps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+  // Update nextStep function
+  const nextStep = async (values: FormikValues) => {
+    if (currentStep === 0) {
+      const result = await submitCourse(values as CourseFormValues, currentStep);
+      if (result.success && result.innerData?.id) {
+        setCourseId(result.innerData.id.toString());
+        setFormData((prev) => ({ ...prev, ...values }));
+        setCurrentStep((prev) => prev + 2); // Skip pricing step
+      } else {
+        toast.error(result.error || t("messages.error_creating_course"));
+        return;
+      }
+    } else if (currentStep === 2 && courseId) {
+      const result = await submitCertificate(values, courseId);
+      if (result.success && result.innerData?.id) {
+        setCertificateId(result.innerData.id.toString());
+        setFormData((prev) => ({ ...prev, ...values }));
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        toast.error(result.error || t("messages.error_creating_certificate"));
+        return;
+      }
+    } else if (currentStep === 3 && courseId) {
+      const result = await submitExam(values, courseId);
+      if (result.success && result.innerData?.id) {
+        setFormData((prev) => ({ ...prev, ...values }));
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        toast.error(result.error || t("messages.error_creating_exam"));
+        return;
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, ...values }));
+      if (currentStep < steps.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      }
     }
   };
+  
 
   const prevStep = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const handleSubmit = async (values: CourseFormValues) => {
-    setFormData(values);
-    console.log("Final Form Data:", values);
-    alert("Form submitted successfully!");
-    // API call example:
-    // await fetch("/api/create-course", { method: "POST", body: JSON.stringify(values) });
+    try {
+      const result = await submitCourse(values, currentStep);
+      
+      if (result.success) {
+        toast.success(t("messages.course_created_successfully"));
+      } else {
+        toast.error(result.error || t("messages.error_creating_course"));
+      }
+    } catch (error) {
+      console.error("Error creating course:", error);
+      toast.error(t("messages.error_creating_course"));
+    }
   };
 
   const CurrentStepComponent = StepComponents[currentStep];

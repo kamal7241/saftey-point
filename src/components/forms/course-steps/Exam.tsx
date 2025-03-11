@@ -1,7 +1,6 @@
 import Input from "@/components/formsUI/Input";
 import SelectField from "@/components/formsUI/SelectField";
 import Textarea from "@/components/formsUI/Textarea";
-import Calendar from "@/components/ui/icons/Calendar";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
 
@@ -9,18 +8,15 @@ interface ExamProps {
   values: FormikValues;
   handleChange: FormikProps<FormikValues>["handleChange"];
   setFieldValue: FormikProps<FormikValues>["setFieldValue"];
-  errors: FormikValues;
 }
 
 export default function Exam({
   values,
   handleChange,
-  errors,
   setFieldValue,
 }: ExamProps) {
   const t = useTranslations("common");
-  console.log("values", values);
-  console.log("errors", errors);
+
   return (
     <div>
       <div className="mt-4 grid w-full grid-cols-4 gap-x-4 gap-y-6">
@@ -46,8 +42,9 @@ export default function Exam({
             value={values.examType}
             onChange={(name, value) => setFieldValue(name, value)}
             options={[
-              { value: "comapny_1", label: t("user_type.comapny_1") },
-              { value: "comapny_2", label: t("user_type.comapny_2") },
+              { value: "WRITTEN", label: t("exam_type.written") },
+              { value: "PRACTICAL", label: t("exam_type.practical") },
+              { value: "ONLINE", label: t("exam_type.online") },
             ]}
             customDropdown
           />
@@ -59,18 +56,15 @@ export default function Exam({
         </div>
         <div className="col-span-2">
           <Input
-            label={t("duration")}
-            type="date"
-            placeholder={t("duration")}
-            value={values.duration}
-            onChange={(dateRange) => setFieldValue("duration", dateRange)}
-            name="duration"
-            range={true}
-            iconEnd={true}
-            iconSVG={<Calendar />}
+            label={t("examDuration")}
+            type="number"
+            placeholder={t("examDuration")}
+            value={values.examDuration}
+            onChange={handleChange}
+            name="examDuration"
           />
           <ErrorMessage
-            name="issue_date"
+            name="examDuration"
             component="div"
             className="text-xs text-red-500"
           />

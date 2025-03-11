@@ -63,7 +63,8 @@ export default function Certificate({
             type="date"
             placeholder={t("issue_date")}
             value={values.issue_date}
-            onChange={(dateRange) => setFieldValue("issue_date", dateRange)}
+            onChange={handleChange}
+            // onChange={(dateRange) => setFieldValue("issue_date", dateRange)}
             name="issue_date"
             iconEnd={true}
             iconSVG={<Calendar />}

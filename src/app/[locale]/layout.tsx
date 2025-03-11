@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Cairo, Jost } from "next/font/google";
-
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
 
 const fontEn = Jost({
@@ -14,9 +14,19 @@ const fontAr = Cairo({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
 });
+
 export const metadata: Metadata = {
   title: "Safety Points Academy Dashboard",
   description: "Safety Points Academy Dashboard app",
+  icons: {
+    icon: [
+      { url: "/favicon/favicon.ico", sizes: "any" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/favicon/apple-touch-icon.png", sizes: "180x180" }],
+    other: [{ rel: "manifest", url: "/favicon/site.webmanifest" }],
+  },
 };
 
 export default async function RootLayout({
@@ -37,29 +47,29 @@ export default async function RootLayout({
           locale === "ar" ? fontAr.className : fontEn.className
         }`}
       >
-        <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/favicon/apple-touch-icon.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon/favicon-16x16.png"
-        />
-        <link rel="manifest" href="/favicon/site.webmanifest" />
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
-
-          <ToastContainer />
+          <div suppressHydrationWarning>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: "",
+                style: {
+                  zIndex: 9999,
+                },
+              }}
+            />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              newestOnTop
+              closeOnClick
+              rtl={direction === "rtl"}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

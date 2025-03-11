@@ -23,7 +23,6 @@ export default function CourseInfo({
   errors,
   setFieldValue,
 }: CourseInfoProps) {
-  console.log("errors", errors);
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
   return (
@@ -51,11 +50,10 @@ export default function CourseInfo({
             value={values.status}
             onChange={(name, value) => setFieldValue(name, value)}
             options={[
-              { value: "active", label: t("user_status.active") },
-              { value: "inactive", label: t("user_status.inactive") },
-              { value: "pending", label: t("user_status.pending") },
-              { value: "suspended", label: t("user_status.suspended") },
-              { value: "expired", label: t("user_status.expired") },
+              { value: "DRAFT", label: t("user_status.draft") },
+              { value: "PUBLISHED", label: t("user_status.published") },
+              { value: "ARCHIVED", label: t("user_status.archived") },
+              { value: "IN_REVIEW", label: t("user_status.in_review") },
             ]}
             customDropdown
           />

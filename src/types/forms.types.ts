@@ -4,6 +4,13 @@ export interface CourseFormValues {
     status: string;
     price: string;
     certificate: string;
+    prerequisites: string;
+    validity: string;
+    courseCover: string;
+    medicalTest: string;
+    maxAttendees: string;
+    language: string;
+    level: string;
 }
 
 

@@ -156,7 +156,13 @@
     "assessor": "Assessor",
     "staff_details": "Staff Details",
     "resume": "Resume",
+    "edit_company": "Edit Company",
     "session_time": "Time (From & To)",
+    "new_password":"New Password",
+    "enter_new_password":"Enter New Password",
+    "confirm_password":"Confirm Password",
+    "password_reset_success":"Password reset successfully!",
+    "confirm_new_password":"Confirm New Password",
     "prerequisites": {
       "name": "Prerequisites",
       "none": "None",
@@ -233,6 +239,9 @@
     }
   },
   "validation": {
+    "required": "This field is required.",
+    "password_min_length": "Password must be at least 8 characters long.",
+    "passwords_must_match": "Passwords must match.",
     "courseName": {
       "required": "Course Name is required"
     },

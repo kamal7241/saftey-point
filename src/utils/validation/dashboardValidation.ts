@@ -12,6 +12,13 @@ export const addCompanyValidationSchema = Yup.object({
     .matches(/[0-9]/, "Password must contain a number"),
 });
 
+export const editCompanyValidationSchema = Yup.object({
+  companyName: Yup.string().required("Company Name is required"),
+  status: Yup.string().required("Status is required"),
+  email: Yup.string().email("Invalid email format").required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+});
+
 export const addUserValidationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
   lastName: Yup.string().required("Last Name is required"),

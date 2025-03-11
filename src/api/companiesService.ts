@@ -55,11 +55,9 @@ export const fetchCompanies = async (offset: number = 0, limit: number = 10) => 
     }
 };
 
-
-
-export const fetchComapnyById = async (comapnyID: string) => {
+export const fetchComapnyById = async (companyID: string) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company/${comapnyID}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyID}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -100,3 +98,111 @@ export const deleteCompany = async (id: number) => {
         }
     }
 };
+
+export const updateCompany = async (
+    id: number,
+    values: CompanyData,
+    currentData: CompanyData
+) => {
+    const apiData: Partial<CompanyData> = {};
+
+    // Compare top-level fields
+    // if (values.name !== currentData.name)
+    //     apiData.name = values.name;
+    if (values.status !== currentData.status)
+        apiData.status = values.status.toUpperCase();
+
+    // Compare nested `user` fields
+    const userUpdates: Partial<CompanyData["user"]> = {};
+
+    if (values.user.firstName && values.user.firstName !== currentData.user.firstName)
+        userUpdates.firstName = values.user.firstName;
+    if (values.user.lastName && values.user.lastName !== currentData.user.lastName)
+        userUpdates.lastName = values.user.lastName;
+    if (values.user.avatar && values.user.avatar !== currentData.user.avatar)
+        userUpdates.avatar = values.user.avatar;
+    if (values.user.email && values.user.email !== currentData.user.email)
+        userUpdates.email = values.user.email;
+    if (values.user.phone && values.user.phone !== currentData.user.phone)
+        userUpdates.phone = values.user.phone;
+    if (values.user.isVerified !== currentData.user.isVerified)
+        userUpdates.isVerified = values.user.isVerified;
+
+    if (Object.keys(userUpdates).length > 0) {
+        apiData.user = userUpdates as CompanyData["user"];
+    }
+
+    // If no changes detected, return early
+    if (Object.keys(apiData).length === 0) {
+        console.log("No changes detected, skipping update.");
+        return { success: true, data: currentData };
+    }
+
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(apiData),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update company");
+        }
+
+        return { result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating company:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const resetCompanyPassword = async (
+    companyId: number,
+    newPassword: string
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "accept": "*/*",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: {
+              password: newPassword,
+            },
+          }),
+        }
+      );
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to reset password.");
+      }
+  
+      return { success: true, data: result };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error resetting password:", error);
+        return { success: false, error: error.message };
+      } else {
+        console.error("Unexpected error:", error);
+        return { success: false, error: "An unexpected error occurred" };
+      }
+    }
+  };

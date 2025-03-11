@@ -15,8 +15,10 @@ import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
 import { useRouter } from "@/i18n/routing";
-import { deleteCompany } from "@/api/companiesService";
+import { deleteCompany, resetCompanyPassword } from "@/api/companiesService";
 import Popup from "../ui/Popup";
+import NewCompanyForm from "../forms/NewCompanyForm";
+import ResetPasswordForm from "../forms/ResetPasswordForm";
 
 interface SingleCompanyProps {
   companyData: SingleCompany;
@@ -26,11 +28,11 @@ export default function SingleCompany({ companyData }: SingleCompanyProps) {
   const t = useTranslations("common");
   const [userData] = useState<SingleCompany>(companyData);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [resetPasswordPopupOpen, setResetPasswordPopupOpen] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const router = useRouter();
-  console.log("companyData", companyData);
-  console.log("addPopupOpen", addPopupOpen);
 
   const handleDelete = async () => {
     const result = await deleteCompany(Number(userData?.id));
@@ -41,13 +43,34 @@ export default function SingleCompany({ companyData }: SingleCompanyProps) {
     }
     setShowDeleteConfirm(false);
   };
+  const handleResetPassword = async (newPassword: string) => {
+    try {
+      const result = await resetCompanyPassword(
+        Number(userData?.id),
+        newPassword
+      );
+
+      if (result.success) {
+        // Set success state to true
+        setResetPasswordSuccess(true);
+        // Close the popup after a short delay (e.g., 2 seconds)
+        setTimeout(() => {
+          setResetPasswordPopupOpen(false);
+          setResetPasswordSuccess(false); // Reset success state
+        }, 2000);
+      } else {
+        setError(result.error || "Failed to reset password.");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+  };
 
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
   };
-  //   const handleExport = () => {
-  //     console.log("Exporting data...");
-  //   };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -62,23 +85,48 @@ export default function SingleCompany({ companyData }: SingleCompanyProps) {
   if (error) return <div>{error}</div>;
   return (
     <div className="h-full">
-    {showDeleteConfirm && (
-      <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
-        <div>
-          <p className="p-5 text-center text-2xl">
-            {t("are_you_sure_delete")}
-          </p>
-          <div className="flex items-center justify-center gap-4">
-            <Button onClick={handleDelete} label={t("buttons.confirm")} />
-            <Button
-              onClick={handleDeleteCancel}
-              label={t("buttons.cancel")}
-              variant="dark"
-            />
-          </div>
-        </div>
+      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+        <NewCompanyForm
+          title={t("edit_company")}
+          sub_title={t("form_subtitle")}
+          onClose={() => setAddPopupOpen(false)}
+          companyData={userData}
+        />
       </Popup>
-    )}
+      <Popup
+        isOpen={resetPasswordPopupOpen}
+        onClose={() => setResetPasswordPopupOpen(false)}
+      >
+        {resetPasswordSuccess ? (
+          <div className="p-4 text-center">
+            <p className="text-green-500 text-lg font-semibold">
+              {t("password_reset_success")}
+            </p>
+          </div>
+        ) : (
+          <ResetPasswordForm
+            onClose={() => setResetPasswordPopupOpen(false)}
+            onSubmit={handleResetPassword}
+          />
+        )}
+      </Popup>
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleDelete} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("company_details")}
@@ -96,7 +144,7 @@ export default function SingleCompany({ companyData }: SingleCompanyProps) {
             />
             <Button
               label={t("buttons.reset_password")}
-              onClick={() => setAddPopupOpen(true)}
+              onClick={() => setResetPasswordPopupOpen(true)}
               icon={
                 <span className="inline-block w-6">
                   <Lock />

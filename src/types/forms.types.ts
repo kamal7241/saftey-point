@@ -8,8 +8,8 @@ export interface CourseFormValues {
 
 
 export interface CompanyData {
-    id?: string;
-    name: string;
+    id?: number;
+    name?: string;
     status: string;
     userType: string;
     user: {

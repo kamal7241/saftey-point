@@ -1,6 +1,6 @@
 "use client";
 import Input from "@/components/formsUI/Input";
-import { addCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
+import { addCompanyValidationSchema, editCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -9,12 +9,15 @@ import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
-import { submitCompany } from "@/api/companiesService";
+import { submitCompany, updateCompany } from "@/api/companiesService";
+import { SingleCompany } from "@/types/ui.types";
+import { CompanyData } from "@/types/forms.types";
 
 interface NewCompanyFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  companyData?: SingleCompany | null;
 }
 
 interface FormValues {
@@ -30,9 +33,28 @@ export default function NewCompanyForm({
   title,
   sub_title,
   onClose,
+  companyData,
 }: NewCompanyFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
+
+  const initialValues: FormValues = companyData
+    ? {
+        companyName: companyData.user.firstName,
+        status: companyData.status.toLowerCase(),
+        email: companyData.user.email,
+        phoneNumber: companyData.user.phone,
+        password: "",
+        file: companyData.user.avatar || null,
+      }
+    : {
+        companyName: "",
+        status: "",
+        email: "",
+        phoneNumber: "",
+        password: "",
+        file: null,
+      };
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
@@ -45,39 +67,62 @@ export default function NewCompanyForm({
   const [apiErrors, setApiErrors] = useState<string | null>(null);
 
   const handleSubmit = async (values: FormValues) => {
-    const apiData = {
-      name: values.companyName,
-      status: values.status.toUpperCase(),
-      userType: "COMPANY",
-      user: {
-        firstName: values.companyName,
-        lastName: "COMPANY",
-        avatar: values.file ?? "avatar.png",
-        email: values.email,
-        phone: values.phoneNumber,
-        password: values.password,
-        isVerified: true,
-      },
+    const apiData: CompanyData = {
+        name: values.companyName,
+        status: values.status.toUpperCase(),
+        userType: "COMPANY",
+        user: {
+            firstName: values.companyName,
+            lastName: "COMPANY",
+            avatar: values.file ?? "avatar.png",
+            email: values.email,
+            phone: values.phoneNumber,
+            password: values.password,
+            isVerified: true,
+        },
     };
 
     try {
-      const result = await submitCompany(apiData);
-      if (result.success) {
-        setIsSubmitted(true);
-        setApiErrors(null);
-      } else {
-        setApiErrors(result.error || "An error occurred");
-      }
+        let result;
+        if (companyData && companyData.id) {
+            // Map `SingleCompany` to `CompanyData` for `currentData`
+            const currentData: CompanyData = {
+                id: companyData.id, // `id` is now a `number`
+                name: companyData.user.firstName, // Use `firstName` as `name` if `name` is not available
+                status: companyData.status,
+                userType: companyData.userType,
+                user: {
+                    firstName: companyData.user.firstName,
+                    lastName: companyData.user.lastName,
+                    avatar: companyData.user.avatar,
+                    email: companyData.user.email,
+                    phone: companyData.user.phone,
+                    password: companyData.user.password || "", // Provide a default value
+                    isVerified: companyData.user.isVerified,
+                },
+            };
+
+            result = await updateCompany(companyData.id, apiData, currentData);
+        } else {
+            result = await submitCompany(apiData);
+        }
+
+        if (result.success) {
+            setIsSubmitted(true);
+            setApiErrors(null);
+        } else {
+            setApiErrors(result.error || "An error occurred");
+        }
     } catch {
-      setApiErrors("An unexpected error occurred");
+        setApiErrors("An unexpected error occurred");
     }
-  };
+};
 
   if (isSubmitted) {
     return (
       <div className="py-10">
         <SuccessMessage
-          title={"Successfully Added"}
+          title={"Successfully " + (companyData ? "Updated" : "Added")}
           msg={"Thank you for filling out your information!"}
           bigger
         />
@@ -102,15 +147,12 @@ export default function NewCompanyForm({
       )}
 
       <Formik
-        initialValues={{
-          companyName: "",
-          status: "",
-          email: "",
-          phoneNumber: "",
-          password: "",
-          file: null,
-        }}
-        validationSchema={addCompanyValidationSchema}
+        initialValues={initialValues}
+        validationSchema={
+          companyData && companyData.id
+            ? editCompanyValidationSchema
+            : addCompanyValidationSchema
+        }
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue }) => (
@@ -125,6 +167,11 @@ export default function NewCompanyForm({
                 onChange={(file) => setFieldValue("file", file)}
                 label={t("logo_company")}
                 note={t("fileuploader_note")}
+                initialImageUrl={
+                  companyData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${companyData.user.avatar}`
+                    : null
+                }
               />
             </div>
 
@@ -202,31 +249,36 @@ export default function NewCompanyForm({
               />
             </div>
 
-            <div className="col-span-3">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
-                onChange={handleChange}
-                name="password"
-              />
-            </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
-            <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
-            </div>
+            {!companyData && (
+              <>
+                <div className="col-span-3">
+                  <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter password or generate one"
+                    value={values.password}
+                    onChange={handleChange}
+                    name="password"
+                  />
+                </div>
+                <div className="col-span-1 self-end">
+                  <Button
+                    label={t("buttons.generate")}
+                    onClick={() => handleGeneratePassword(setFieldValue)}
+                    type="button"
+                    variant="dark"
+                    padding="px-4 py-2.5"
+                    textSize="text-base w-full"
+                  />
+                </div>
+                <div className="col-span-4">
+                  <ErrorMessage name="password">
+                    {(msg) => <ErrorMessageWrappers msg={msg} />}
+                  </ErrorMessage>
+                </div>
+              </>
+            )}
+
             <div className="flex justify-end gap-4 col-span-4">
               <Button
                 label={t("buttons.close")}

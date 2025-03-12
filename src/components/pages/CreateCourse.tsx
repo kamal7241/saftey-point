@@ -1,30 +1,47 @@
 "use client";
-import { useState } from "react";
-import { Formik, Form, FormikValues } from "formik";
-import * as Yup from "yup";
+import Certificate from "@/components/forms/course-steps/Certificate";
 import CourseInfo from "@/components/forms/course-steps/CourseInfo";
 import Pricing from "@/components/forms/course-steps/Pricing";
-import Certificate from "@/components/forms/course-steps/Certificate";
 import { CourseFormValues } from "@/types/forms.types";
-import PageHeader from "../global/PageHeader";
+import { Form, Formik, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
-import StepNavigation from "../forms/course-steps/StepNavigation";
-import InfoCircle from "../ui/icons/InfoCircle";
-import Moneys from "../ui/icons/Moneys";
-import Award from "../ui/icons/Award";
-import TaskSquare from "../ui/icons/TaskSquare";
-import Session from "../ui/icons/Session";
-import { getCourseInfoValidationSchema, getPricingValidationSchema } from "@/utils/validation/dashboardValidation";
+import { useState } from "react";
 import Exam from "../forms/course-steps/Exam";
 import SessionStep from "../forms/course-steps/SessionStep";
-import { submitCertificate, submitCourse, submitExam } from "@/api/courseService";
+import StepNavigation from "../forms/course-steps/StepNavigation";
+import PageHeader from "../global/PageHeader";
+import Award from "../ui/icons/Award";
+import InfoCircle from "../ui/icons/InfoCircle";
+import Moneys from "../ui/icons/Moneys";
+import Session from "../ui/icons/Session";
+import TaskSquare from "../ui/icons/TaskSquare";
+// Update imports to include submitSession
+import {
+  submitCertificate,
+  submitCourse,
+  submitExam,
+  submitSession,
+} from "@/api/courseService";
+import {
+  getCertificateValidationSchema,
+  getCourseInfoValidationSchema,
+  getExamValidationSchema,
+  getPricingValidationSchema,
+  getSessionValidationSchema,
+} from "@/utils/validation/courseValidation";
 import { toast } from "react-hot-toast";
+import { useRouter } from "@/i18n/routing";
+import Popup from "../ui/Popup";
+import SuccessMessage from "../ui/SuccessMessage";
 
 export default function CreateCourse() {
   const t = useTranslations();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [courseId, setCourseId] = useState<string | null>(null);
   const [certificateId, setCertificateId] = useState<string | null>(null);
+  const [examId, setExamId] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
     courseTitle: "",
     description: "",
@@ -44,25 +61,19 @@ export default function CreateCourse() {
     displayScore: "no",
     watermark: "no",
   });
-console.log('courseId>>',courseId)
-console.log('certificateId>>',certificateId)
+  console.log("courseId>>", courseId);
+  console.log("certificateId>>", certificateId);
+  console.log("examId>>", examId);
   const StepComponents = [CourseInfo, Pricing, Certificate, Exam, SessionStep];
 
   const validationSchemas = [
     getCourseInfoValidationSchema(t),
     getPricingValidationSchema(t),
-    Yup.object({
-      certificateName: Yup.string().required(t("validation.certificate.name.required")),
-      validate_date_interval: Yup.array()
-        .of(Yup.string().required())
-        .min(2)
-        .required(t("validation.certificate.date_interval.required")),
-      issue_date: Yup.string().required(t("validation.certificate.issue_date.required")),
-      displayScore: Yup.string().required(t("validation.certificate.display_score.required")),
-      watermark: Yup.string().required(t("validation.certificate.watermark.required")),
-    }),
+    getCertificateValidationSchema(t),
+    getExamValidationSchema(t),
+    getSessionValidationSchema(t),
   ];
-  
+
   const steps = [
     { label: "Course Info", icon: <InfoCircle /> },
     { label: "Pricing", icon: <Moneys /> },
@@ -73,7 +84,10 @@ console.log('certificateId>>',certificateId)
   // Update nextStep function
   const nextStep = async (values: FormikValues) => {
     if (currentStep === 0) {
-      const result = await submitCourse(values as CourseFormValues, currentStep);
+      const result = await submitCourse(
+        values as CourseFormValues,
+        currentStep
+      );
       if (result.success && result.innerData?.id) {
         setCourseId(result.innerData.id.toString());
         setFormData((prev) => ({ ...prev, ...values }));
@@ -93,12 +107,43 @@ console.log('certificateId>>',certificateId)
         return;
       }
     } else if (currentStep === 3 && courseId) {
-      const result = await submitExam(values, courseId);
-      if (result.success && result.innerData?.id) {
+      if (examId) {
+        // If examId exists, proceed to next step
         setFormData((prev) => ({ ...prev, ...values }));
         setCurrentStep((prev) => prev + 1);
       } else {
-        toast.error(result.error || t("messages.error_creating_exam"));
+        // If no examId, create new exam
+        const result = await submitExam(values, courseId);
+        if (result.success && result.innerData?.id) {
+          setExamId(result.innerData.id.toString());
+          setFormData((prev) => ({ ...prev, ...values }));
+        } else {
+          toast.error(result.error || t("messages.error_creating_exam"));
+          return;
+        }
+      }
+    } else if (currentStep === 4 && courseId) {
+      // Format session time values before submission
+      const formattedValues = {
+        ...values,
+        session_time: Array.isArray(values.session_time) 
+          ? values.session_time.map(time => 
+              time instanceof Date ? time.toISOString() : time
+            )
+          : values.session_time,
+        session_date: values.session_date instanceof Date 
+          ? values.session_date.toISOString().split('T')[0]
+          : values.session_date
+      };
+
+      const result = await submitSession(formattedValues, courseId);
+      debugger;
+      if (result.success && result.innerData?.id) {
+        setFormData((prev) => ({ ...prev, ...values }));
+        setShowSuccess(true);
+        toast.success(t("messages.course_created_successfully"));
+      } else {
+        toast.error(result.error || t("messages.error_creating_session"));
         return;
       }
     } else {
@@ -108,28 +153,19 @@ console.log('certificateId>>',certificateId)
       }
     }
   };
-  
 
   const prevStep = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleSubmit = async (values: CourseFormValues) => {
-    try {
-      const result = await submitCourse(values, currentStep);
-      
-      if (result.success) {
-        toast.success(t("messages.course_created_successfully"));
-      } else {
-        toast.error(result.error || t("messages.error_creating_course"));
-      }
-    } catch (error) {
-      console.error("Error creating course:", error);
-      toast.error(t("messages.error_creating_course"));
+  const CurrentStepComponent = StepComponents[currentStep];
+
+
+  const handleClose = () => {
+    if (courseId) {
+      router.push(`/dashboard/courses-management/list/${courseId}`);
     }
   };
-
-  const CurrentStepComponent = StepComponents[currentStep];
 
   const breadcrumbItems = [
     { label: t("common.home"), href: "/" },
@@ -148,6 +184,16 @@ console.log('certificateId>>',certificateId)
         breadcrumbItems={breadcrumbItems}
         title={t("common.courses_list")}
       />
+
+      <Popup isOpen={showSuccess} onClose={handleClose}>
+        <div className="py-10">
+          <SuccessMessage
+            title={"Successfully Added"}
+            msg={"Thank you for filling out your information!"}
+            bigger
+          />
+        </div>
+      </Popup>
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
         <div className="flex flex-col gap-6 pb-20">
           <h3 className="heading3">{t("common.add_course")}</h3>
@@ -159,9 +205,10 @@ console.log('certificateId>>',certificateId)
           <Formik
             initialValues={formData}
             validationSchema={validationSchemas[currentStep]}
-            onSubmit={
-              currentStep === steps.length - 1 ? handleSubmit : nextStep
-            }
+            // onSubmit={
+            //   currentStep === steps.length - 1 ? handleSubmit : nextStep
+            // }
+            onSubmit={nextStep}
           >
             {({ values, handleChange, errors, setFieldValue }) => (
               <Form className="">
@@ -170,6 +217,7 @@ console.log('certificateId>>',certificateId)
                   handleChange={handleChange}
                   errors={errors}
                   setFieldValue={setFieldValue}
+                  examId={currentStep === 3 && examId ? examId : undefined}
                 />
 
                 {/* Navigation Buttons */}

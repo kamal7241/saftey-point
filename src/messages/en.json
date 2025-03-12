@@ -146,6 +146,11 @@
     "validate_date_interval": "Validate Date Interval (from - to)",
     "displayScore": "Display Score",
     "watermark": "Watermark",
+    "payment_methods": "Payment Methods",
+    "passing_score": "Passing score",
+    "start_date": "Start date",
+    "duration": "Duration",
+    "instructor": "Instructor",
     "examType": "Exam Type",
     "examDuration": "Exam Duration",
     "examName": "Exam Name",
@@ -165,6 +170,14 @@
     "confirm_password": "Confirm Password",
     "password_reset_success": "Password reset successfully!",
     "confirm_new_password": "Confirm New Password",
+    "schedule": "Schedule",
+    "date": "Date",
+    "trainer_1": "trainer 1",
+    "trainer_2": "trainer 2",
+    "assistant_1": "assistant 1",
+    "assistant_2": "assistant 2",
+    "assessor_1": "assessor 1",
+    "assessor_2": "assessor 2",
     "prerequisites": {
       "name": "Prerequisites",
       "none": "None",
@@ -209,7 +222,7 @@
     },
     "exam_type": {
       "written": "Written",
-      "practical": "Practical", 
+      "practical": "Practical",
       "online": "Online"
     },
     "user_role": {
@@ -235,6 +248,8 @@
       "suspend": "Suspend",
       "confirm": "Confirm",
       "cancel": "Cancel",
+      "add_question": "Add Question",
+      "create_exam": "Create Exam",
       "anotherPrice": "Add Another Price",
       "removeLastPrice": "Remove Last Price",
       "reset_password": "Reset Password",
@@ -326,9 +341,71 @@
     },
     "medicalTest": {
       "required": "Medical test option is required"
+    },
+
+    "exam": {
+      "name": {
+        "required": "Exam name is required"
+      },
+      "type": {
+        "required": "Exam type is required"
+      },
+      "instructions": {
+        "required": "Instructions are required"
+      },
+      "duration": {
+        "required": "Duration is required",
+        "positive": "Duration must be a positive number"
+      },
+      "totalMarks": {
+        "required": "Total marks is required",
+        "positive": "Total marks must be a positive number"
+      },
+      "passMarks": {
+        "required": "Pass marks is required",
+        "positive": "Pass marks must be a positive number"
+      }
+    },
+    "session": {
+      "name": {
+        "required": "Session name is required"
+      },
+      "description": {
+        "required": "Session description is required"
+      },
+      "trainer": {
+        "required": "Trainer is required"
+      },
+      "assistant": {
+        "required": "Assistant is required"
+      },
+      "assessor": {
+        "required": "Assessor is required"
+      },
+      "scheduleType": {
+        "required": "Schedule type is required",
+        "invalid": "Invalid schedule type"
+      },
+      "date": {
+        "required": "Session date is required"
+      },
+      "time": {
+        "required": "Session time is required",
+        "from": {
+          "required": "Start time is required"
+        },
+        "to": {
+          "required": "End time is required"
+        }
+      }
     }
   },
   "messages": {
-    "error_creating_course": "error_creating_course"
+    "error_creating_course": "error_creating_course",
+    "question_created_successfully": "question_created_successfully",
+    "error_creating_question": "error_creating_question",
+    "error_creating_session": "Error creating session",
+    "course_created_successfully": "Course created successfully",
+    "session_created_successfully": "Session created successfully"
   }
 }

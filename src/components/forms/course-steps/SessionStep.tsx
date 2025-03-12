@@ -52,11 +52,9 @@ export default function SessionStep({
             ]}
             customDropdown
           />
-          <ErrorMessage
-            name="trainer"
-            component="div"
-            className="text-xs text-red-500"
-          />
+          {errors.trainer && (
+            <p className="text-xs text-red-500 py-1">{errors.trainer}</p>
+          )}
         </div>
         <div className="col-span-2">
           <SelectField
@@ -70,11 +68,10 @@ export default function SessionStep({
             ]}
             customDropdown
           />
-          <ErrorMessage
-            name="assistant"
-            component="div"
-            className="text-xs text-red-500"
-          />
+
+          {errors.assistant && (
+            <p className="text-xs text-red-500 py-1">{errors.assistant}</p>
+          )}
         </div>
         <div className="col-span-2">
           <SelectField
@@ -88,11 +85,10 @@ export default function SessionStep({
             ]}
             customDropdown
           />
-          <ErrorMessage
-            name="assessor"
-            component="div"
-            className="text-xs text-red-500"
-          />
+
+          {errors.assessor && (
+            <p className="text-xs text-red-500 py-1">{errors.assessor}</p>
+          )}
         </div>
         <div className="col-span-6">
           <Textarea
@@ -130,7 +126,7 @@ export default function SessionStep({
             type="date"
             placeholder={t("date")}
             value={values.session_date}
-            onChange={(dateRange) => setFieldValue("session_date", dateRange)}
+            onChange={handleChange}
             name="session_date"
             iconEnd={true}
             iconSVG={<Calendar />}

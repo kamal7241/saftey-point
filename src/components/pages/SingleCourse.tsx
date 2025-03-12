@@ -99,12 +99,12 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         return (
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("exam_type")}
+              label={t("examType")}
               content="Final Exam"
               icon={<Edit />}
             />
             <GroupInfo
-              label={t("exam_duration")}
+              label={t("examDuration")}
               content="3 Hours"
               icon={<Edit />}
             />

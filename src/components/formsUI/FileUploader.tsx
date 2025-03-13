@@ -132,7 +132,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                   onClick={handleDelete}
                   type="button"
                   icon={
-                    <span className="inline-block h-4 w-4">
+                    <span className="inline-block h-4 w-4 text-white">
                       <Trash />
                     </span>
                   }
@@ -199,7 +199,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                 onClick={handleDelete}
                 type="button"
                 icon={
-                  <span className="inline-block h-6 w-6">
+                  <span className="inline-block h-6 w-6 text-white">
                     <Trash />
                   </span>
                 }

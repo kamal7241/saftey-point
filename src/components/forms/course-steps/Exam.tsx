@@ -6,6 +6,7 @@ import Textarea from "@/components/formsUI/Textarea";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
 import { toast } from "react-hot-toast";
+import QuestionsTable from "./QuestionsTable";
 
 interface ExamProps {
   values: FormikValues;
@@ -151,8 +152,10 @@ export default function Exam({
             className="text-xs text-red-500 py-1"
           />
         </div>
-
-        {examId && (
+      </div>
+      <QuestionsTable examId={examId} />
+      {examId && (
+        <>
           <div className="col-span-4 mt-4">
             <button
               type="button"
@@ -162,8 +165,8 @@ export default function Exam({
               {t("buttons.add_question")}
             </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

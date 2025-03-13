@@ -178,6 +178,20 @@
     "assistant_2": "assistant 2",
     "assessor_1": "assessor 1",
     "assessor_2": "assessor 2",
+    "questions": "Questions",
+    "answers": "Answers",
+    "no_questions_found": "no_questions_found",
+    "loading": "loading",
+    "question_title": "Question Title",
+    "enter_answer": "Enter Answer",
+    "enter_question_title": "Enter Question Title",
+    "enter_description": "Enter Description",
+    "question_type": {
+      "name": "Question Type",
+      "mcq": "Multiple Choice",
+      "true_false": "True/False",
+      "matching": "Matching"
+    },
     "prerequisites": {
       "name": "Prerequisites",
       "none": "None",
@@ -244,12 +258,14 @@
       "delete": "delete",
       "close": "close",
       "submit": "submit",
+      "submitting": "submitting",
       "edit": "Edit",
       "suspend": "Suspend",
       "confirm": "Confirm",
       "cancel": "Cancel",
       "add_question": "Add Question",
       "create_exam": "Create Exam",
+      "add_answer": "Add Answer",
       "anotherPrice": "Add Another Price",
       "removeLastPrice": "Remove Last Price",
       "reset_password": "Reset Password",
@@ -401,6 +417,7 @@
     }
   },
   "messages": {
+    "missing_examId": "Missing Exam ID",
     "error_creating_course": "error_creating_course",
     "question_created_successfully": "question_created_successfully",
     "error_creating_question": "error_creating_question",

@@ -1,11 +1,9 @@
 "use client";
-import { submitExamQuestion } from "@/api/courseService";
 import Input from "@/components/formsUI/Input";
 import SelectField from "@/components/formsUI/SelectField";
 import Textarea from "@/components/formsUI/Textarea";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
-import { toast } from "react-hot-toast";
 import QuestionsTable from "./QuestionsTable";
 
 interface ExamProps {
@@ -24,39 +22,6 @@ export default function Exam({
   examId,
 }: ExamProps) {
   const t = useTranslations("common");
-  const tMsgs = useTranslations("messages");
-
-  const handleAddQuestion = async () => {
-    const questionData = {
-      title: "Sample Question",
-      description: "Sample Description",
-      type: "MCQ",
-      examId: Number(examId),
-      options: [
-        {
-          optionText: "Option A",
-          isCorrect: false,
-        },
-      ],
-      answers: [
-        {
-          answerText: "Correct answer",
-          isCorrect: true,
-          matchWith: "Match A",
-          options: ["Option 1", "Option 2"],
-        },
-      ],
-    };
-
-    if (examId) {
-      const result = await submitExamQuestion(examId, questionData);
-      if (result.success) {
-        toast.success(tMsgs("question_created_successfully"));
-      } else {
-        toast.error(result.error || tMsgs("error_creating_question"));
-      }
-    }
-  };
 
   return (
     <div>
@@ -153,20 +118,7 @@ export default function Exam({
           />
         </div>
       </div>
-      <QuestionsTable examId={examId} />
-      {examId && (
-        <>
-          <div className="col-span-4 mt-4">
-            <button
-              type="button"
-              onClick={handleAddQuestion}
-              className="rounded bg-blue-500 px-4 py-2 text-white"
-            >
-              {t("buttons.add_question")}
-            </button>
-          </div>
-        </>
-      )}
+      {examId && (<QuestionsTable examId={examId} />)}
     </div>
   );
 }

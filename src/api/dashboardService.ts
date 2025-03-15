@@ -1,4 +1,4 @@
-import { Individual, SingleCourse, SingleStaff } from "@/types/ui.types";
+import { Individual, SingleStaff } from "@/types/ui.types";
 
 
 const generateRandomString = (length: number): string => {
@@ -10,21 +10,6 @@ const generateRandomString = (length: number): string => {
     return result;
 };
 
-
-// export const fetchCompanies = async () => {
-//     const data = Array.from({ length: 50 }, (_, index) => ({
-//         id: index + 1,
-//         name: `Company ${generateRandomString(5)}`,
-//         location: `Location ${generateRandomString(3)}`,
-//         status: Math.random() > 0.5 ? "1" : "0",
-//         branches: Math.floor(Math.random() * 10) + 1,
-//         employees: Math.floor(Math.random() * 500) + 50,
-//         created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-//         image: `https://loremflickr.com/320/240/business?random`,
-//     }));
-
-//     return data;
-// };
 
 export const submitIndividual = async (values: Individual) => {
     const apiData = {
@@ -228,46 +213,6 @@ export const fetchUserById = async (userID: number) => {
     }
 };
 
-export const fetchCourses = async (): Promise<SingleCourse[]> => {
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/courses`);
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error("Failed to fetch courses");
-        }
-
-        return result.innerData.items.map((course: SingleCourse) => ({
-            id: course.id,
-            title: course.title,
-            language: course.language,
-            enrollments: course.maxAttendees,
-            sessions: course.sessions,
-            level: course.level,
-            status: course.status === "ACTIVE" ? "1" : "0",
-        }));
-    } catch (error) {
-        console.error("Error fetching courses:", error);
-        return [];
-    }
-};
-
-export const fetchCourseById = async (courseID: number) => {
-    try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/courses/${courseID}`);
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            throw new Error(result.message || "Failed to fetch course details");
-        }
-
-        const course = result.innerData;
-        return course;
-    } catch (error) {
-        console.error("Error fetching course by ID:", error);
-        return null;
-    }
-};
 
 
 export const fetchStaffManagement = async (offset: number = 0, limit: number = 10) => {

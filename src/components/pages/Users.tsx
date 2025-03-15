@@ -39,7 +39,6 @@ const Users = () => {
       setLoading(true);
       const offset = (currentPage - 1) * limit;
       const response = await fetchUsers(offset, limit);
-      console.log("Fetched Users:", response.users); 
       setUsers(response.users);
       setTotalCount(response.totalCount);
       setLoading(false);

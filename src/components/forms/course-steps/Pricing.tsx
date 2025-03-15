@@ -50,10 +50,9 @@ export default function Pricing({
     branch: string;
     type: string;
     fees: string;
-    image?: string; // Optional if you might not always have an image
+    image?: string;
   };
 
-  // Sample data for the table
   const tableData: TableRowData[] = [
     {
       id: 1,
@@ -69,16 +68,15 @@ export default function Pricing({
       type: "Wholesale",
       fees: "$300",
     },
-    // Add more rows as needed
   ];
 
   // Define the columns with specific accessors typed as keyof TableRowData
   const columns: { header: string; accessor: keyof TableRowData }[] = [
-    { header: "ID", accessor: "id" },
-    { header: "City", accessor: "city" },
-    { header: "Branch", accessor: "branch" },
-    { header: "Type", accessor: "type" },
-    { header: "Fees", accessor: "fees" },
+    { header: "id", accessor: "id" },
+    { header: "city", accessor: "city" },
+    { header: "branch", accessor: "branch" },
+    { header: "type", accessor: "type" },
+    { header: "fees", accessor: "fees" },
   ];
 
   return (
@@ -188,8 +186,9 @@ export default function Pricing({
             label={t("chooseType")}
             name="priceType"
             options={[
-              { value: "theoretical", label: t("theoretical") },
-              { value: "practical", label: t("practical") },
+              { value: "BOTH", label: t("both") },
+              { value: "THEORETICAL", label: t("theoretical") },
+              { value: "PRACTICAL", label: t("practical") },
             ]}
             selectedValue={values.priceType}
             onChange={handleChange}

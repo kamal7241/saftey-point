@@ -60,6 +60,11 @@
     "enrollments": "Enrollments",
     "sessions": "Sessions",
     "level": "Level",
+    "id": "ID",
+    "city": "city",
+    "branch": "branch",
+    "type": "type",
+    "fees": "fees",
     "created": "created"
   },
   "common": {
@@ -131,6 +136,7 @@
     "yes": "Yes",
     "no": "No",
     "theoretical": "Theoretical",
+    "both": "Both",
     "priceType": "Price Type",
     "chooseType": "Choose Type",
     "discount": "Discount (٪)",

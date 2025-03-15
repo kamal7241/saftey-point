@@ -1,5 +1,5 @@
 "use client";
-import { fetchCourses } from "@/api/dashboardService";
+import { fetchCourses } from "@/api/courseService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { SingleCourse } from "@/types/ui.types";
@@ -24,19 +24,26 @@ const Courses = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [courses, setCourses] = useState<SingleCourse[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
 
+  const limit = 10;
   useEffect(() => {
     const getCourses = async () => {
-      const response = await fetchCourses();
-      setCourses(response);
+      setLoading(true);
+      const offset = (currentPage - 1) * limit;
+      const response = await fetchCourses(offset, limit);
+      setCourses(response.courses);
+      setTotalCount(response.totalCount);
+      setLoading(false);
     };
     getCourses();
-  }, []);
+  }, [currentPage]);
 
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = course.title
@@ -135,11 +142,11 @@ const Courses = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
+            totalPages: Math.ceil(totalCount / limit),
             onPageChange: handlePageChange,
           }}
           sortable
-          rowsPerPage={10}
+          rowsPerPage={limit}
           renderRowActions={(row) => (
             <div className="flex gap-2">
               <Switcher />
@@ -166,6 +173,7 @@ const Courses = () => {
               />
             </div>
           )}
+          isLoading={loading}
         />
       </div>
 

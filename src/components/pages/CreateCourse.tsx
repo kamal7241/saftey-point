@@ -15,11 +15,12 @@ import InfoCircle from "../ui/icons/InfoCircle";
 import Moneys from "../ui/icons/Moneys";
 import Session from "../ui/icons/Session";
 import TaskSquare from "../ui/icons/TaskSquare";
-// Update imports to include submitSession
+
 import {
   submitCertificate,
   submitCourse,
   submitExam,
+  submitPricing,
   submitSession,
 } from "@/api/courseService";
 import {
@@ -64,7 +65,7 @@ export default function CreateCourse() {
   console.log("courseId>>", courseId);
   console.log("certificateId>>", certificateId);
   console.log("examId>>", examId);
-  const StepComponents = [CourseInfo, Pricing, Certificate, Exam, SessionStep];
+  const StepComponents = [Pricing, CourseInfo, Certificate, Exam, SessionStep];
 
   const validationSchemas = [
     getCourseInfoValidationSchema(t),
@@ -81,6 +82,7 @@ export default function CreateCourse() {
     { label: "Exam", icon: <TaskSquare /> },
     { label: "Session", icon: <Session /> },
   ];
+
   // Update nextStep function
   const nextStep = async (values: FormikValues) => {
     if (currentStep === 0) {
@@ -91,9 +93,26 @@ export default function CreateCourse() {
       if (result.success && result.innerData?.id) {
         setCourseId(result.innerData.id.toString());
         setFormData((prev) => ({ ...prev, ...values }));
-        setCurrentStep((prev) => prev + 2); // Skip pricing step
+        setCurrentStep((prev) => prev + 1);
       } else {
         toast.error(result.error || t("messages.error_creating_course"));
+        return;
+      }
+    } else if (currentStep === 1 && courseId) {
+      const pricingData = {
+        price: Number(values.price),
+        discount: Number(values.discount),
+        isTheoreticalOnly: values.theoreticalOnly === "yes",
+        type: values.priceType,
+        isCompanyTraining: values.companyPremises === "yes"
+      };
+      
+      const result = await submitPricing(courseId, pricingData);
+      if (result.success) {
+        setFormData((prev) => ({ ...prev, ...values }));
+        setCurrentStep((prev) => prev + 1);
+      } else {
+        toast.error(result.error || t("messages.error_creating_pricing"));
         return;
       }
     } else if (currentStep === 2 && courseId) {
@@ -221,18 +240,18 @@ export default function CreateCourse() {
                 />
 
                 {/* Navigation Buttons */}
-                <div className="mt-6 flex justify-between">
+                <div className="mt-6 flex justify-end gap-6">
                   <button
                     type="button"
                     className="rounded bg-gray-300 px-4 py-2 disabled:opacity-50"
                     onClick={prevStep}
                     disabled={currentStep === 0}
                   >
-                    Back
+                    Cancel
                   </button>
                   <button
                     type="submit"
-                    className="rounded bg-red-500 px-4 py-2 text-white disabled:opacity-50"
+                    className="rounded bg-primary hover:bg-primaryLight px-4 py-2 text-white disabled:opacity-50"
                   >
                     {currentStep === steps.length - 1 ? "Submit" : "Next"}
                   </button>

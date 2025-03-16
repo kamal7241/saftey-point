@@ -3,6 +3,54 @@ import { CourseFormValues } from "@/types/forms.types";
 import { SingleCourse } from "@/types/ui.types";
 import { FormikValues } from "formik";
 
+interface PricingItem {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: null | string;
+    price: string;
+    discount: string;
+    isTheoreticalOnly: boolean;
+    type: string;
+    isCompanyTraining: boolean;
+    courseId: number;
+    countryId: null | number;
+  }
+  
+  interface PricingListResponse {
+    success: boolean;
+    message: string;
+    timestamp: string;
+    innerData: {
+      items: PricingItem[];
+      count: number;
+    };
+  }
+  
+interface SessionDTO {
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    status: string;
+    courseId: number;
+}
+
+interface SessionResponse {
+    success: boolean;
+    message?: string;
+    error?: string;
+    innerData?: any;
+}
+
+interface CorporatePricingDTO {
+    type: string;
+    isCompanyTraining: boolean;
+    city: string;
+    trainees: number;
+    fees: number;
+    currency: string;
+}
 interface CreateCourseDTO {
     title: string;
     status: string;
@@ -271,24 +319,25 @@ export const submitExamQuestion = async (examId: string, questionData: ExamQuest
     }
 };
 
-// Add these interfaces after the existing ones
-interface SessionDTO {
-    title: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-    courseId: number;
-}
+export const deleteExamQuestion = async (examId: string, questionId: number) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${examId}/questions/${questionId}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'accept': '*/*'
+                }
+            }
+        );
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error deleting question:', error);
+        return { success: false, error: 'Failed to delete question' };
+    }
+};
 
-interface SessionResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
-
-// Add this function with the other export functions
 export const submitSession = async (values: FormikValues, courseId: string): Promise<SessionResponse> => {
     try {
         const sessionData: SessionDTO = {
@@ -403,3 +452,57 @@ export const submitPricing = async (courseId: string, pricingData: PricingDTO): 
         return { success: false, error: 'An unexpected error occurred' };
     }
 }
+
+
+export const submitCorporatePricing = async (courseId: string, values: CorporatePricingDTO): Promise<PricingResponse> => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/pricing/corporate`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': '*/*'
+                },
+                body: JSON.stringify(values)
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to submit corporate pricing');
+        }
+
+        return result;
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return { success: false, error: error.message };
+        }
+        return { success: false, error: 'An unexpected error occurred' };
+    }
+};
+
+
+export const fetchCoursePricing = async (courseId: number): Promise<PricingItem[] | null> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/pricing`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result: PricingListResponse = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch pricing details');
+    }
+
+    return result.innerData.items;
+  } catch (error) {
+    console.error('Error fetching course pricing:', error);
+    return null;
+  }
+};

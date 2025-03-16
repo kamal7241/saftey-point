@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChevronDown } from "../ui/icons/ChevronDown";
 import Image from "next/image";
 
@@ -30,11 +30,22 @@ const SelectField: React.FC<SelectFieldProps> = ({
   customDropdown = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredOptions, setFilteredOptions] = useState(options);
+
+  useEffect(() => {
+    const filtered = options.filter((option) =>
+      option.label.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredOptions(filtered);
+  }, [searchTerm, options]);
 
   const handleOptionClick = (optionValue: string) => {
     onChange(name, optionValue);
     setIsOpen(false);
+    setSearchTerm("");
   };
+
   const selectedLabel =
     options.find((option) => option.value === value)?.label || placeholder;
 
@@ -48,7 +59,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <div className="flex justify-between items-center">
-              <span>{selectedLabel}</span>
+              <span className="capitalize">{selectedLabel}</span>
               <span className="inline-block text-gray-900 w-4 absolute end-2 top-1/2 -translate-y-1/2">
                 <ChevronDown />
               </span>
@@ -76,37 +87,55 @@ const SelectField: React.FC<SelectFieldProps> = ({
         )}
 
         {customDropdown && isOpen && (
-          <ul className="absolute z-10 w-full border border-gray-400 rounded-lg py-4 bg-white shadow-md mt-1 overflow-hidden">
-            {options.map((option) => (
-              <li
-                key={option.value}
-                className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer gap-2.5 text-gray-600"
-                onClick={() => handleOptionClick(option.value)}
-              >
+          <div className="absolute z-10 w-full border border-gray-400 rounded-lg bg-white shadow-md mt-1 overflow-hidden">
+            {options.length > 5 && (
+              <div className="p-2 border-b">
                 <input
-                  type="checkbox"
-                  checked={value === option.value}
-                  readOnly
-                  className="peer hidden"
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-primary placeholder:text-black-100"
+                  onClick={(e) => e.stopPropagation()}
                 />
-                <Image
-                  src="/images/icons/checkbox.svg"
-                  className="peer-checked:hidden"
-                  width="16"
-                  height="16"
-                  alt=""
-                />
-                <Image
-                  src="/images/icons/checkbox_checked.svg"
-                  className="hidden peer-checked:block"
-                  width="16"
-                  height="16"
-                  alt=""
-                />
-                {option.label}
-              </li>
-            ))}
-          </ul>
+              </div>
+            )}
+            <ul className="py-2 overflow-y-auto max-h-[180px]">
+              {filteredOptions.length === 0 ? (
+                <li className="px-3 py-2 text-gray-500 text-center">No results found</li>
+              ) : (
+                filteredOptions.map((option) => (
+                  <li
+                    key={option.value}
+                    className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer gap-2.5 text-gray-600"
+                    onClick={() => handleOptionClick(option.value)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={value === option.value}
+                      readOnly
+                      className="peer hidden"
+                    />
+                    <Image
+                      src="/images/icons/checkbox.svg"
+                      className="peer-checked:hidden"
+                      width="16"
+                      height="16"
+                      alt=""
+                    />
+                    <Image
+                      src="/images/icons/checkbox_checked.svg"
+                      className="hidden peer-checked:block"
+                      width="16"
+                      height="16"
+                      alt=""
+                    />
+                    {option.label}
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
         )}
       </div>
     </div>

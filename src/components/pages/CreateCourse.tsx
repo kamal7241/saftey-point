@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Certificate from "@/components/forms/course-steps/Certificate";
 import CourseInfo from "@/components/forms/course-steps/CourseInfo";
@@ -65,7 +66,13 @@ export default function CreateCourse() {
   console.log("courseId>>", courseId);
   console.log("certificateId>>", certificateId);
   console.log("examId>>", examId);
-  const StepComponents = [Pricing, CourseInfo, Certificate, Exam, SessionStep];
+  const StepComponents = [
+    CourseInfo,
+    (props: any) => <Pricing {...props} courseId={courseId} />,
+    Certificate,
+    Exam,
+    SessionStep,
+  ];
 
   const validationSchemas = [
     getCourseInfoValidationSchema(t),
@@ -99,20 +106,44 @@ export default function CreateCourse() {
         return;
       }
     } else if (currentStep === 1 && courseId) {
-      const pricingData = {
-        price: Number(values.price),
-        discount: Number(values.discount),
+      // Handle main pricing data
+      const mainPricingData = {
         isTheoreticalOnly: values.theoreticalOnly === "yes",
         type: values.priceType,
-        isCompanyTraining: values.companyPremises === "yes"
+        isCompanyTraining: values.companyPremises === "yes",
       };
-      
-      const result = await submitPricing(courseId, pricingData);
-      if (result.success) {
+
+      // Find all price sets from form values
+      let index = 0;
+      const priceSetPromises = [];
+
+      while (values[`price_${index}`] !== undefined) {
+        if (values[`price_${index}`]) {
+          const pricingData = {
+            ...mainPricingData,
+            price: Number(values[`price_${index}`]),
+            discount: Number(values[`discount_${index}`] || 0),
+          };
+          priceSetPromises.push(submitPricing(courseId, pricingData));
+        }
+        index++;
+      }
+
+      try {
+        // Submit all price sets
+        const results = await Promise.all(priceSetPromises);
+
+        // Check if any submission failed
+        const hasError = results.some((result) => !result.success);
+        if (hasError) {
+          toast.error(t("messages.error_creating_pricing"));
+          return;
+        }
+
         setFormData((prev) => ({ ...prev, ...values }));
         setCurrentStep((prev) => prev + 1);
-      } else {
-        toast.error(result.error || t("messages.error_creating_pricing"));
+      } catch (error) {
+        toast.error(`${t("messages.error_creating_pricing")} - ${error}`);
         return;
       }
     } else if (currentStep === 2 && courseId) {
@@ -145,18 +176,18 @@ export default function CreateCourse() {
       // Format session time values before submission
       const formattedValues = {
         ...values,
-        session_time: Array.isArray(values.session_time) 
-          ? values.session_time.map(time => 
+        session_time: Array.isArray(values.session_time)
+          ? values.session_time.map((time) =>
               time instanceof Date ? time.toISOString() : time
             )
           : values.session_time,
-        session_date: values.session_date instanceof Date 
-          ? values.session_date.toISOString().split('T')[0]
-          : values.session_date
+        session_date:
+          values.session_date instanceof Date
+            ? values.session_date.toISOString().split("T")[0]
+            : values.session_date,
       };
 
       const result = await submitSession(formattedValues, courseId);
-      debugger;
       if (result.success && result.innerData?.id) {
         setFormData((prev) => ({ ...prev, ...values }));
         setShowSuccess(true);
@@ -178,7 +209,6 @@ export default function CreateCourse() {
   };
 
   const CurrentStepComponent = StepComponents[currentStep];
-
 
   const handleClose = () => {
     if (courseId) {

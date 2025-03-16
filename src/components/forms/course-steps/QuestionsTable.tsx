@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import NewQuestionForm from "./NewQuestionForm";
+import { deleteExamQuestion } from "@/api/courseService";
+import { Trash } from "@/components/ui/icons/Trash"; // Make sure you have this icon
 
 interface Question {
   id: number;
@@ -67,6 +69,23 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
     setAddPopupOpen(true);
   };
 
+  const handleDeleteQuestion = async (questionId: number) => {
+    if (!examId) return;
+
+    try {
+      const result = await deleteExamQuestion(examId, questionId);
+      if (result.success) {
+        toast.success(t("question_deleted_successfully"));
+        fetchQuestions(); // Refetch the questions
+      } else {
+        toast.error(t("error_deleting_question"));
+      }
+    } catch (error) {
+      console.error("Error deleting question:", error);
+      toast.error(t("error_deleting_question"));
+    }
+  };
+
   return (
     <div className="py-6">
       <div className="flex justify-between items-center mb-6">
@@ -87,6 +106,23 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
       {/* Table to display questions */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
+          <thead>
+            <tr>
+              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
+                {t("title")}
+              </th>
+              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
+                {t("description")}
+              </th>
+              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
+                {t("type")}
+              </th>
+              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
+                {t("options")}
+              </th>
+              <th></th>
+            </tr>
+          </thead>
           <tbody>
             {loading ? (
               <tr>
@@ -102,7 +138,12 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
               </tr>
             ) : (
               questions.map((question) => (
-                <tr key={question.id} className="hover:bg-gray-50">
+                <tr
+                  key={question.id}
+                  className={`hover:bg-gray-50 ${
+                    questions.indexOf(question) % 2 === 0 ? "bg-gray-100" : ""
+                  }`}
+                >
                   <td className="py-3 px-4 border-b text-sm text-gray-700">
                     {question.title}
                   </td>
@@ -129,6 +170,18 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
                         </li>
                       ))}
                     </ul>
+                  </td>
+                  <td className="py-3 px-4 border-b text-sm text-gray-700">
+                    <Button
+                      onClick={() => handleDeleteQuestion(question.id)}
+                      variant="danger"
+                      icon={
+                        <span className="inline-block h-4 w-4 text-red-500">
+                          <Trash />
+                        </span>
+                      }
+                      aria-label={t("delete")}
+                    />
                   </td>
                 </tr>
               ))

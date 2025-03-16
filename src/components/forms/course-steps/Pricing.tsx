@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "@/components/formsUI/Input";
 import RadioField from "@/components/formsUI/RadioField";
 import SelectField from "@/components/formsUI/SelectField";
@@ -8,7 +8,9 @@ import Button from "@/components/ui/Button";
 import Table from "@/components/ui/Table";
 import { Add } from "@/components/ui/icons/Add";
 import FormPrice from "./FormPrice";
+import { toast } from "react-hot-toast";
 import Popup from "@/components/ui/Popup";
+import { fetchCountries } from "@/api/dashboardService";
 
 interface PricingProps {
   values: FormikValues;
@@ -19,6 +21,7 @@ interface PricingProps {
     value: string,
     shouldValidate?: boolean
   ) => void;
+  courseId?: string;
 }
 
 export default function Pricing({
@@ -26,10 +29,13 @@ export default function Pricing({
   handleChange,
   errors,
   setFieldValue,
+  courseId,
 }: PricingProps) {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
 
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [countries, setCountries] = useState([]);
   const [pricingSets, setPricingSets] = useState([
     { country: "", price: "", discount: "" },
   ]);
@@ -79,6 +85,16 @@ export default function Pricing({
     { header: "fees", accessor: "fees" },
   ];
 
+
+  useEffect(() => {
+    const getCountries = async () => {
+      const response = await fetchCountries();
+      if (response.success) {
+        setCountries(response.countries);
+      }
+    };
+    getCountries();
+  }, []);
   return (
     <div>
       <div className="grid w-full grid-cols-4 gap-4">
@@ -94,13 +110,10 @@ export default function Pricing({
                   name={`country_${index}`}
                   value={values[`country_${index}`] || ""}
                   onChange={(name, value) => setFieldValue(name, value)}
-                  options={[
-                    { value: "active", label: t("user_status.active") },
-                    { value: "inactive", label: t("user_status.inactive") },
-                    { value: "pending", label: t("user_status.pending") },
-                    { value: "suspended", label: t("user_status.suspended") },
-                    { value: "expired", label: t("user_status.expired") },
-                  ]}
+                  options={countries.map((country) => ({
+                    value: (country as { code: string }).code,
+                    label: (country as { name: string }).name,
+                  }))}
                   customDropdown
                 />
                 <ErrorMessage
@@ -132,6 +145,7 @@ export default function Pricing({
                   value={values[`discount_${index}`] || ""}
                   onChange={handleChange}
                   name={`discount_${index}`}
+                  required={false}
                 />
                 <ErrorMessage
                   name={`discount_${index}`}
@@ -170,7 +184,7 @@ export default function Pricing({
               { value: "yes", label: t("yes") },
               { value: "no", label: t("no") },
             ]}
-            selectedValue={values.theoreticalOnly}
+            selectedValue={values.theoreticalOnly ?? "no"}
             onChange={handleChange}
           />
           {errors.theoreticalOnly && (
@@ -190,7 +204,7 @@ export default function Pricing({
               { value: "THEORETICAL", label: t("theoretical") },
               { value: "PRACTICAL", label: t("practical") },
             ]}
-            selectedValue={values.priceType}
+            selectedValue={values.priceType ?? "BOTH"}
             onChange={handleChange}
           />
           {errors.priceType && (
@@ -206,7 +220,7 @@ export default function Pricing({
               { value: "yes", label: t("yes") },
               { value: "no", label: t("no") },
             ]}
-            selectedValue={values.companyPremises}
+            selectedValue={values.companyPremises ?? "no"}
             onChange={handleChange}
           />
           {errors.companyPremises && (
@@ -224,7 +238,13 @@ export default function Pricing({
             <div className="flex gap-3 justify-between items-stretch flex-wrap">
               <Button
                 label={t("addSpecificPrice")}
-                onClick={() => setAddPopupOpen(true)}
+onClick={() => {
+  if (!courseId) {
+    toast.error(tMsgs("missing_courseId"));
+    return;
+  }
+  setAddPopupOpen(true);
+}}
                 icon={
                   <span className="w-6 inline-block">
                     <Add />
@@ -240,14 +260,16 @@ export default function Pricing({
             </div>
           </div>
           <Table<TableRowData> data={tableData} columns={columns} />
-
-          <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-            <FormPrice
-              title={t("add_company")}
-              sub_title={t("add_company_subtitle")}
-              onClose={() => setAddPopupOpen(false)}
-            />
-          </Popup>
+          {courseId && (
+            <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+              <FormPrice
+                title={t("add_specific_price")}
+                sub_title={t("form_subtitle")}
+                onClose={() => setAddPopupOpen(false)}
+                courseId={courseId}
+              />
+            </Popup>
+          )}
         </div>
       )}
     </div>

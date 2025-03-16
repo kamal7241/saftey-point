@@ -1,50 +1,104 @@
 "use client";
+import { submitCorporatePricing } from "@/api/courseService";
+import { fetchBranches, fetchCountries } from "@/api/dashboardService";
 import Input from "@/components/formsUI/Input";
-import { addCompanyValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
-import FileUploader from "../../formsUI/FileUploader";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import * as Yup from "yup";
 import SelectField from "../../formsUI/SelectField";
 import Button from "../../ui/Button";
-import ErrorMessageWrappers from "../../ui/ErrorMessageWrappers";
 import SuccessMessage from "../../ui/SuccessMessage";
 
 interface FormPriceProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  courseId: string;
 }
 interface FormValues {
-  companyName: string;
-  status: string;
-  email: string;
-  phoneNumber: string;
-  password: string;
-  file: File | null;
+  city: string;
+  branch: string;
+  trainees: number | null;
+  type: string;
+  fees: number | null;
 }
 
 export default function FormPrice({
   title,
   sub_title,
   onClose,
+  courseId,
 }: FormPriceProps) {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const tTable = useTranslations("tables");
-
-  const handleGeneratePassword = (
-    setFieldValue: (field: string, value: string) => void
-  ) => {
-    const randomPassword = Math.random().toString(36).slice(-8);
-    setFieldValue("password", randomPassword);
-  };
+  const tValidation = useTranslations("validation");
+  const [countries, setCountries] = useState([]);
+  const [branches, setBranches] = useState([]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (values: FormValues) => {
-    console.log("Form Submitted:", values);
-    setIsSubmitted(true);
+  const validationSchema = Yup.object({
+    city: Yup.string().required(tValidation("required")),
+    branch: Yup.string().required(tValidation("required")),
+    trainees: Yup.number()
+      .nullable()
+      .required(tValidation("required"))
+      .min(1, tValidation("min_number", { min: 1 })),
+    type: Yup.string()
+      .required(tValidation("required"))
+      .oneOf(["BOTH", "THEORETICAL", "PRACTICAL"], tValidation("invalid_type")),
+    fees: Yup.number()
+      .nullable()
+      .required(tValidation("required"))
+      .min(0, tValidation("min_number", { min: 0 })),
+  });
+  const handleSubmit = async (values: FormValues) => {
+    try {
+      const pricingData = {
+        type: values.type,
+        isCompanyTraining: false,
+        city: values.city,
+        trainees: Number(values.trainees),
+        fees: Number(values.fees),
+        currency: "USD"
+      };
+      if (!courseId) {
+        toast.error(tMsgs("missing_courseId"));
+        return;
+      }
+    
+      const response = await submitCorporatePricing(courseId, pricingData);
+      
+      if (response.success) {
+        setIsSubmitted(true);
+      } else {
+        // Handle error case
+        console.error("Failed to submit pricing:", response.error);
+      }
+    } catch (error) {
+      console.error("Error submitting pricing:", error);
+    }
   };
+
+  useEffect(() => {
+    const getCountries = async () => {
+      const response = await fetchCountries();
+      if (response.success) {
+        setCountries(response.countries);
+      }
+    };
+    const getBranches = async () => {
+      const response = await fetchBranches();
+      if (response.success) {
+        setBranches(response.branches);
+      }
+    };
+    getBranches();
+    getCountries();
+  }, []);
 
   if (isSubmitted) {
     return (
@@ -75,61 +129,50 @@ export default function FormPrice({
 
       <Formik
         initialValues={{
-          companyName: "",
-          status: "",
-          email: "",
-          phoneNumber: "",
-          password: "",
-          file: null,
+          city: "",
+          branch: "",
+          trainees: null,
+          type: "",
+          fees: null,
         }}
-        validationSchema={addCompanyValidationSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue, submitForm }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
-            <div className="col-span-4">
-              <FileUploader
-                onChange={(file) => setFieldValue("file", file)}
-                label={t("logo_company")}
-                note={t("fileuploader_note")}
-              />
-            </div>
-
-            {/* Company Name */}
             <div className="col-span-2">
-              <Input
-                label="Company Name"
-                type="text"
-                placeholder="Enter company name"
-                value={values.companyName}
-                onChange={handleChange}
-                name="companyName"
+              <SelectField
+                label={tTable("city")}
+                name="city"
+                value={values.city}
+                onChange={(name, value) => setFieldValue(name, value)}
+                options={countries.map((country) => ({
+                  value: (country as { code: string }).code,
+                  label: (country as { name: string }).name,
+                }))}
+                customDropdown
               />
               <ErrorMessage
-                name="companyName"
+                name="city"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
 
-            {/* Status */}
             <div className="col-span-2">
               <SelectField
-                label={tTable("status")}
-                name="status"
-                value={values.status}
+                label={tTable("branch")}
+                name="branch"
+                value={values.branch}
                 onChange={(name, value) => setFieldValue(name, value)}
-                options={[
-                  { value: "active", label: t("company_status.active") },
-                  { value: "inactive", label: t("company_status.inactive") },
-                  { value: "pending", label: t("company_status.pending") },
-                  { value: "suspended", label: t("company_status.suspended") },
-                  { value: "expired", label: t("company_status.expired") },
-                ]}
+                options={branches.map((branch) => ({
+                  value: (branch as { id: number }).id.toString(),
+                  label: (branch as { name: string }).name,
+                }))}
                 customDropdown
               />
               <ErrorMessage
-                name="status"
+                name="branch"
                 component="div"
                 className="text-xs text-red-500"
               />
@@ -138,77 +181,68 @@ export default function FormPrice({
             {/* Email */}
             <div className="col-span-2">
               <Input
-                label="Email"
-                type="email"
-                placeholder="Enter email address"
-                value={values.email}
+                label={t("trainees")}
+                type="number"
+                placeholder={t("trainees")}
+                value={values.trainees??""}
                 onChange={handleChange}
-                name="email"
+                name="trainees"
               />
               <ErrorMessage
-                name="email"
+                name="trainees"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
 
-            {/* Phone Number */}
             <div className="col-span-2">
-              <Input
-                label="Phone Number"
-                type="text"
-                placeholder="Enter phone number"
-                value={values.phoneNumber}
-                onChange={handleChange}
-                name="phoneNumber"
+              <SelectField
+                label={tTable("type")}
+                name="type"
+                value={values.type}
+                onChange={(name, value) => setFieldValue(name, value)}
+                options={[
+                  { value: "BOTH", label: t("both") },
+                  { value: "THEORETICAL", label: t("theoretical") },
+                  { value: "PRACTICAL", label: t("practical") },
+                ]}
+                customDropdown
               />
               <ErrorMessage
-                name="phoneNumber"
+                name="type"
                 component="div"
                 className="text-xs text-red-500"
               />
             </div>
 
-            <div className="col-span-3">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
-                onChange={handleChange}
-                name="password"
-                // extraClass="p-3"
-              />
-            </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
             <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
+              <Input
+                label={t("fees")}
+                type="number"
+                placeholder={t("fees")}
+                value={values.fees??""}
+                onChange={handleChange}
+                name="fees"
+              />
+              <ErrorMessage
+                name="fees"
+                component="div"
+                className="text-xs text-red-500"
+              />
             </div>
+
             <div className="flex justify-end gap-4 col-span-4">
               <Button
-                label={t("buttons.close")}
+                label={t("buttons.cancel")}
                 onClick={onClose}
                 variant="transparent"
                 padding="py-3 px-4"
               />
               <Button
-                label={t("buttons.submit")}
+                label={t("buttons.add")}
                 onClick={submitForm}
-                type="submit"
                 variant="primary"
                 padding="py-3 px-4"
-                // disabled={isSubmitting}
               />
             </div>
           </Form>

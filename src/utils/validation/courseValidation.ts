@@ -59,19 +59,6 @@ export const getPricingValidationSchema = (t: (key: string) => string) => {
           .max(100, t("validation.discount.max")),
       };
     }, {}),
-
-    // Radio button selections
-    theoreticalOnly: Yup.string()
-      .required(t("validation.theoreticalOnly.required"))
-      .oneOf(["yes", "no"]),
-    
-    priceType: Yup.string()
-      .required(t("validation.priceType.required"))
-      .oneOf(["theoretical", "practical"]),
-    
-    companyPremises: Yup.string()
-      .required(t("validation.companyPremises.required"))
-      .oneOf(["yes", "no"]),
   });
 };
 

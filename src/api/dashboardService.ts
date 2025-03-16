@@ -420,22 +420,6 @@ export const fetchExams = async () => {
     return data;
 };
 
-export const fetchBranches = async () => {
-    const data = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `Branch ${generateRandomString(5)}`,
-        location_map: `Location ${generateRandomString(3)}`,
-        address: `address ${generateRandomString(3)}`,
-        location_name: `Location ${generateRandomString(3)}`,
-        status: Math.random() > 0.5 ? "1" : "0",
-        branches: Math.floor(Math.random() * 10) + 1,
-        employees: Math.floor(Math.random() * 500) + 50,
-        created: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-    }));
-
-    return data;
-};
-
 export const fetchAdmins = async () => {
     const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,
@@ -452,3 +436,66 @@ export const fetchAdmins = async () => {
 
     return data;
 };
+
+
+export const fetchCountries = async () => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch countries");
+        }
+
+        return {
+            success: true,
+            countries: result.innerData,
+            message: result.message,
+        };
+    } catch (error) {
+        console.error("Error fetching countries:", error);
+        return {
+            success: false,
+            countries: [],
+            message: error instanceof Error ? error.message : "Failed to fetch countries",
+        };
+    }
+};
+
+export const fetchBranches = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/v1/branch?offset=0&limit=100`,
+        {
+          headers: {
+            accept: "*/*",
+          },
+        }
+      );
+      const result = await response.json();
+  
+      if (!result.success) {
+        throw new Error("Failed to fetch branches");
+      }
+  
+      return {
+        success: true,
+        branches: result.innerData.branches,
+        message: result.message,
+      };
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+      return {
+        success: false,
+        branches: [],
+        message: error instanceof Error ? error.message : "Failed to fetch branches",
+      };
+    }
+  };

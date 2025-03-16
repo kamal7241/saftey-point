@@ -1,16 +1,26 @@
 "use client";
-import { fetchCourseById } from "@/api/dashboardService";
+import { fetchCourseById, fetchCoursePricing } from "@/api/courseService";
 import type { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
+import CourseTitle from "../ui/icons/CourseTitle";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
 import Edit2 from "../ui/icons/Edit2";
+import StatusCheck from "../ui/icons/StatusCheck";
 import Suspend from "../ui/icons/Suspend";
-import UserSquare from "../ui/icons/UserSquare";
+import Status from "../ui/Status";
+import Calendar from "../ui/icons/Calendar";
+import Task from "../ui/icons/Task";
+import ImagePopup from "../ui/ImagePopup";
+import Attach from "../ui/icons/Attach";
+import LanguageSquare from "../ui/icons/LanguageSquare";
+import People from "../ui/icons/People";
+import Medical from "../ui/icons/Medical";
+import Note from "../ui/icons/Note";
 
 interface SingleCourseProps {
   courseID: string;
@@ -19,6 +29,8 @@ interface SingleCourseProps {
 export default function SingleCourse({ courseID }: SingleCourseProps) {
   const t = useTranslations("common");
   const [courseData, setCourseData] = useState<SingleCourse>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [pricingData, setPricingData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editPopupOpen, setEditPopupOpen] = useState(false);
@@ -42,8 +54,20 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     getCourseData();
   }, [getCourseData]);
 
+  useEffect(() => {
+    const getPricingData = async () => {
+      if (activeTab === "pricing") {
+        const data = await fetchCoursePricing(Number(courseID));
+        if (data) {
+          setPricingData(data);
+        }
+      }
+    };
+    getPricingData();
+  }, [activeTab, courseID]);
+
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (error || !courseData) return <div>{error}</div>;
   console.log("courseData", courseData);
   console.log("editPopupOpen", editPopupOpen);
   const breadcrumbItems = [
@@ -61,38 +85,100 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     switch (activeTab) {
       case "course_info":
         return (
-          <div className="grid grid-cols-3 gap-6">
-            <GroupInfo
-              label={t("instructor")}
-              content="John Doe"
-              icon={<UserSquare />}
-            />
-            <GroupInfo
-              label={t("duration")}
-              content="12 Weeks"
-              icon={<Edit />}
-            />
-            <GroupInfo
-              label={t("start_date")}
-              content="March 1, 2025"
-              icon={<Edit />}
-            />
-          </div>
+          <>
+            <div className="grid grid-cols-3 gap-6">
+              <GroupInfo
+                label={t("courseTitle")}
+                content={courseData.title ?? "missing from API"}
+                icon={<CourseTitle />}
+              />
+              <GroupInfo
+                label={t("status")}
+                content={
+                  courseData?.status === "ACTIVE" ? (
+                    <Status status={"1"} />
+                  ) : (
+                    <Status status={"0"} />
+                  )
+                }
+                icon={<StatusCheck />}
+              />
+              <GroupInfo
+                label={t("prerequisites.name")}
+                content={courseData.prerequisites ?? "missing from API"}
+                icon={<CourseTitle />}
+              />
+              <GroupInfo
+                label={t("validity")}
+                content={
+                  courseData.validity
+                    ? new Date(courseData.validity).toDateString()
+                    : "missing from API"
+                }
+                icon={<Calendar />}
+              />
+              <GroupInfo
+                label={t("level.name")}
+                content={courseData.level ?? "missing from API"}
+                icon={<Task />}
+              />
+              <GroupInfo
+                label={t("courseCover")}
+                content={<ImagePopup imagePath={courseData?.cover} />}
+                icon={<Attach />}
+              />
+              <GroupInfo
+                label={t("language.name")}
+                content={courseData.language ?? "missing from API"}
+                icon={<LanguageSquare />}
+              />
+              <GroupInfo
+                label={t("maxAttendees")}
+                content={courseData.maxAttendees ?? "missing from API"}
+                icon={
+                  <span className="text-transparent">
+                    <People />
+                  </span>
+                }
+              />
+              <GroupInfo
+                label={t("medicalTest")}
+                content={courseData.requiresMedicalTest ? "Yes" : "No"}
+                icon={<Medical />}
+              />
+            </div>
+            <div className="mt-6">
+              <GroupInfo
+                label={t("description")}
+                content={courseData.description ?? "missing from API"}
+                icon={<Note />}
+              />
+            </div>
+          </>
         );
       case "pricing":
         return (
-          <div className="grid grid-cols-3 gap-6">
-            <GroupInfo label={t("price")} content="$499" icon={<Edit />} />
-            <GroupInfo
-              label={t("discount")}
-              content="10% Off"
-              icon={<Edit />}
-            />
-            <GroupInfo
-              label={t("payment_methods")}
-              content="Credit Card, PayPal"
-              icon={<Edit />}
-            />
+          // TODO add missing parameters
+          <div className="divide-y space-y-2">
+            {pricingData.map((pricing) => (
+              <div key={pricing.id} className="grid grid-cols-3 gap-6 py-4">
+                <GroupInfo
+                  label={t("price")}
+                  content={`$${pricing.price}`}
+                  icon={<Edit />}
+                />
+                <GroupInfo
+                  label={t("discount")}
+                  content={`${pricing.discount}%`}
+                  icon={<Edit />}
+                />
+                <GroupInfo
+                  label={t("type")}
+                  content={pricing.type}
+                  icon={<Edit />}
+                />
+              </div>
+            ))}
           </div>
         );
       case "exam":

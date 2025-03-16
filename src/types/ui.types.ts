@@ -148,12 +148,17 @@ export interface SingleCourse {
     id: number;
     title: string;
     language: string;
+    prerequisites?: string;
+    validity?: string;
+    description?: string;
     enrollments?: number;
     maxAttendees?: number;
+    requiresMedicalTest?: boolean;
     sessions: number;
     level: number;
     status: string;
     image?: string;
+    cover?: string;
 }
 
 

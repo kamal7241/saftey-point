@@ -76,7 +76,7 @@ export default function Exam({
         <div className="col-span-2">
           <Input
             label={t("totalMarks")}
-            type="text"
+            type="number"
             placeholder={t("totalMarks")}
             value={values.totalMarks}
             onChange={handleChange}
@@ -91,7 +91,7 @@ export default function Exam({
         <div className="col-span-2">
           <Input
             label={t("passMarks")}
-            type="text"
+            type="number"
             placeholder={t("passMarks")}
             value={values.passMarks}
             onChange={handleChange}

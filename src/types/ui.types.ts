@@ -56,13 +56,14 @@ export interface SingleCertificate {
 
 export interface Branch {
     id: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
     name: string;
-    location_name: string;
     status: string;
     address: string;
-    location_map: string;
-    created: string;
-    image?: string;
+    latitude: string;
+    longitude: string;
 }
 
 

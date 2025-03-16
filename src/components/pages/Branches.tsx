@@ -34,19 +34,19 @@ const Branches = () => {
   useEffect(() => {
     const getBranches = async () => {
       const response = await fetchBranches();
-      const data = await response;
+      const data = await response.branches;
       setBranches(data);
       
       const uniqueDates = Array.from(
-        new Set(data.map((item) => item.created))
+        new Set(data.map((item: Branch) => item.createdAt))
       );
 
       const formattedDates = uniqueDates.map((date) => {
-        const formattedDate = format(new Date(date), "yyyy / MM / dd");
+        const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
         return { value: date, label: formattedDate };
       });
 
-      setCreatedOptions(formattedDates);
+      setCreatedOptions(formattedDates as { value: string; label: string }[]);
     };
 
     getBranches();
@@ -69,8 +69,7 @@ const Branches = () => {
   const columns: { header: string; accessor: keyof Branch }[] = [
     { header: "branch_name", accessor: "name" },
     { header: "address", accessor: "address" },
-    { header: "location", accessor: "location_name" },
-    { header: "created", accessor: "created" },
+    { header: "created", accessor: "createdAt" },
     { header: "status", accessor: "status" },
   ];
 
@@ -93,20 +92,20 @@ const Branches = () => {
         [
           "ID",
           "Name",
-          "Location",
+          "Address",
           "Status",
-          // "Branches",
-          // "Employees",
-          "Created",
+          "Created At",
+          "Latitude",
+          "Longitude"
         ],
         ...filteredBranches.map((c) => [
           c.id,
           c.name,
-          c.location_name,
+          c.address,
           c.status,
-          // c.branches,
-          // c.employees,
-          c.created,
+          c.createdAt,
+          c.latitude,
+          c.longitude
         ]),
       ]
         .map((row) => row.join(","))
@@ -253,7 +252,7 @@ const Branches = () => {
           />
         )}
         <Table
-          data={filteredBranches}
+          data={filteredBranches.map(branch => ({ ...branch, image: undefined }))}
           columns={columns}
           pagination={{
             currentPage,

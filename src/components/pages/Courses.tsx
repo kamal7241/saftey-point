@@ -69,7 +69,6 @@ const Courses = () => {
     { header: "status", accessor: "status" },
   ];
 
-  const totalPages = Math.ceil(filteredCourses.length / 10);
 
   const handlePageChange = (page: number) => setCurrentPage(page);
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) =>

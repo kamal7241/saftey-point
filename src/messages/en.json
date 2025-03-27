@@ -121,6 +121,8 @@
     "status": "status",
     "add_user": "Add User",
     "edit_user": "Edit User",
+    "edit": "Edit",
+    "trash": "trash",
     "add_staff": "Add Staff",
     "logo_user": "User Photo",
     "exams": "Exams",

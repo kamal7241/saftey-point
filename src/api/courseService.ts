@@ -2,167 +2,29 @@
 import { CourseFormValues } from "@/types/forms.types";
 import { SingleCourse } from "@/types/ui.types";
 import { FormikValues } from "formik";
+import {
+  CertificateDTO,
+  CertificateResponse,
+  CorporatePricingDTO,
+  CourseExam,
+  CourseExamResponse,
+  CourseResponse,
+  CreateCourseDTO,
+  ExamDTO,
+  ExamQuestionDTO,
+  ExamResponse,
+  PricingDTO,
+  PricingItem,
+  PricingListResponse,
+  PricingResponse,
+  Question,
+  QuestionListResponse,
+  QuestionResponse,
+  SessionDTO,
+  SessionResponse,
+  UpdateQuestionDTO,
+} from "@/types/api.types";
 
-interface PricingItem {
-    id: number;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: null | string;
-    price: string;
-    discount: string;
-    isTheoreticalOnly: boolean;
-    type: string;
-    isCompanyTraining: boolean;
-    courseId: number;
-    countryId: null | number;
-  }
-  
-  interface PricingListResponse {
-    success: boolean;
-    message: string;
-    timestamp: string;
-    innerData: {
-      items: PricingItem[];
-      count: number;
-    };
-  }
-  
-interface SessionDTO {
-    title: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    status: string;
-    courseId: number;
-}
-
-interface SessionResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
-
-interface CorporatePricingDTO {
-    type: string;
-    isCompanyTraining: boolean;
-    city: string;
-    trainees: number;
-    fees: number;
-    currency: string;
-}
-interface CreateCourseDTO {
-    title: string;
-    status: string;
-    prerequisites: string;
-    description: string;
-    validity: string;
-    cover: string;
-    requiresMedicalTest: boolean;
-    maxAttendees: number;
-    language: string;
-    level: string;
-}
-
-interface CourseResponse {
-    success: boolean;
-    message?: string;
-    timestamp?: string;
-    innerData?: {
-        id: number;
-        title: string;
-        status: string;
-        prerequisites: string;
-        validity: string;
-        cover: string;
-        level: string;
-        language: string;
-        maxAttendees: number;
-        requiresMedicalTest: boolean;
-        description: string;
-        createdAt: string;
-        updatedAt: string;
-        deletedAt: string | null;
-    };
-    error?: string;
-}
-
-interface CertificateDTO {
-    title: string;
-    validFrom: string;
-    validTo: string;
-    issueDate: string;
-    displaySource: boolean;
-    watermark: boolean;
-    courseId: number;
-}
-
-interface CertificateResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
-
-interface ExamDTO {
-    title: string;
-    instructions: string;
-    duration: number;
-    examType: string;
-    totalMarks: number;
-    passMarks: number;
-    courseId: number;
-}
-
-interface ExamResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
-
-interface ExamQuestionOption {
-    optionText: string;
-    isCorrect: boolean;
-}
-
-interface ExamQuestionAnswer {
-    answerText: string;
-    isCorrect: boolean;
-    matchWith: string;
-    options: string[];
-}
-
-interface ExamQuestionDTO {
-    title: string;
-    description: string;
-    type: string;
-    examId: number;
-    options: ExamQuestionOption[];
-    answers: ExamQuestionAnswer[];
-}
-
-interface QuestionResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
-
-interface PricingDTO {
-    price: number;
-    discount: number;
-    isTheoreticalOnly: boolean;
-    type: string;
-    isCompanyTraining: boolean;
-}
-
-interface PricingResponse {
-    success: boolean;
-    message?: string;
-    error?: string;
-    innerData?: any;
-}
 
 export const submitCourse = async (values: CourseFormValues, step: number): Promise<CourseResponse> => {
     if (step === 0) {
@@ -457,7 +319,7 @@ export const submitPricing = async (courseId: string, pricingData: PricingDTO): 
 export const submitCorporatePricing = async (courseId: string, values: CorporatePricingDTO): Promise<PricingResponse> => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/pricing/corporate`,
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/corporate-pricing`,
             {
                 method: 'POST',
                 headers: {
@@ -504,5 +366,77 @@ export const fetchCoursePricing = async (courseId: number): Promise<PricingItem[
   } catch (error) {
     console.error('Error fetching course pricing:', error);
     return null;
+  }
+};
+
+export const fetchCourseExams = async (courseId: number): Promise<CourseExam[] | null> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${courseId}/exams`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result: CourseExamResponse = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch exam details');
+    }
+
+    return result.innerData;
+  } catch (error) {
+    console.error('Error fetching course exams:', error);
+    return null;
+  }
+};
+
+export const fetchExamQuestions = async (examId: string): Promise<Question[] | null> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${examId}/questions`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result: QuestionListResponse = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch questions');
+    }
+
+    return result.innerData;
+  } catch (error) {
+    console.error('Error fetching exam questions:', error);
+    return null;
+  }
+};
+
+
+export const updateExamQuestion = async (
+  examId: string,
+  questionId: number,
+  data: UpdateQuestionDTO
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${examId}/questions/${questionId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          accept: '*/*',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const result = await response.json();
+    return { success: response.ok, error: result.message };
+  } catch (error) {
+    console.error('Error updating question:', error);
+    return { success: false, error: 'Failed to update question' };
   }
 };

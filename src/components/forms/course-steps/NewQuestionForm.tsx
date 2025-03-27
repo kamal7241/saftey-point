@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { submitExamQuestion } from "@/api/courseService";
+import { submitExamQuestion, updateExamQuestion } from "@/api/courseService";
 import Input from "@/components/formsUI/Input";
 import SelectField from "@/components/formsUI/SelectField";
 import Textarea from "@/components/formsUI/Textarea";
@@ -8,9 +8,10 @@ import Button from "@/components/ui/Button";
 import RadioCheck from "@/components/ui/icons/RadioCheck";
 import RadioUnCheck from "@/components/ui/icons/RadioUnCheck";
 import { Trash } from "@/components/ui/icons/Trash";
+import { Question } from "@/types/courses.types";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as Yup from "yup";
 
@@ -25,6 +26,7 @@ interface NewQuestionFormProps {
   sub_title?: string;
   onClose?: () => void;
   examId?: string;
+  editQuestion?: Question | null;
 }
 interface FormValues {
   title: string;
@@ -40,6 +42,7 @@ export default function NewQuestionForm({
   sub_title,
   onClose,
   examId,
+  editQuestion
 }: NewQuestionFormProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
@@ -52,19 +55,76 @@ export default function NewQuestionForm({
     title: Yup.string().required(tValidation("required")),
     description: Yup.string().required(tValidation("required")),
   });
+  
+  // Update initialValues to use editQuestion data if available
   const initialValues = {
-    title: "",
-    description: "",
-    type: "",
-    answers: [
-      {
-        text: "",
-        isCorrect: false,
-        matchWith: "",
-      },
-    ],
+    title: editQuestion?.title || "",
+    description: editQuestion?.description || "",
+    type: editQuestion?.type || "",
+    answers: editQuestion?.options.map(opt => ({
+      text: opt.optionText,
+      isCorrect: opt.isCorrect,
+      matchWith: "",
+    })) || [{ text: "", isCorrect: false, matchWith: "" }],
     examId: "",
     options: [],
+  };
+  
+  // Update useEffect to set answers when editing
+  useEffect(() => {
+    if (editQuestion) {
+      setAnswers(
+        editQuestion.options.map(opt => ({
+          text: opt.optionText,
+          isCorrect: opt.isCorrect,
+        }))
+      );
+    }
+  }, [editQuestion]);
+  
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
+    setSubmitting(true);
+    try {
+      if (!examId) {
+        toast.error(tMsgs("missing_examId"));
+        return;
+      }
+  
+      const questionData = {
+        title: values.title,
+        description: values.description,
+        type: values.type,
+        examId: Number(examId),
+        options: values.type === "MATCHING" ? [] : answers.map((answer) => ({
+          optionText: answer.text,
+          isCorrect: answer.isCorrect,
+        })),
+        answers: values.type === "MATCHING" ? answers.map((answer, index) => ({
+          answerText: answer.text,
+          isCorrect: true,
+          matchWith: answers[(index + 1) % answers.length].text,
+          options: answers.map((a) => a.text),
+        })) : [],
+      };
+  
+      const result = editQuestion
+        ? await updateExamQuestion(examId, editQuestion.id, questionData)
+        : await submitExamQuestion(examId, questionData);
+  
+      if (result.success) {
+        toast.success(tMsgs(editQuestion ? "question_updated_successfully" : "question_created_successfully"));
+        onClose?.();
+      } else {
+        toast.error(result.error || tMsgs(editQuestion ? "error_updating_question" : "error_creating_question"));
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error(tMsgs(editQuestion ? "error_updating_question" : "error_creating_question"));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddAnswer = () => {
@@ -90,52 +150,52 @@ export default function NewQuestionForm({
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
-    setSubmitting(true);
-    try {
-      console.log("values>>", values);
-      if (!examId) {
-        toast.error(tMsgs("missing_examId"));
-        return;
-      }
+  // const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
+  //   setSubmitting(true);
+  //   try {
+  //     console.log("values>>", values);
+  //     if (!examId) {
+  //       toast.error(tMsgs("missing_examId"));
+  //       return;
+  //     }
 
-      const questionData = {
-        title: values.title,
-        description: values.description,
-        type: values.type,
-        examId: Number(examId),
-        options:
-          values.type === "MATCHING"
-            ? []
-            : answers.map((answer) => ({
-                optionText: answer.text,
-                isCorrect: answer.isCorrect,
-              })),
-        answers:
-          values.type === "MATCHING"
-            ? answers.map((answer, index) => ({
-                answerText: answer.text,
-                isCorrect: true,
-                matchWith: answers[(index + 1) % answers.length].text,
-                options: answers.map((a) => a.text),
-              }))
-            : [],
-      };
+  //     const questionData = {
+  //       title: values.title,
+  //       description: values.description,
+  //       type: values.type,
+  //       examId: Number(examId),
+  //       options:
+  //         values.type === "MATCHING"
+  //           ? []
+  //           : answers.map((answer) => ({
+  //               optionText: answer.text,
+  //               isCorrect: answer.isCorrect,
+  //             })),
+  //       answers:
+  //         values.type === "MATCHING"
+  //           ? answers.map((answer, index) => ({
+  //               answerText: answer.text,
+  //               isCorrect: true,
+  //               matchWith: answers[(index + 1) % answers.length].text,
+  //               options: answers.map((a) => a.text),
+  //             }))
+  //           : [],
+  //     };
 
-      const result = await submitExamQuestion(examId, questionData);
-      if (result.success) {
-        toast.success(tMsgs("question_created_successfully"));
-        onClose?.();
-      } else {
-        toast.error(result.error || tMsgs("error_creating_question"));
-      }
-    } catch (error) {
-      console.error("Submission error:", error);
-      toast.error(tMsgs("error_creating_question"));
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  //     const result = await submitExamQuestion(examId, questionData);
+  //     if (result.success) {
+  //       toast.success(tMsgs("question_created_successfully"));
+  //       onClose?.();
+  //     } else {
+  //       toast.error(result.error || tMsgs("error_creating_question"));
+  //     }
+  //   } catch (error) {
+  //     console.error("Submission error:", error);
+  //     toast.error(tMsgs("error_creating_question"));
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
 
   return (
     <div className="p-6">
@@ -163,8 +223,8 @@ export default function NewQuestionForm({
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "MCQ", label: t("question_type.mcq") },
-                  { value: "True_False", label: t("question_type.true_false") },
-                  { value: "MATCING", label: t("question_type.matching") },
+                  // { value: "True_False", label: t("question_type.true_false") },
+                  // { value: "MATCING", label: t("question_type.matching") },
                 ]}
                 customDropdown
               />

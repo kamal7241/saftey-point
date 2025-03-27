@@ -1,24 +1,15 @@
 "use client";
+import { deleteExamQuestion, fetchExamQuestions } from "@/api/courseService";
 import Button from "@/components/ui/Button";
 import { Add } from "@/components/ui/icons/Add";
+import { Delete } from "@/components/ui/icons/Delete";
+import { Edit } from "@/components/ui/icons/Edit";
 import Popup from "@/components/ui/Popup";
+import { Question } from "@/types/courses.types";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import NewQuestionForm from "./NewQuestionForm";
-import { deleteExamQuestion } from "@/api/courseService";
-import { Trash } from "@/components/ui/icons/Trash"; // Make sure you have this icon
-
-interface Question {
-  id: number;
-  title: string;
-  description: string;
-  type: string;
-  options: Array<{
-    optionText: string;
-    isCorrect: boolean;
-  }>;
-}
 
 interface QuestionsTableProps {
   examId?: string;
@@ -29,37 +20,29 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
   const tMsgs = useTranslations("messages");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
 
-  const fetchQuestions = async () => {
-    if (!examId) return;
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${examId}/questions`,
-        {
-          headers: {
-            accept: "*/*",
-          },
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        setQuestions(data.innerData);
-      } else {
-        toast.error(tMsgs("error_fetching_questions"));
-      }
-    } catch (error) {
-      console.error("Error fetching questions:", error);
-      toast.error(tMsgs("error_fetching_questions"));
-    } finally {
-      setLoading(false);
-    }
+  const handleEditClick = (question: Question) => {
+    setEditingQuestion(question);
+    setAddPopupOpen(true);
   };
 
-  //   useEffect(() => {
-  //     fetchQuestions();
-  //   }, [examId]);
+  const getQuestions = useCallback(async () => {
+    if (!examId) return;
+    setLoading(true);
+    const data = await fetchExamQuestions(examId);
+    if (data) {
+      setQuestions(data);
+    } else {
+      toast.error(tMsgs("error_fetching_questions"));
+    }
+    setLoading(false);
+  }, [examId, tMsgs]);
+
+  useEffect(() => {
+    getQuestions();
+  }, [getQuestions]);
 
   const handleAddQuestionClick = () => {
     if (!examId) {
@@ -76,7 +59,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
       const result = await deleteExamQuestion(examId, questionId);
       if (result.success) {
         toast.success(t("question_deleted_successfully"));
-        fetchQuestions(); // Refetch the questions
+        getQuestions();
       } else {
         toast.error(t("error_deleting_question"));
       }
@@ -103,26 +86,9 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
           />
         </div>
       </div>
-      {/* Table to display questions */}
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200">
-          <thead>
-            <tr>
-              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
-                {t("title")}
-              </th>
-              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
-                {t("description")}
-              </th>
-              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
-                {t("type")}
-              </th>
-              <th className="py-3 px-4 border-b text-sm font-medium text-gray-900">
-                {t("options")}
-              </th>
-              <th></th>
-            </tr>
-          </thead>
           <tbody>
             {loading ? (
               <tr>
@@ -147,7 +113,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
                   <td className="py-3 px-4 border-b text-sm text-gray-700">
                     {question.title}
                   </td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">
+                  {/* <td className="py-3 px-4 border-b text-sm text-gray-700">
                     {question.description}
                   </td>
                   <td className="py-3 px-4 border-b text-sm text-gray-700">
@@ -170,18 +136,26 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
                         </li>
                       ))}
                     </ul>
-                  </td>
-                  <td className="py-3 px-4 border-b text-sm text-gray-700">
-                    <Button
-                      onClick={() => handleDeleteQuestion(question.id)}
-                      variant="danger"
-                      icon={
-                        <span className="inline-block h-4 w-4 text-red-500">
-                          <Trash />
+                  </td> */}
+                  <td className="py-3 px-4 border-b text-sm text-gray-700 w-[135px]">
+                    <div className="flex gap-2.5">
+                      <button
+                        onClick={() => handleEditClick(question)}
+                        aria-label={t("edit")}
+                      >
+                        <span className="inline-block h-5 w-5 text-gray-900">
+                          <Edit />
                         </span>
-                      }
-                      aria-label={t("delete")}
-                    />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteQuestion(question.id)}
+                        aria-label={t("trash")}
+                      >
+                        <span className="inline-block h-5 w-5 text-red-400">
+                          <Delete />
+                        </span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -192,13 +166,19 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
 
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
         <NewQuestionForm
-          title={t("buttons.add_question")}
+          title={
+            editingQuestion
+              ? t("buttons.edit_question")
+              : t("buttons.add_question")
+          }
           sub_title={t("form_subtitle")}
           onClose={() => {
             setAddPopupOpen(false);
-            fetchQuestions(); // Refresh questions after adding new one
+            setEditingQuestion(null);
+            getQuestions();
           }}
           examId={examId}
+          editQuestion={editingQuestion}
         />
       </Popup>
     </div>

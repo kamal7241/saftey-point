@@ -1,26 +1,35 @@
 "use client";
-import { fetchCourseById, fetchCoursePricing } from "@/api/courseService";
+import {
+  fetchCourseById,
+  fetchCourseExams,
+  fetchCoursePricing,
+} from "@/api/courseService";
 import type { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
+import CorporatePricingTable from "../ui/CorporatePricingTable";
 import GroupInfo from "../ui/GroupInfo";
+import Attach from "../ui/icons/Attach";
+import Calendar from "../ui/icons/Calendar";
 import CourseTitle from "../ui/icons/CourseTitle";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
 import Edit2 from "../ui/icons/Edit2";
-import StatusCheck from "../ui/icons/StatusCheck";
-import Suspend from "../ui/icons/Suspend";
-import Status from "../ui/Status";
-import Calendar from "../ui/icons/Calendar";
-import Task from "../ui/icons/Task";
-import ImagePopup from "../ui/ImagePopup";
-import Attach from "../ui/icons/Attach";
 import LanguageSquare from "../ui/icons/LanguageSquare";
-import People from "../ui/icons/People";
 import Medical from "../ui/icons/Medical";
 import Note from "../ui/icons/Note";
+import NoteFlat from "../ui/icons/NoteFlat";
+import People from "../ui/icons/People";
+import StatusCheck from "../ui/icons/StatusCheck";
+import Suspend from "../ui/icons/Suspend";
+import Task from "../ui/icons/Task";
+import TaskBorder from "../ui/icons/TaskBorder";
+import Timer from "../ui/icons/Timer";
+import ImagePopup from "../ui/ImagePopup";
+import Status from "../ui/Status";
+import QuestionsTable from "../forms/course-steps/QuestionsTable";
 
 interface SingleCourseProps {
   courseID: string;
@@ -31,9 +40,11 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
   const [courseData, setCourseData] = useState<SingleCourse>();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [pricingData, setPricingData] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [examData, setExamData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editPopupOpen, setEditPopupOpen] = useState(false);
+  // const [editPopupOpen, setEditPopupOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<
     "course_info" | "pricing" | "exam" | "certificate" | "sessions"
   >("course_info");
@@ -66,10 +77,22 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     getPricingData();
   }, [activeTab, courseID]);
 
+  useEffect(() => {
+    const getExamData = async () => {
+      if (activeTab === "exam") {
+        const data = await fetchCourseExams(Number(courseID));
+        if (data) {
+          setExamData(data);
+        }
+      }
+    };
+    getExamData();
+  }, [activeTab, courseID]);
+
   if (loading) return <div>Loading...</div>;
   if (error || !courseData) return <div>{error}</div>;
-  console.log("courseData", courseData);
-  console.log("editPopupOpen", editPopupOpen);
+  // console.log("courseData", courseData);
+  // console.log("editPopupOpen", editPopupOpen);
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("courses"), href: "/dashboard/courses" },
@@ -179,26 +202,44 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
                 />
               </div>
             ))}
+            <CorporatePricingTable courseId={courseID} />
           </div>
         );
       case "exam":
         return (
-          <div className="grid grid-cols-3 gap-6">
-            <GroupInfo
-              label={t("examType")}
-              content="Final Exam"
-              icon={<Edit />}
-            />
-            <GroupInfo
-              label={t("examDuration")}
-              content="3 Hours"
-              icon={<Edit />}
-            />
-            <GroupInfo
-              label={t("passing_score")}
-              content="80%"
-              icon={<Edit />}
-            />
+          <div className="divide-y space-y-2">
+            {examData.map((exam) => (
+              <React.Fragment key={exam.id}>
+                <div className="grid grid-cols-3 gap-6 py-4">
+                  <GroupInfo
+                    label={t("examName")}
+                    content={exam.title}
+                    icon={<Note />}
+                  />
+                  <GroupInfo
+                    label={t("examType")}
+                    content={exam.examType}
+                    icon={<NoteFlat />}
+                  />
+                  <GroupInfo
+                    label={t("examDuration")}
+                    content={`${exam.duration} Mins`}
+                    icon={<Timer />}
+                  />
+                  <GroupInfo
+                    label={t("totalMarks")}
+                    content={`${exam.totalMarks}`}
+                    icon={<TaskBorder />}
+                  />
+                  <GroupInfo
+                    label={t("passMarks")}
+                    content={`${exam.passMarks}`}
+                    icon={<TaskBorder />}
+                  />
+                </div>
+                <QuestionsTable examId={exam.id} />
+              </React.Fragment>
+            ))}
           </div>
         );
       default:
@@ -215,7 +256,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
           <>
             <Button
               label={t("buttons.edit")}
-              onClick={() => setEditPopupOpen(true)}
+              onClick={() => console.log("EDIT")}
               icon={
                 <span className="inline-block w-6">
                   <Edit2 />
@@ -235,7 +276,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
             />
             <Button
               label={t("buttons.delete")}
-              onClick={() => setEditPopupOpen(true)}
+              onClick={() => console.log("EDIT")}
               icon={
                 <span className="inline-block w-6">
                   <Delete />

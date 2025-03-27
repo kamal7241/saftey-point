@@ -41,7 +41,7 @@ export default function CreateCourse() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [courseId, setCourseId] = useState<string | null>(null);
-  const [certificateId, setCertificateId] = useState<string | null>(null);
+  // const [certificateId, setCertificateId] = useState<string | null>(null);
   const [examId, setExamId] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -63,9 +63,9 @@ export default function CreateCourse() {
     displayScore: "no",
     watermark: "no",
   });
-  console.log("courseId>>", courseId);
-  console.log("certificateId>>", certificateId);
-  console.log("examId>>", examId);
+  // console.log("courseId>>", courseId);
+  // console.log("certificateId>>", certificateId);
+  // console.log("examId>>", examId);
   const StepComponents = [
     CourseInfo,
     (props: any) => <Pricing {...props} courseId={courseId} />,
@@ -149,7 +149,7 @@ export default function CreateCourse() {
     } else if (currentStep === 2 && courseId) {
       const result = await submitCertificate(values, courseId);
       if (result.success && result.innerData?.id) {
-        setCertificateId(result.innerData.id.toString());
+        // setCertificateId(result.innerData.id.toString());
         setFormData((prev) => ({ ...prev, ...values }));
         setCurrentStep((prev) => prev + 1);
       } else {

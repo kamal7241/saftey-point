@@ -6,6 +6,8 @@ import {
   CertificateDTO,
   CertificateResponse,
   CorporatePricingDTO,
+  CorporatePricingItem,
+  CorporatePricingListResponse,
   CourseExam,
   CourseExamResponse,
   CourseResponse,
@@ -345,6 +347,29 @@ export const submitCorporatePricing = async (courseId: string, values: Corporate
     }
 };
 
+
+export const fetchCorporatePricing = async (courseId: string): Promise<CorporatePricingItem[] | null> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/corporate-pricing`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result: CorporatePricingListResponse = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch corporate pricing details');
+    }
+
+    return result.innerData.items;
+  } catch (error) {
+    console.error('Error fetching corporate pricing:', error);
+    return null;
+  }
+};
 
 export const fetchCoursePricing = async (courseId: number): Promise<PricingItem[] | null> => {
   try {

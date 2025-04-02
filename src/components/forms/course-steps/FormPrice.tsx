@@ -42,7 +42,7 @@ export default function FormPrice({
 
   const validationSchema = Yup.object({
     city: Yup.string().required(tValidation("required")),
-    branch: Yup.string().required(tValidation("required")),
+    // branch: Yup.string().required(tValidation("required")),
     trainees: Yup.number()
       .nullable()
       .required(tValidation("required"))

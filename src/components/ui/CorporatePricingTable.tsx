@@ -5,47 +5,50 @@ import { Add } from "./icons/Add";
 import Popup from "./Popup";
 import FormPrice from "../forms/course-steps/FormPrice";
 import { toast } from "react-hot-toast";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { fetchCorporatePricing } from "@/api/courseService";
+import { CorporatePricingItem } from "@/types/api.types";
 
 interface CorporatePricingTableProps {
   courseId: string;
 }
 
-type TableRowData = {
-  id: number;
-  city: string;
-  branch: string;
-  type: string;
-  fees: string;
-  image?: string;
-};
+// type TableRowData = {
+//   id: number;
+//   city: string;
+//   branch: string;
+//   type: string;
+//   fees: string;
+//   image?: string;
+// };
 
 export default function CorporatePricingTable({ courseId }: CorporatePricingTableProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [tableData, setTableData] = useState<CorporatePricingItem[]>([]);
 
-  const tableData: TableRowData[] = [
-    {
-      id: 1,
-      city: "New York",
-      branch: "Manhattan",
-      type: "Retail",
-      fees: "$200",
-    },
-    {
-      id: 2,
-      city: "Los Angeles",
-      branch: "Downtown",
-      type: "Wholesale",
-      fees: "$300",
-    },
-  ];
+  const getPricing = useCallback(async () => {
+    if (!courseId) return;
+    setLoading(true);
+    const data = await fetchCorporatePricing(courseId);
+    if (data) {
+      setTableData(data);
+    } else {
+      toast.error(tMsgs("error_fetching_pricing"));
+    }
+    setLoading(false);
+  }, [courseId, tMsgs]);
 
-  const columns: { header: string; accessor: keyof TableRowData }[] = [
+  useEffect(() => {
+    getPricing();
+  }, [getPricing]);
+
+  const columns: { header: string; accessor: keyof CorporatePricingItem }[] = [
     { header: "id", accessor: "id" },
     { header: "city", accessor: "city" },
-    { header: "branch", accessor: "branch" },
+    // { header: "branch", accessor: "branch" },
     { header: "type", accessor: "type" },
     { header: "fees", accessor: "fees" },
   ];
@@ -78,13 +81,24 @@ export default function CorporatePricingTable({ courseId }: CorporatePricingTabl
           />
         </div>
       </div>
-      <Table<TableRowData> data={tableData} columns={columns} />
+      
+      {loading ? (
+        <div className="text-center py-4 text-gray-500">{t("loading")}...</div>
+      ) : tableData.length === 0 ? (
+        <div className="text-center py-4 text-gray-500">{t("no_pricing_found")}</div>
+      ) : (
+        <Table<CorporatePricingItem> data={tableData} columns={columns} />
+      )}
+
       {courseId && (
         <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
           <FormPrice
-            title={t("add_specific_price")}
+            title={t("addSpecificPrice")}
             sub_title={t("form_subtitle")}
-            onClose={() => setAddPopupOpen(false)}
+            onClose={() => {
+              setAddPopupOpen(false);
+              getPricing(); // Refresh data after adding new price
+            }}
             courseId={courseId}
           />
         </Popup>

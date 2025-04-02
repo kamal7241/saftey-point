@@ -202,7 +202,9 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
                 />
               </div>
             ))}
-            <CorporatePricingTable courseId={courseID} />
+            <div className="mt-6">
+              <CorporatePricingTable courseId={courseID} />
+            </div>
           </div>
         );
       case "exam":

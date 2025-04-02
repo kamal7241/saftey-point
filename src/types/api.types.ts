@@ -12,6 +12,17 @@ export interface PricingItem {
   courseId: number;
   countryId: null | number;
 }
+export interface CorporatePricingItem {
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: null | string;
+  city: string;
+  trainees: string;
+  type: string;
+  fees: string;
+  currency: string;
+}
 
 export interface PricingListResponse {
   success: boolean;
@@ -19,6 +30,15 @@ export interface PricingListResponse {
   timestamp: string;
   innerData: {
     items: PricingItem[];
+    count: number;
+  };
+}
+export interface CorporatePricingListResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
+  innerData: {
+    items: CorporatePricingItem[];
     count: number;
   };
 }

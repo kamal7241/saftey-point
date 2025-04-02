@@ -56,7 +56,6 @@ export default function NewQuestionForm({
     description: Yup.string().required(tValidation("required")),
   });
   
-  // Update initialValues to use editQuestion data if available
   const initialValues = {
     title: editQuestion?.title || "",
     description: editQuestion?.description || "",
@@ -70,7 +69,6 @@ export default function NewQuestionForm({
     options: [],
   };
   
-  // Update useEffect to set answers when editing
   useEffect(() => {
     if (editQuestion) {
       setAnswers(
@@ -148,54 +146,6 @@ export default function NewQuestionForm({
     }));
     setAnswers(newAnswers);
   };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
-  //   setSubmitting(true);
-  //   try {
-  //     console.log("values>>", values);
-  //     if (!examId) {
-  //       toast.error(tMsgs("missing_examId"));
-  //       return;
-  //     }
-
-  //     const questionData = {
-  //       title: values.title,
-  //       description: values.description,
-  //       type: values.type,
-  //       examId: Number(examId),
-  //       options:
-  //         values.type === "MATCHING"
-  //           ? []
-  //           : answers.map((answer) => ({
-  //               optionText: answer.text,
-  //               isCorrect: answer.isCorrect,
-  //             })),
-  //       answers:
-  //         values.type === "MATCHING"
-  //           ? answers.map((answer, index) => ({
-  //               answerText: answer.text,
-  //               isCorrect: true,
-  //               matchWith: answers[(index + 1) % answers.length].text,
-  //               options: answers.map((a) => a.text),
-  //             }))
-  //           : [],
-  //     };
-
-  //     const result = await submitExamQuestion(examId, questionData);
-  //     if (result.success) {
-  //       toast.success(tMsgs("question_created_successfully"));
-  //       onClose?.();
-  //     } else {
-  //       toast.error(result.error || tMsgs("error_creating_question"));
-  //     }
-  //   } catch (error) {
-  //     console.error("Submission error:", error);
-  //     toast.error(tMsgs("error_creating_question"));
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
 
   return (
     <div className="p-6">

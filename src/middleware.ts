@@ -21,34 +21,6 @@ style-src 'self' 'unsafe-inline';
 report-to default;`;
 const enforcedCspHeaders = cspHeaders + "frame-ancestors 'self';";
 
-// function customHeadersMiddleware(request: NextRequest) {
-//   const { pathname } = request.nextUrl;
-//   const response = new Response(null);
-
-//   if (
-//     pathname.includes("/images/") ||
-//     pathname.includes("/videos/") ||
-//     pathname.includes("/fonts/") ||
-//     pathname.includes("/styles/") ||
-//     pathname.includes("/favicons/")
-//   ) {
-//     response.headers.set("Cache-Control", "public, max-age=31536000, immutable");
-//     response.headers.delete("Content-Security-Policy-Report-Only");
-//   } else {
-//     response.headers.set("Content-Security-Policy", enforcedCspHeaders.replace(/\n/g, ""));
-//     response.headers.set("Content-Security-Policy-Report-Only", cspHeaders.replace(/\n/g, ""));
-//   }
-//   response.headers.set("X-Content-Type-Options", "nosniff");
-//   response.headers.set("X-Frame-Options", "deny");
-//   response.headers.set("X-Powered-By", "Ojja");
-//   // response.headers.set("Referrer-Policy", "same-origin");
-//   response.headers.set("Strict-Transport-Security", "max-age=15768000");
-//   response.headers.set("X-XSS-Protection", "1; mode=block");
-//   response.headers.set("Permissions-Policy", "browsing-topics=()");
-
-//   return response;
-// }
-
 function customHeadersMiddleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const response = new Response(null);
@@ -134,5 +106,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"], // Apply to all routes except API and Next.js internals
+  matcher: ["/((?!api|_next|.*\\..*).*)"],
 };

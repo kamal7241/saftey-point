@@ -13,15 +13,6 @@ interface CorporatePricingTableProps {
   courseId: number;
 }
 
-// type TableRowData = {
-//   id: number;
-//   city: string;
-//   branch: string;
-//   type: string;
-//   fees: string;
-//   image?: string;
-// };
-
 export default function CorporatePricingTable({ courseId }: CorporatePricingTableProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
@@ -97,7 +88,7 @@ export default function CorporatePricingTable({ courseId }: CorporatePricingTabl
             sub_title={t("form_subtitle")}
             onClose={() => {
               setAddPopupOpen(false);
-              getPricing(); // Refresh data after adding new price
+              getPricing();
             }}
             courseId={courseId}
           />

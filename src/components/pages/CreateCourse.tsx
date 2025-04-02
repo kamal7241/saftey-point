@@ -41,7 +41,6 @@ export default function CreateCourse() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [courseId, setCourseId] = useState<string | null>(null);
-  // const [certificateId, setCertificateId] = useState<string | null>(null);
   const [examId, setExamId] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -63,9 +62,7 @@ export default function CreateCourse() {
     displayScore: "no",
     watermark: "no",
   });
-  // console.log("courseId>>", courseId);
-  // console.log("certificateId>>", certificateId);
-  // console.log("examId>>", examId);
+
   const StepComponents = [
     CourseInfo,
     (props: any) => <Pricing {...props} courseId={courseId} />,
@@ -90,7 +87,6 @@ export default function CreateCourse() {
     { label: "Session", icon: <Session /> },
   ];
 
-  // Update nextStep function
   const nextStep = async (values: FormikValues) => {
     if (currentStep === 0) {
       const result = await submitCourse(
@@ -106,14 +102,12 @@ export default function CreateCourse() {
         return;
       }
     } else if (currentStep === 1 && courseId) {
-      // Handle main pricing data
       const mainPricingData = {
         isTheoreticalOnly: values.theoreticalOnly === "yes",
         type: values.priceType,
         isCompanyTraining: values.companyPremises === "yes",
       };
 
-      // Find all price sets from form values
       let index = 0;
       const priceSetPromises = [];
 
@@ -130,10 +124,8 @@ export default function CreateCourse() {
       }
 
       try {
-        // Submit all price sets
         const results = await Promise.all(priceSetPromises);
 
-        // Check if any submission failed
         const hasError = results.some((result) => !result.success);
         if (hasError) {
           toast.error(t("messages.error_creating_pricing"));
@@ -149,7 +141,6 @@ export default function CreateCourse() {
     } else if (currentStep === 2 && courseId) {
       const result = await submitCertificate(values, courseId);
       if (result.success && result.innerData?.id) {
-        // setCertificateId(result.innerData.id.toString());
         setFormData((prev) => ({ ...prev, ...values }));
         setCurrentStep((prev) => prev + 1);
       } else {
@@ -158,11 +149,9 @@ export default function CreateCourse() {
       }
     } else if (currentStep === 3 && courseId) {
       if (examId) {
-        // If examId exists, proceed to next step
         setFormData((prev) => ({ ...prev, ...values }));
         setCurrentStep((prev) => prev + 1);
       } else {
-        // If no examId, create new exam
         const result = await submitExam(values, courseId);
         if (result.success && result.innerData?.id) {
           setExamId(result.innerData.id.toString());
@@ -173,7 +162,6 @@ export default function CreateCourse() {
         }
       }
     } else if (currentStep === 4 && courseId) {
-      // Format session time values before submission
       const formattedValues = {
         ...values,
         session_time: Array.isArray(values.session_time)
@@ -254,9 +242,6 @@ export default function CreateCourse() {
           <Formik
             initialValues={formData}
             validationSchema={validationSchemas[currentStep]}
-            // onSubmit={
-            //   currentStep === steps.length - 1 ? handleSubmit : nextStep
-            // }
             onSubmit={nextStep}
           >
             {({ values, handleChange, errors, setFieldValue }) => (

@@ -200,7 +200,7 @@ const Certificates = () => {
           />
         )}
         <Table
-          data={filteredCertificates}
+          data={filteredCertificates as (SingleCertificate & { image?: undefined })[]}
           columns={columns}
           pagination={{
             currentPage,

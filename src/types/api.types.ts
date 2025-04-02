@@ -22,6 +22,7 @@ export interface CorporatePricingItem {
   type: string;
   fees: string;
   currency: string;
+  image?: string;
 }
 
 export interface PricingListResponse {

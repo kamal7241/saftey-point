@@ -203,7 +203,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
               </div>
             ))}
             <div className="mt-6">
-              <CorporatePricingTable courseId={courseID} />
+              <CorporatePricingTable courseId={Number(courseID)} />
             </div>
           </div>
         );

@@ -13,9 +13,8 @@ const formatDate = (date: string): string => {
     .replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3 / $2 / $1");
 };
 
-
-interface TableProps<T, HasImage extends { image?: string } = { image?: never }> {
-  data: (T & HasImage)[];
+interface TableProps<T extends { image?: string }> {
+  data: T[];
   columns: { header: string; accessor: keyof T }[];
   renderRowActions?: (row: T) => React.ReactNode;
   pagination?: {
@@ -28,8 +27,7 @@ interface TableProps<T, HasImage extends { image?: string } = { image?: never }>
   isLoading?: boolean;
 }
 
-// Update the component definition
-const Table = <T, HasImage extends { image?: string } = { image?: never }>({
+const Table = <T extends { image?: string }>({
   data,
   columns,
   renderRowActions,
@@ -41,7 +39,7 @@ const Table = <T, HasImage extends { image?: string } = { image?: never }>({
   sortable,
   rowsPerPage = 10,
   isLoading = false,
-}: TableProps<T, HasImage>) => {
+}: TableProps<T>) => {
   const t = useTranslations("tables");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
@@ -177,9 +175,9 @@ const Table = <T, HasImage extends { image?: string } = { image?: never }>({
                         </span>
                       ) : column.accessor === "name" ? (
                         <div className="flex items-center gap-2 min-w-[200px]">
-                          {'image' in row && (row as HasImage).image && (
+                          {row.image && (
                             <ImageWithFallback
-                              src={(row as HasImage).image!}
+                              src={row.image}
                               alt="Company Logo"
                             />
                           )}

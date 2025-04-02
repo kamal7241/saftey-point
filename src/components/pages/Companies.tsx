@@ -30,35 +30,7 @@ const Companies = () => {
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
-  // const [createdOptions, setCreatedOptions] = useState<
-  //   { value: string; label: string }[]
-  // >([]);
-
-  // useEffect(() => {
-  //   const getCompanies = async () => {
-  //     const response = await fetchCompanies();
-  //     const data = await response;
-  //     setCompanies(data);
-  //     // Extract unique created dates
-
-  //     // Extract unique dates and format them
-  //     const uniqueDates = Array.from(
-  //       new Set(data.map((company) => company.created))
-  //     );
-
-  //     const formattedDates = uniqueDates.map((date) => {
-  //       const formattedDate = format(new Date(date), "yyyy / MM / dd");
-  //       return { value: date, label: formattedDate };
-  //     });
-
-  //     setCreatedOptions(formattedDates);
-  //   };
-
-  //   getCompanies();
-  // }, []);
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
 
   const limit = 10;
   useEffect(() => {

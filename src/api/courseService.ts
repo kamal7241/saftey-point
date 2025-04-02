@@ -286,8 +286,6 @@ export const fetchCourseById = async (courseID: number) => {
     }
 };
 
-
-// Add this function with the other export functions
 export const submitPricing = async (courseId: string, pricingData: PricingDTO): Promise<PricingResponse> => {
     try {
         const response = await fetch(

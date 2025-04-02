@@ -318,7 +318,7 @@ export const submitPricing = async (courseId: string, pricingData: PricingDTO): 
 }
 
 
-export const submitCorporatePricing = async (courseId: string, values: CorporatePricingDTO): Promise<PricingResponse> => {
+export const submitCorporatePricing = async (courseId: number, values: CorporatePricingDTO): Promise<PricingResponse> => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/corporate-pricing`,
@@ -348,7 +348,7 @@ export const submitCorporatePricing = async (courseId: string, values: Corporate
 };
 
 
-export const fetchCorporatePricing = async (courseId: string): Promise<CorporatePricingItem[] | null> => {
+export const fetchCorporatePricing = async (courseId: number): Promise<CorporatePricingItem[] | null> => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/corporate-pricing`,

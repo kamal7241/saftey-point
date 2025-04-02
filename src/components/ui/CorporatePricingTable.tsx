@@ -10,7 +10,7 @@ import { fetchCorporatePricing } from "@/api/courseService";
 import { CorporatePricingItem } from "@/types/api.types";
 
 interface CorporatePricingTableProps {
-  courseId: string;
+  courseId: number;
 }
 
 // type TableRowData = {

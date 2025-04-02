@@ -15,7 +15,7 @@ interface FormPriceProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
-  courseId: string;
+  courseId: number;
 }
 interface FormValues {
   city: string;

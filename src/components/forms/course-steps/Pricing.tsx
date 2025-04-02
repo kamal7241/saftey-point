@@ -17,7 +17,7 @@ interface PricingProps {
     value: string,
     shouldValidate?: boolean
   ) => void;
-  courseId?: string;
+  courseId?: number;
 }
 
 export default function Pricing({
@@ -189,7 +189,7 @@ export default function Pricing({
       </div>
 
       {(values.companyPremises === true ||
-        values.companyPremises === "yes") && (
+        values.companyPremises === "yes") && courseId && (
         <CorporatePricingTable courseId={courseId} />
       )}
     </div>

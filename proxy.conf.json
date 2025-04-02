@@ -1,6 +1,0 @@
-{
-    "/api": {
-        "target": "https://api.vimeo.com/me/videos",
-        "secure": true
-    }
-}

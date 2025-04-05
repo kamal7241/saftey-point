@@ -17,11 +17,13 @@ import NewCompanyForm from "../forms/NewCompanyForm";
 import PageHeader from "../global/PageHeader";
 import { useRouter } from "@/i18n/routing";
 import { Company } from "@/types/ui.types";
-import { fetchCompanies } from "@/api/companiesService";
+import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/companiesService";
+import { showToast } from "@/utils/toast";
 
 
 const Companies = () => {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,18 +33,19 @@ const Companies = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState<number | null>(null);
 
   const limit = 10;
+  const getUsers = async () => {
+    setLoading(true);
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchCompanies(offset, limit);
+    setCompanies(response.companies);
+    setTotalCount(response.totalCount);
+    setLoading(false);
+  };
   useEffect(() => {
-    const getUsers = async () => {
-      setLoading(true);
-      const offset = (currentPage - 1) * limit;
-      const response = await fetchCompanies(offset, limit);
-      setCompanies(response.companies);
-      setTotalCount(response.totalCount);
-      setLoading(false);
-    };
-
     getUsers();
   }, [currentPage]);
 
@@ -110,9 +113,31 @@ const Companies = () => {
     document.body.removeChild(link);
   };
 
+  const handleToggleVerification = async (companyId: number, isVerified: boolean) => {
+    try {
+      const result = await toggleCompanyVerification(companyId, isVerified);
+      if (result.success) {
+
+        showToast.success(tMsgs(
+          isVerified
+            ? "company_suspended_successfully"
+            : "company_activated_successfully"
+        ));
+        getUsers();
+      } else {
+        console.error("Failed to toggle verification:", result.error);
+      }
+    } catch (error) {
+      console.error("Error toggling verification:", error);
+    }
+  };
   const renderRowActions = (row: Company) => (
     <div className="flex gap-2">
-      <Switcher />
+
+      <Switcher
+        isChecked={row.isVerified ?? false}
+        onChange={(checked) => handleToggleVerification(row.id, checked)}
+      />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -132,7 +157,10 @@ const Companies = () => {
         noBackground={true}
         textColor="red-500"
         noLabel={true}
-        onClick={() => handleDelete(row.id)}
+        onClick={() => {
+          setCompanyToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
@@ -145,10 +173,31 @@ const Companies = () => {
 
   const handleEdit = (id: number) => {
     console.log("Editing company with ID:", id);
+    router.push(`/dashboard/company-management/companies/${id}`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting company with ID:", id);
+
+  const handleDelete = async () => {
+    if (!companyToDelete) return;
+
+    try {
+      const result = await deleteCompany(companyToDelete);
+      if (result.success) {
+        showToast.success(tMsgs('company_deleted_successfully'));
+        await getUsers();
+      } else {
+        console.error("Failed to delete company:", result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting company:", error);
+    }
+    setShowDeleteConfirm(false);
+    setCompanyToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setCompanyToDelete(null);
   };
 
   const breadcrumbItems = [
@@ -167,6 +216,23 @@ const Companies = () => {
         title={t("manage-companies")}
       />
 
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleDelete} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
@@ -249,7 +315,7 @@ const Companies = () => {
             currentPage,
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: (page) => setCurrentPage(page),
-  
+
           }}
           sortable={true}
           rowsPerPage={limit}

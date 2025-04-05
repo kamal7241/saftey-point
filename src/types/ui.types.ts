@@ -35,6 +35,7 @@ export interface Company {
     employees: number;
     created?: string;
     image?: string;
+    isVerified?: boolean;
 }
 export interface SingleUser {
     id: number;

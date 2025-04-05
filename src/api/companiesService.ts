@@ -45,6 +45,7 @@ export const fetchCompanies = async (offset: number = 0, limit: number = 10) => 
                 status: company.status === "ACTIVE" ? "1" : "0",
                 type: company.userType,
                 phone: company.user.phone,
+                isVerified: company.user.isVerified,
                 image: `${process.env.NEXT_PUBLIC_URL}/${company.user.avatar}`,
             })),
             totalCount: result.innerData.count
@@ -156,7 +157,7 @@ export const updateCompany = async (
             throw new Error(result.message || "Failed to update company");
         }
 
-        return { result };
+        return { success: true, data: result };
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error("Error updating company:", error);
@@ -206,3 +207,39 @@ export const resetCompanyPassword = async (
       }
     }
   };
+
+export const toggleCompanyVerification = async (companyId: number, isVerified: boolean) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: {
+                        isVerified: isVerified
+                    }
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update company verification status");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating company verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};

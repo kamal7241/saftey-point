@@ -17,7 +17,6 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-import Switcher from "../ui/SmallSwitcher";
 
 
 const Branches = () => {
@@ -121,7 +120,7 @@ const Branches = () => {
 
   const renderRowActions = (row: Branch) => (
     <div className="flex gap-2">
-      <Switcher />
+      {/* <Switcher /> */}
       <Button
         icon={<Eye />}
         noBackground={true}

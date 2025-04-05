@@ -16,7 +16,7 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-import Switcher from "../ui/SmallSwitcher";
+// import Switcher from "../ui/SmallSwitcher";
 
 const Courses = () => {
   const t = useTranslations("common");
@@ -148,7 +148,7 @@ const Courses = () => {
           rowsPerPage={limit}
           renderRowActions={(row) => (
             <div className="flex gap-2">
-              <Switcher />
+              {/* <Switcher /> */}
               <Button
                 icon={<Eye />}
                 noBackground

@@ -8,7 +8,9 @@ export default async function Page({
   params: Promise<{ companyID: string }>;
 }) {
   const { companyID } = await params;
-  const companyData = await fetchComapnyById(companyID);
-
-  return <SingleCompany companyData={companyData} />;
+  
+  // Fetch initial data
+  const initialData = await fetchComapnyById(companyID);
+  
+  return <SingleCompany companyData={initialData} companyID={companyID} />;
 }

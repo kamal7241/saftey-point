@@ -8,8 +8,11 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <>
-      {children}
-    </>
+
+    <html lang="en">
+      <body className={`dark:bg-gray-900`}>
+        {children}
+      </body>
+    </html>
   );
 }

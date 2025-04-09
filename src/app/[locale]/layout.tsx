@@ -31,49 +31,49 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 }) {
-  const { locale } = await params;
+  const locale = params.locale;
   const messages = await getMessages({ locale });
   const direction = locale === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={direction} suppressHydrationWarning>
-      <body
-        className={`antialiased ${
-          locale === "ar" ? fontAr.className : fontEn.className
-        }`}
-      >
-        <NextIntlClientProvider messages={messages} locale={locale}>
-          {children}
-          <div suppressHydrationWarning>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                className: "",
-                style: {
-                  zIndex: 9999,
-                },
-              }}
-            />
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              newestOnTop
-              closeOnClick
-              rtl={direction === "rtl"}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-            />
-          </div>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <div
+      lang={locale}
+      dir={direction}
+      className={`antialiased ${
+        locale === "ar" ? fontAr.className : fontEn.className
+      }`}
+    >
+      <NextIntlClientProvider messages={messages} locale={locale}>
+        {children}
+        <div suppressHydrationWarning>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              className: "",
+              style: {
+                zIndex: 9999,
+              },
+            }}
+          />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            newestOnTop
+            closeOnClick
+            rtl={direction === "rtl"}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
+        </div>
+      </NextIntlClientProvider>
+    </div>
   );
 }

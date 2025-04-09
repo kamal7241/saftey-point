@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CourseFormValues } from "@/types/forms.types";
 import { SingleCourse } from "@/types/ui.types";
 import { FormikValues } from "formik";

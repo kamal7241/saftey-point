@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { submitExamQuestion, updateExamQuestion } from "@/api/courseService";
 import Input from "@/components/formsUI/Input";

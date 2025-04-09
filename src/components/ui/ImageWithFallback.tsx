@@ -21,8 +21,7 @@ const ImageWithFallback = ({
   onError,
 }: ImageWithFallbackProps) => {
   const [imgSrc, setImgSrc] = useState(src);
-  const [hasError, setHasError] = useState(false);
-
+  
   return (
     <Image
       src={imgSrc}
@@ -32,7 +31,6 @@ const ImageWithFallback = ({
       fill={fill}
       onError={() => {
         setImgSrc("/images/noimage.webp");
-        setHasError(true);
         onError?.();
       }}
     />

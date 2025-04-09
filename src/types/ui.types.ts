@@ -45,6 +45,7 @@ export interface SingleUser {
     phone: string;
     image?: string;
     status: string;
+    isVerified: boolean;
 }
 export interface SingleCertificate {
     id: number;
@@ -99,6 +100,25 @@ export interface Individual {
     };
 }
 
+export interface IndividualResponse {
+    id: number;
+    identityType: string;
+    nationalId: string;
+    nationalIdExpiry: string;
+    nationalIdFront: string;
+    nationalIdBack: string;
+    countryId: string;
+    birthday: string;
+    status: string;
+    userType: string;
+    userId: number;
+    firstName: string;
+    lastName: string;
+    avatar: string;
+    email: string;
+    phone: string;
+    isVerified: boolean;
+}
 export interface Country {
     code: string;
     name: string;

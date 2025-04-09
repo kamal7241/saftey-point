@@ -1,5 +1,5 @@
 "use client";
-import { fetchUsers } from "@/api/dashboardService";
+import { deleteIndividual, fetchUsers, toggleUserVerification } from "@/api/usersService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { SingleUser } from "@/types/ui.types";
@@ -16,10 +16,13 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import Switcher from "../ui/SmallSwitcher";
+import { showToast } from "@/utils/toast";
 
 
 const Users = () => {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,6 +34,8 @@ const Users = () => {
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const limit = 10;
   useEffect(() => {
@@ -108,9 +113,34 @@ const Users = () => {
     document.body.removeChild(link);
   };
 
+  const handleToggleVerification = async (userId: number, isVerified: boolean) => {
+    try {
+      const result = await toggleUserVerification(userId, isVerified);
+      if (result.success) {
+        showToast.success(tMsgs(
+          isVerified
+            ? "user_suspended_successfully"
+            : "user_activated_successfully"
+        ));
+        // Refresh the users list
+        const offset = (currentPage - 1) * limit;
+        const response = await fetchUsers(offset, limit);
+        setUsers(response.users);
+        setTotalCount(response.totalCount);
+      } else {
+        console.error("Failed to toggle verification:", result.error);
+      }
+    } catch (error) {
+      console.error("Error toggling verification:", error);
+    }
+  };
+
   const renderRowActions = (row: SingleUser) => (
     <div className="flex gap-2">
-      {/* <Switcher /> */}
+      <Switcher
+        isChecked={row.isVerified ?? false}
+        onChange={(checked) => handleToggleVerification(row.id, checked)}
+      />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -130,7 +160,10 @@ const Users = () => {
         noBackground={true}
         textColor="red-500"
         noLabel={true}
-        onClick={() => handleDelete(row.id)}
+        onClick={() => {
+          setUserToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
@@ -146,9 +179,32 @@ const Users = () => {
     router.push(`/dashboard/user-management/users/${id}`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting user with ID:", id);
-    router.push(`/dashboard/user-management/users/${id}`);
+
+  const handleDelete = async () => {
+    if (!userToDelete) return;
+
+    try {
+      const result = await deleteIndividual(userToDelete);
+      if (result.success) {
+        showToast.success(tMsgs('user_deleted_successfully'));
+        const offset = (currentPage - 1) * limit;
+        const response = await fetchUsers(offset, limit);
+        setUsers(response.users);
+        setTotalCount(response.totalCount);
+      } else {
+        console.error("Failed to delete user:", result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+    setShowDeleteConfirm(false);
+    setUserToDelete(null);
+  };
+
+  // Add this new function
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setUserToDelete(null);
   };
 
   const breadcrumbItems = [
@@ -166,6 +222,24 @@ const Users = () => {
         breadcrumbItems={breadcrumbItems}
         title={t("users")}
       />
+
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleDelete} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
 
       {/* Table */}
       <div className="mt-6 rounded-2xl bg-white">
@@ -249,7 +323,7 @@ const Users = () => {
             currentPage,
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: (page) => setCurrentPage(page),
-  
+
           }}
           // sortable={true}
           rowsPerPage={limit}

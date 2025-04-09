@@ -13,14 +13,14 @@ import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
 import RadioField from "../formsUI/RadioField";
-import { submitIndividual, updateIndividual } from "@/api/dashboardService";
-import { Individual } from "@/types/ui.types";
+import { submitIndividual, updateIndividual } from "@/api/usersService";
+import { Individual, IndividualResponse } from "@/types/ui.types";
 
 interface NewUserFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
-  userData?: Individual | null;
+  userData?: IndividualResponse | null;
 }
 interface FormValues {
   firstName: string;
@@ -52,19 +52,19 @@ export default function NewUserForm({
 
   const initialValues: FormValues = userData
     ? {
-        firstName: userData.user.firstName,
-        lastName: userData.user.lastName || "",
-        jobTitle: userData.user.jobTitle || "",
+        firstName: userData.firstName,
+        lastName: userData.lastName || "",
+        jobTitle: "", // jobTitle is not in the new response
         type: userData.userType.toLowerCase(),
-        status: userData.user.isVerified ? "active" : "inactive",
-        email: userData.user.email,
-        phoneNumber: userData.user.phone || "",
+        status: userData.isVerified ? "active" : "inactive",
+        email: userData.email,
+        phoneNumber: userData.phone || "",
         nationalId: userData.nationalId,
         identityType: userData.identityType.toLowerCase() || "national_id",
         password: "",
-        avatar: userData.user.avatar || "avatar.png",
+        avatar: userData.avatar || "avatar.png",
         nationalIdExpiry: userData.nationalIdExpiry || "2025-01-01",
-        nationality: userData.nationality || "",
+        nationality: userData.countryId || "",
         birthday: userData.birthday || "",
         nationalIdFront: userData.nationalIdFront || "",
         nationalIdBack: userData.nationalIdBack || "",
@@ -111,29 +111,55 @@ export default function NewUserForm({
       status: values.status || "pending",
       userType: values.type,
       user: {
-        id: userData ? userData.user.id : 0,
+        id: userData?.userId || 0,
         firstName: values.firstName,
         lastName: values.lastName || "",
         avatar: values.avatar || "avatar.png",
         email: values.email,
         phone: values.phoneNumber,
-        isVerified: false,
+        isVerified: values.status === "active",
+      },
+    };
+
+    // Create currentData from userData
+    const currentData: Individual = {
+      identityType: userData?.identityType || "",
+      nationalId: userData?.nationalId || "",
+      nationalIdExpiry: userData?.nationalIdExpiry || "",
+      nationalIdFront: userData?.nationalIdFront || "",
+      nationalIdBack: userData?.nationalIdBack || "",
+      nationality: userData?.countryId || "",
+      birthday: userData?.birthday || "",
+      status: userData?.status || "",
+      userType: userData?.userType || "",
+      user: {
+        id: userData?.userId || 0,
+        firstName: userData?.firstName || "",
+        lastName: userData?.lastName || "",
+        avatar: userData?.avatar || "",
+        email: userData?.email || "",
+        phone: userData?.phone || "",
+        isVerified: userData?.isVerified || false,
       },
     };
   
     let result;
     if (userData && userData.id) {
-      result = await updateIndividual(userData.id, mappedValues, userData);
+      result = await updateIndividual(userData.id, mappedValues, currentData);
     } else {
       result = await submitIndividual(mappedValues);
     }
   
-    console.log('ressult>>>',result)
-    if (result && result.success === true) {
+    if (result?.success) {
       setIsSubmitted(true);
       setApiErrors(null);
+      if (onClose) {
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      }
     } else {
-      setIsSubmitted(false); // Ensure the form doesn't proceed on failure
+      setIsSubmitted(false);
       setApiErrors(result?.error || "An error occurred");
     }
   };

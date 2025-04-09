@@ -1,9 +1,11 @@
+"use client";
 import Footer from "@/components/global/Footer";
 import Header from "@/components/global/Header";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Sidebar from "@/components/Sidebar";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -12,6 +14,15 @@ interface DashboardLayoutProps {
 export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
   return (
     <>
       <ProtectedRoute>

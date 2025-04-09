@@ -1,6 +1,6 @@
 "use client";
-import { deleteIndividual, fetchUserById } from "@/api/dashboardService";
-import { Individual } from "@/types/ui.types";
+import { deleteIndividual, fetchUserById, resetUserPassword, toggleUserVerification } from "@/api/usersService";
+import { IndividualResponse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
@@ -23,6 +23,8 @@ import NewUserForm from "../forms/NewUserForm";
 import { useRouter } from "@/i18n/routing";
 import ImagePopup from "../ui/ImagePopup";
 import ImageWithFallback from "../ui/ImageWithFallback";
+import { showToast } from "@/utils/toast";
+import ResetPasswordForm from "../forms/ResetPasswordForm";
 
 interface SingleUserProps {
   userID: string;
@@ -30,11 +32,15 @@ interface SingleUserProps {
 
 export default function SingleUser({ userID }: SingleUserProps) {
   const t = useTranslations("common");
-  const [userData, setUserData] = useState<Individual>();
+  const tMsgs = useTranslations("messages");
+  const [userData, setUserData] = useState<IndividualResponse>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [resetPasswordPopupOpen, setResetPasswordPopupOpen] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const router = useRouter();
 
   const getUserData = useCallback(async () => {
@@ -72,6 +78,55 @@ export default function SingleUser({ userID }: SingleUserProps) {
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
   };
+  const handleResetPassword = async (newPassword: string) => {
+    try {
+      const result = await resetUserPassword(Number(userData?.id), newPassword);
+
+      if (result.success) {
+        setResetPasswordSuccess(true);
+        setTimeout(() => {
+          setResetPasswordPopupOpen(false);
+          setResetPasswordSuccess(false);
+        }, 2000);
+      } else {
+        setError(result.error || "Failed to reset password.");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+  };
+
+  const handleToggleVerification = async () => {
+    try {
+      const result = await toggleUserVerification(
+        Number(userData?.id),
+        !userData?.isVerified
+      );
+      if (result.success) {
+        const newData = await fetchUserById(Number(userID));
+        setUserData(newData);
+        showToast.success(tMsgs(
+          userData?.isVerified
+            ? "user_suspended_successfully"
+            : "user_activated_successfully"
+        ));
+      } else {
+        setError(result.error || "Failed to update user status");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+    setShowSuspendConfirm(false);
+  };
+
+  const handleSuspendCancel = () => {
+    setShowSuspendConfirm(false);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -110,6 +165,40 @@ export default function SingleUser({ userID }: SingleUserProps) {
           </div>
         </Popup>
       )}
+      <Popup
+        isOpen={resetPasswordPopupOpen}
+        onClose={() => setResetPasswordPopupOpen(false)}
+      >
+        {resetPasswordSuccess ? (
+          <div className="p-4 text-center">
+            <p className="text-green-500 text-lg font-semibold">
+              {t("password_reset_success")}
+            </p>
+          </div>
+        ) : (
+          <ResetPasswordForm
+            onClose={() => setResetPasswordPopupOpen(false)}
+            onSubmit={handleResetPassword}
+          />
+        )}
+      </Popup>
+      {showSuspendConfirm && (
+        <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t(userData?.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleSuspendCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("user_details")}
@@ -118,41 +207,25 @@ export default function SingleUser({ userID }: SingleUserProps) {
             <Button
               label={t("buttons.edit")}
               onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Edit2 />
-                </span>
-              }
+              icon={<span className="inline-block w-6"><Edit2 /></span>}
               variant="primary"
             />
             <Button
               label={t("buttons.reset_password")}
-              onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Lock />
-                </span>
-              }
+              onClick={() => setResetPasswordPopupOpen(true)}
+              icon={<span className="inline-block w-6"><Lock /></span>}
               variant="secondary"
             />
             <Button
-              label={t("buttons.suspend")}
-              onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Suspend />
-                </span>
-              }
+              label={t(userData?.isVerified ? "buttons.suspend" : "buttons.activate")}
+              onClick={() => setShowSuspendConfirm(true)}
+              icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
             />
             <Button
               label={t("buttons.delete")}
               onClick={() => setShowDeleteConfirm(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Delete />
-                </span>
-              }
+              icon={<span className="inline-block w-6"><Delete /></span>}
               variant="danger"
             />
           </>
@@ -162,32 +235,32 @@ export default function SingleUser({ userID }: SingleUserProps) {
         <h1 className="heading3">{t("user_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
           <ImageWithFallback
-            src={`${process.env.NEXT_PUBLIC_URL}/${userData?.user.avatar}`}
+            src={`${process.env.NEXT_PUBLIC_URL}/${userData?.avatar}`}
             alt="user-profile"
             width={80}
             height={80}
             className="rounded-full object-cover w-20 h-20"
           />
           <h2 className="heading2">
-            {userData?.user.firstName} {userData?.user.lastName}
+            {userData?.firstName} {userData?.lastName}
           </h2>
         </div>
         <div className="flex flex-col gap-10">
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
               label={t("job_title")}
-              content={userData?.user.jobTitle ?? "missing from API"}
+              content="missing from API"
               icon={<MedalStar />}
             />
             <GroupInfo
               label={t("phone_number")}
-              content={userData?.user.phone}
+              content={userData?.phone}
               copyIt
               icon={<PhoneIcon />}
             />
             <GroupInfo
               label={t("email")}
-              content={userData?.user.email}
+              content={userData?.email}
               copyIt
               icon={<Buildings2 />}
             />
@@ -238,7 +311,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
             />
             <GroupInfo
               label={t("user_nationality")}
-              content={userData?.nationality}
+              content={userData?.countryId}
               icon={<UserSquare />}
             />
           </div>

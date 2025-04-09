@@ -4,6 +4,8 @@ import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "../globals.css";
 
 const fontEn = Jost({
   weight: ["300", "400", "500", "600", "700"],

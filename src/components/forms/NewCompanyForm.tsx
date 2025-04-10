@@ -12,6 +12,7 @@ import SuccessMessage from "../ui/SuccessMessage";
 import { submitCompany, updateCompany } from "@/api/companiesService";
 import { SingleCompany } from "@/types/ui.types";
 import { CompanyData } from "@/types/forms.types";
+import { generateStrongPassword } from "@/utils/passwordGenerator";
 
 interface NewCompanyFormProps {
   title?: string;
@@ -40,27 +41,28 @@ export default function NewCompanyForm({
 
   const initialValues: FormValues = companyData
     ? {
-        companyName: companyData.user.firstName,
-        status: companyData.status.toLowerCase(),
-        email: companyData.user.email,
-        phoneNumber: companyData.user.phone,
-        password: "",
-        file: companyData.user.avatar || null,
-      }
+      companyName: companyData.user.firstName,
+      status: companyData.status.toLowerCase(),
+      email: companyData.user.email,
+      phoneNumber: companyData.user.phone,
+      password: "",
+      file: companyData.user.avatar || null,
+    }
     : {
-        companyName: "",
-        status: "",
-        email: "",
-        phoneNumber: "",
-        password: "",
-        file: null,
-      };
+      companyName: "",
+      status: "",
+      email: "",
+      phoneNumber: "",
+      password: "",
+      file: null,
+    };
+
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
   ) => {
-    const randomPassword = Math.random().toString(36).slice(-8);
-    setFieldValue("password", randomPassword);
+    const password = generateStrongPassword();
+    setFieldValue("password", password);
   };
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -68,55 +70,55 @@ export default function NewCompanyForm({
 
   const handleSubmit = async (values: FormValues) => {
     const apiData: CompanyData = {
-        name: values.companyName,
-        status: values.status.toUpperCase(),
-        userType: "COMPANY",
-        user: {
-            firstName: values.companyName,
-            lastName: "COMPANY",
-            avatar: values.file ?? "avatar.png",
-            email: values.email,
-            phone: values.phoneNumber,
-            password: values.password,
-            isVerified: true,
-        },
+      name: values.companyName,
+      status: values.status.toUpperCase(),
+      userType: "COMPANY",
+      user: {
+        firstName: values.companyName,
+        lastName: "COMPANY",
+        avatar: values.file ?? "avatar.png",
+        email: values.email,
+        phone: values.phoneNumber,
+        password: values.password,
+        isVerified: true,
+      },
     };
 
     try {
-        let result;
-        if (companyData && companyData.id) {
-            // Map `SingleCompany` to `CompanyData` for `currentData`
-            const currentData: CompanyData = {
-                id: companyData.id, // `id` is now a `number`
-                name: companyData.user.firstName, // Use `firstName` as `name` if `name` is not available
-                status: companyData.status,
-                userType: companyData.userType,
-                user: {
-                    firstName: companyData.user.firstName,
-                    lastName: companyData.user.lastName,
-                    avatar: companyData.user.avatar,
-                    email: companyData.user.email,
-                    phone: companyData.user.phone,
-                    password: companyData.user.password || "", // Provide a default value
-                    isVerified: companyData.user.isVerified,
-                },
-            };
+      let result;
+      if (companyData && companyData.id) {
+        // Map `SingleCompany` to `CompanyData` for `currentData`
+        const currentData: CompanyData = {
+          id: companyData.id, // `id` is now a `number`
+          name: companyData.user.firstName, // Use `firstName` as `name` if `name` is not available
+          status: companyData.status,
+          userType: companyData.userType,
+          user: {
+            firstName: companyData.user.firstName,
+            lastName: companyData.user.lastName,
+            avatar: companyData.user.avatar,
+            email: companyData.user.email,
+            phone: companyData.user.phone,
+            password: companyData.user.password || "", // Provide a default value
+            isVerified: companyData.user.isVerified,
+          },
+        };
 
-            result = await updateCompany(companyData.id, apiData, currentData);
-        } else {
-            result = await submitCompany(apiData);
-        }
+        result = await updateCompany(companyData.id, apiData, currentData);
+      } else {
+        result = await submitCompany(apiData);
+      }
 
-        if (result.success) {
-            setIsSubmitted(true);
-            setApiErrors(null);
-        } else {
-            setApiErrors(result.error || "An error occurred");
-        }
+      if (result.success) {
+        setIsSubmitted(true);
+        setApiErrors(null);
+      } else {
+        setApiErrors(result.error || "An error occurred");
+      }
     } catch {
-        setApiErrors("An unexpected error occurred");
+      setApiErrors("An unexpected error occurred");
     }
-};
+  };
 
   if (isSubmitted) {
     return (

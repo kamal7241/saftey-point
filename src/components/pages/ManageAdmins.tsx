@@ -1,11 +1,12 @@
 "use client";
-import { fetchAdmins } from "@/api/dashboardService";
+import { fetchAdmins } from "@/api/adminService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
-import { User } from "@/types/ui.types";
+import { Admin } from "@/types/ui.types";
+import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import NewBranchForm from "../forms/NewBranchForm";
+import NewAdminForm from "../forms/NewAdminForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -17,55 +18,58 @@ import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 
-
 const ManageAdmins = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  const [admins, setAdmins] = useState<User[]>([]);
+  const [admins, setAdmins] = useState<Admin[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
 
+  const limit = 10;
+  const getAdmins = async () => {
+    setLoading(true);
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchAdmins(offset, limit);
+    if ('admins' in response) {
+      setAdmins(response.admins);
+      setTotalCount(response.totalCount);
+    } else {
+      showToast.error("Failed to fetch admins");
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      const response = await fetchAdmins();
-      const data = await response;
-      setAdmins(data);
+    getAdmins();
+  }, [currentPage]);
 
-    };
-
-    getData();
-  }, []);
-
-  const filteredAdmins = admins.filter((item) => {
-    const matchesSearch = item.name
+  const filteredAdmins = admins.filter((admin) => {
+    const matchesSearch = admin.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return item[key as keyof User]
+      return admin[key as keyof Admin]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
     });
     return matchesSearch && matchesFilters;
   });
-
-  const columns: { header: string; accessor: keyof User }[] = [
-    { header: "admin_id", accessor: "id" },
+  
+  const columns: { header: string; accessor: keyof Admin }[] = [
+    { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
-    { header: "role", accessor: "role" },
-    { header: "permissions", accessor: "permissions" },
+    { header: "email", accessor: "email" },
+    { header: "phone_number", accessor: "phone" },
+    // { header: "user_type", accessor: "type" },
     { header: "status", accessor: "status" },
   ];
-
-  const totalPages = Math.ceil(filteredAdmins.length / 10);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -80,15 +84,15 @@ const ManageAdmins = () => {
         [
           "ID",
           "Name",
-          "Role",
-          "permissions",
+          // "Role",
+          // "permissions",
           "Status",
         ],
         ...filteredAdmins.map((c) => [
           c.id,
           c.name,
-          c.role,
-          c.permissions,
+          // c.role,
+          // c.permissions,
           c.status,
         ]),
       ]
@@ -103,7 +107,7 @@ const ManageAdmins = () => {
     document.body.removeChild(link);
   };
 
-  const renderRowActions = (row: User) => (
+  const renderRowActions = (row: Admin) => (
     <div className="flex gap-2">
       {/* <Switcher /> */}
       <Button
@@ -129,11 +133,6 @@ const ManageAdmins = () => {
       />
     </div>
   );
-
-  const handleAddNewRole = () => {
-    console.log("handleAddNewRole");
-    router.push(`/dashboard/admin-management/add-role`);
-  };
 
   const handleView = (id: number) => {
     console.log("Viewing branch with ID:", id);
@@ -171,8 +170,8 @@ const ManageAdmins = () => {
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
-              label={t("buttons.add_role")}
-              onClick={handleAddNewRole}
+              label={t("buttons.add_admin")}
+              onClick={() => setAddPopupOpen(true)}
               icon={
                 <span className="w-6 inline-block">
                   <Add />
@@ -237,19 +236,20 @@ const ManageAdmins = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
-            onPageChange: handlePageChange,
+            totalPages: Math.ceil(totalCount / limit),
+            onPageChange: setCurrentPage,
           }}
           sortable={true}
-          rowsPerPage={10}
+          rowsPerPage={limit}
           renderRowActions={renderRowActions}
+          isLoading={loading}
         />
       </div>
 
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
-        <NewBranchForm
-          title={t("add_branch")}
-          sub_title={t("add_branch_subtitle")}
+        <NewAdminForm
+          title={t("add_admin")}
+          sub_title={t("form_subtitle")}
           onClose={() => setAddPopupOpen(false)}
         />
       </Popup>

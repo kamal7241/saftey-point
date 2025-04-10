@@ -462,3 +462,48 @@ export const updateExamQuestion = async (
     return { success: false, error: 'Failed to update question' };
   }
 };
+
+export const fetchCourseCertificate = async (courseId: number) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/certificates/course/${courseId}`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch certificate details');
+    }
+
+    return result.innerData.count;
+  } catch (error) {
+    console.error('Error fetching course certificate:', error);
+    return null;
+  }
+};
+export const fetchCourseSession = async (courseId: number) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v2/session/course/${courseId}`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch session details');
+    }
+
+    return result.innerData.count;
+  } catch (error) {
+    console.error('Error fetching course session:', error);
+    return null;
+  }
+};

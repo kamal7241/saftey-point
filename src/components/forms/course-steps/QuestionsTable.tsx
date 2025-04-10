@@ -8,8 +8,8 @@ import Popup from "@/components/ui/Popup";
 import { Question } from "@/types/courses.types";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import NewQuestionForm from "./NewQuestionForm";
+import { showToast } from "@/utils/toast";
 
 interface QuestionsTableProps {
   examId?: string;
@@ -35,7 +35,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
     if (data) {
       setQuestions(data);
     } else {
-      toast.error(tMsgs("error_fetching_questions"));
+      showToast.error(tMsgs("error_fetching_questions"));
     }
     setLoading(false);
   }, [examId, tMsgs]);
@@ -46,7 +46,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
 
   const handleAddQuestionClick = () => {
     if (!examId) {
-      toast.error(tMsgs("missing_examId"));
+      showToast.error(tMsgs("missing_examId"));
       return;
     }
     setAddPopupOpen(true);
@@ -58,14 +58,14 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
     try {
       const result = await deleteExamQuestion(examId, questionId);
       if (result.success) {
-        toast.success(t("question_deleted_successfully"));
+        showToast.success(t("question_deleted_successfully"));
         getQuestions();
       } else {
-        toast.error(t("error_deleting_question"));
+        showToast.error(t("error_deleting_question"));
       }
     } catch (error) {
       console.error("Error deleting question:", error);
-      toast.error(t("error_deleting_question"));
+      showToast.error(t("error_deleting_question"));
     }
   };
 
@@ -106,9 +106,8 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
               questions.map((question) => (
                 <tr
                   key={question.id}
-                  className={`hover:bg-gray-50 ${
-                    questions.indexOf(question) % 2 === 0 ? "bg-gray-100" : ""
-                  }`}
+                  className={`hover:bg-gray-50 ${questions.indexOf(question) % 2 === 0 ? "bg-gray-100" : ""
+                    }`}
                 >
                   <td className="py-3 px-4 border-b text-sm text-gray-700">
                     {question.title}
@@ -142,6 +141,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
                       <button
                         onClick={() => handleEditClick(question)}
                         aria-label={t("edit")}
+                        type="button"
                       >
                         <span className="inline-block h-5 w-5 text-gray-900">
                           <Edit />
@@ -150,6 +150,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
                       <button
                         onClick={() => handleDeleteQuestion(question.id)}
                         aria-label={t("trash")}
+                        type="button"
                       >
                         <span className="inline-block h-5 w-5 text-red-400">
                           <Delete />
@@ -164,7 +165,12 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
         </table>
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          setEditingQuestion(null);
+          getQuestions();
+        }}>
         <NewQuestionForm
           title={
             editingQuestion

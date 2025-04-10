@@ -29,3 +29,20 @@ export interface CompanyData {
         isVerified: boolean;
     };
 }
+
+
+export interface AdminData {
+    id?: number;
+    status: string;
+    userType: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        address: string;
+        password: string;
+        isVerified: boolean;
+    };
+}

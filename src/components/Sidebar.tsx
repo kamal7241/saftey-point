@@ -35,7 +35,9 @@ const Sidebar = () => {
   }));
 
   const isActive = useCallback((link: string) => {
-    if (link === '/dashboard') return false; // Skip /dashboard
+    if (link === '/dashboard') {
+      return pathname === '/dashboard' || pathname === '/';
+    }
     return pathname.startsWith(link);
   }, [pathname]);
 

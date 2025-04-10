@@ -20,8 +20,7 @@ export default function SessionStep({
   setFieldValue,
 }: SessionProps) {
   const t = useTranslations("common");
-  console.log("values", values);
-  console.log("errors", errors);
+
   return (
     <div>
       <div className="mt-4 grid w-full grid-cols-6 gap-x-4 gap-y-6">
@@ -126,7 +125,13 @@ export default function SessionStep({
             type="date"
             placeholder={t("date")}
             value={values.session_date}
-            onChange={handleChange}
+            onChange={(value) => {
+              if (typeof value === 'string') {
+                setFieldValue('session_date', value);
+              } else if (value instanceof Date) {
+                setFieldValue('session_date', value.toISOString());
+              }
+            }}
             name="session_date"
             iconEnd={true}
             iconSVG={<Calendar />}

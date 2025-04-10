@@ -95,6 +95,7 @@ export interface Individual {
         avatar: string;
         email: string;
         phone: string;
+        password?: string;
         isVerified: boolean;
         jobTitle?: string;
     };
@@ -149,9 +150,9 @@ export interface SingleStaffUI {
     status: string;
     type: string;
     image?: string;
-    name?:string;
-    email?:string;
-    phone?:string;
+    name?: string;
+    email?: string;
+    phone?: string;
     isVerified: boolean;
     avatar: string;
 }
@@ -201,4 +202,43 @@ export interface SingleCompany {
         password?: string;
         isVerified: boolean;
     };
+}
+export interface AdminResponse {
+    permissions?: string[];
+    role?: string;
+    id: number;
+    status: string;
+    image?: string;
+    userType: string;
+    user: {
+        id: number;
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        isVerified: boolean;
+    };
+}
+// export interface AdminResponse {
+//     id: number;
+//     firstName: string;
+//     lastName: string;
+//     email: string;
+//     status: string;
+//     userType: string;
+//     phone: string;
+//     avatar: string;
+//     isVerified: boolean;
+// }
+export interface Admin {
+    id: number;
+    name: string;
+    email: string;
+    status: string;
+    userType: string;
+    phone: string;
+    avatar: string;
+    isVerified: boolean;
+    image?: string;
 }

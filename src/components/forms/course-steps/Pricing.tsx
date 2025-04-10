@@ -73,11 +73,11 @@ export default function Pricing({
                   }))}
                   customDropdown
                 />
-                <ErrorMessage
-                  name={`country_${index}`}
-                  component="div"
-                  className="text-xs text-red-500 py-1"
-                />
+                {errors[`country_${index}`] && (
+                  <p className="text-xs text-red-500 py-1">
+                    {errors[`country_${index}`]}
+                  </p>
+                )}
               </div>
               <div className="col-span-1">
                 <Input

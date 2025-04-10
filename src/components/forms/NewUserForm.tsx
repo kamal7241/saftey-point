@@ -15,6 +15,7 @@ import SuccessMessage from "../ui/SuccessMessage";
 import RadioField from "../formsUI/RadioField";
 import { submitIndividual, updateIndividual } from "@/api/usersService";
 import { Individual, IndividualResponse } from "@/types/ui.types";
+import { generateStrongPassword } from "@/utils/passwordGenerator";
 
 interface NewUserFormProps {
   title?: string;
@@ -52,45 +53,46 @@ export default function NewUserForm({
 
   const initialValues: FormValues = userData
     ? {
-        firstName: userData.firstName,
-        lastName: userData.lastName || "",
-        jobTitle: "", // jobTitle is not in the new response
-        type: userData.userType.toLowerCase(),
-        status: userData.isVerified ? "active" : "inactive",
-        email: userData.email,
-        phoneNumber: userData.phone || "",
-        nationalId: userData.nationalId,
-        identityType: userData.identityType.toLowerCase() || "national_id",
-        password: "",
-        avatar: userData.avatar || "avatar.png",
-        nationalIdExpiry: userData.nationalIdExpiry || "2025-01-01",
-        nationality: userData.countryId || "",
-        birthday: userData.birthday || "",
-        nationalIdFront: userData.nationalIdFront || "",
-        nationalIdBack: userData.nationalIdBack || "",
-      }
+      firstName: userData.firstName,
+      lastName: userData.lastName || "",
+      jobTitle: "", // jobTitle is not in the new response
+      type: userData.userType.toLowerCase(),
+      status: userData.isVerified ? "active" : "inactive",
+      email: userData.email,
+      phoneNumber: userData.phone || "",
+      nationalId: userData.nationalId,
+      identityType: userData.identityType.toLowerCase() || "national_id",
+      password: "",
+      avatar: userData.avatar || "avatar.png",
+      nationalIdExpiry: userData.nationalIdExpiry || "2025-01-01",
+      nationality: userData.countryId || "",
+      birthday: userData.birthday || "",
+      nationalIdFront: userData.nationalIdFront || "",
+      nationalIdBack: userData.nationalIdBack || "",
+    }
     : {
-        firstName: "",
-        lastName: "",
-        jobTitle: "",
-        type: "",
-        status: "",
-        email: "",
-        phoneNumber: "",
-        nationalId: "",
-        identityType: "national_id",
-        password: "",
-        avatar: "",
-        nationalIdExpiry: "2025-01-01",
-        nationality: "",
-        birthday: "",
-        nationalIdFront: "",
-        nationalIdBack: "",
-      };
+      firstName: "",
+      lastName: "",
+      jobTitle: "",
+      type: "",
+      status: "",
+      email: "",
+      phoneNumber: "",
+      nationalId: "",
+      identityType: "national_id",
+      password: "",
+      avatar: "",
+      nationalIdExpiry: "2025-01-01",
+      nationality: "",
+      birthday: "",
+      nationalIdFront: "",
+      nationalIdBack: "",
+    };
+
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
   ) => {
-    const randomPassword = Math.random().toString(36).slice(-8);
+    const randomPassword = generateStrongPassword();
     setFieldValue("password", randomPassword);
   };
   const [apiErrors, setApiErrors] = useState<string | null>(null);
@@ -99,7 +101,7 @@ export default function NewUserForm({
 
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
-  
+
     const mappedValues: Individual = {
       identityType: values.identityType,
       nationalId: values.nationalId,
@@ -117,6 +119,7 @@ export default function NewUserForm({
         avatar: values.avatar || "avatar.png",
         email: values.email,
         phone: values.phoneNumber,
+        password: values.password,
         isVerified: values.status === "active",
       },
     };
@@ -142,14 +145,14 @@ export default function NewUserForm({
         isVerified: userData?.isVerified || false,
       },
     };
-  
+
     let result;
     if (userData && userData.id) {
       result = await updateIndividual(userData.id, mappedValues, currentData);
     } else {
       result = await submitIndividual(mappedValues);
     }
-  
+
     if (result?.success) {
       setIsSubmitted(true);
       setApiErrors(null);
@@ -163,7 +166,7 @@ export default function NewUserForm({
       setApiErrors(result?.error || "An error occurred");
     }
   };
-  
+
 
   if (isSubmitted) {
     return (

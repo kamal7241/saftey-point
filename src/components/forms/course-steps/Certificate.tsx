@@ -63,8 +63,13 @@ export default function Certificate({
             type="date"
             placeholder={t("issue_date")}
             value={values.issue_date}
-            onChange={handleChange}
-            // onChange={(dateRange) => setFieldValue("issue_date", dateRange)}
+            onChange={(value) => {
+              if (typeof value === 'string') {
+                setFieldValue('issue_date', value);
+              } else if (value instanceof Date) {
+                setFieldValue('issue_date', value.toISOString());
+              }
+            }}
             name="issue_date"
             iconEnd={true}
             iconSVG={<Calendar />}

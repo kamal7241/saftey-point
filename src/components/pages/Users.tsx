@@ -38,15 +38,15 @@ const Users = () => {
   const [userToDelete, setUserToDelete] = useState<number | null>(null);
 
   const limit = 10;
+  const getUsers = async () => {
+    setLoading(true);
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchUsers(offset, limit);
+    setUsers(response.users);
+    setTotalCount(response.totalCount);
+    setLoading(false);
+  };
   useEffect(() => {
-    const getUsers = async () => {
-      setLoading(true);
-      const offset = (currentPage - 1) * limit;
-      const response = await fetchUsers(offset, limit);
-      setUsers(response.users);
-      setTotalCount(response.totalCount);
-      setLoading(false);
-    };
 
     getUsers();
   }, [currentPage]);
@@ -332,11 +332,19 @@ const Users = () => {
         />
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          getUsers();
+        }}>
         <NewUserForm
           title={t("add_user")}
           sub_title={t("form_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
+
+          onClose={() => {
+            setAddPopupOpen(false);
+            getUsers();
+          }}
         />
       </Popup>
     </div>

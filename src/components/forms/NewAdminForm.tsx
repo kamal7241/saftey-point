@@ -1,8 +1,5 @@
 "use client";
-import { submitStaff, updateStaff } from "@/api/dashboardService";
 import Input from "@/components/formsUI/Input";
-import { SingleStaff } from "@/types/ui.types";
-import { addStaffValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -11,13 +8,16 @@ import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
+import { submitAdmin, updateAdmin } from "@/api/adminService";
+import { AdminData } from "@/types/forms.types";
+import * as Yup from 'yup';
 import { generateStrongPassword } from "@/utils/passwordGenerator";
 
-interface NewStaffFormProps {
+interface NewAdminFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
-  userData?: SingleStaff | null;
+  adminData?: AdminData | null;
 }
 
 interface FormValues {
@@ -25,46 +25,61 @@ interface FormValues {
   lastName: string;
   status: string;
   email: string;
-  role: string;
   phoneNumber: string;
+  address: string;
   password: string;
-  resume: string | null;
-  avatar: string | null;
+  file: string | null;
 }
 
-export default function NewStaffForm({
+const validationSchema = Yup.object({
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  status: Yup.string().required('Status is required'),
+  email: Yup.string().email('Invalid email').required('Email is required'),
+  phoneNumber: Yup.string().required('Phone number is required'),
+  address: Yup.string().required('Address is required'),
+  password: Yup.string()
+    .min(8, 'Password must be at least 8 characters')
+    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .matches(/[0-9]/, 'Password must contain at least one number')
+    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+    .required('Password is required'),
+});
+
+export default function NewAdminForm({
   title,
   sub_title,
   onClose,
-  userData,
-}: NewStaffFormProps) {
+  adminData,
+}: NewAdminFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
 
-  const initialValues: FormValues = userData
+  const initialValues: FormValues = adminData
     ? {
-      firstName: userData.user.firstName,
-      lastName: userData.user.lastName || "",
-      status: userData.status || "pending",
-      email: userData.user.email,
-      phoneNumber: userData.user.phone || "",
-      password: "",
-      resume: null,
-      role: "",
-      avatar: userData.user.avatar,
-    }
+        firstName: adminData.user.firstName,
+        lastName: adminData.user.lastName,
+        status: adminData.status.toLowerCase(),
+        email: adminData.user.email,
+        phoneNumber: adminData.user.phone,
+        address: adminData.user.address,
+        password: "",
+        file: adminData.user.avatar || null,
+      }
     : {
-      firstName: "",
-      lastName: "",
-      status: "",
-      email: "",
-      phoneNumber: "",
-      password: "",
-      resume: null,
-      role: "",
-      avatar: null,
-    };
+        firstName: "",
+        lastName: "",
+        status: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        password: "",
+        file: null,
+      };
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
@@ -72,42 +87,39 @@ export default function NewStaffForm({
     const password = generateStrongPassword();
     setFieldValue("password", password);
   };
-
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [apiErrors, setApiErrors] = useState<string | null>(null);
+  
   const handleSubmit = async (values: FormValues) => {
-    console.log("Form Submitted:", values);
-
-    const mappedValues: SingleStaff = {
-      resume: values.resume ?? "",
-      status: values.status || "pending",
+    const apiData: AdminData = {
+      status: values.status.toUpperCase(),
       userType: "ADMIN",
       user: {
-        id: userData ? userData.user.id : 0,
         firstName: values.firstName,
-        lastName: values.lastName || "",
-        avatar: values.avatar || "",
+        lastName: values.lastName,
+        avatar: values.file ?? "avatar.png",
         email: values.email,
         phone: values.phoneNumber,
+        address: values.address,
         password: values.password,
         isVerified: false,
       },
     };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let result: any;
-    if (userData && userData.id) {
-      result = await updateStaff(userData.id, mappedValues, userData);
-    } else {
-      result = await submitStaff(mappedValues);
-    }
 
-    console.log("result>>>", result);
-    if (result && result.success === true) {
-      setIsSubmitted(true);
-      setApiErrors(null);
-    } else {
-      setIsSubmitted(false);
-      setApiErrors(result?.message);
+    try {
+      let result;
+      if (adminData && adminData.id) {
+        result = await updateAdmin(adminData.id, apiData, adminData);
+      } else {
+        result = await submitAdmin(apiData);
+      }
+
+      if (result.success) {
+        setIsSubmitted(true);
+        setApiErrors(null);
+      } else {
+        setApiErrors(result.error || "An error occurred");
+      }
+    } catch {
+      setApiErrors("An unexpected error occurred");
     }
   };
 
@@ -115,8 +127,8 @@ export default function NewStaffForm({
     return (
       <div className="py-10">
         <SuccessMessage
-          title={"Successfully Added"}
-          msg={"Thank you for filling out your information! ."}
+          title={"Successfully " + (adminData ? "Updated" : "Added")}
+          msg={"Admin has been successfully " + (adminData ? "updated" : "created")}
           bigger
         />
       </div>
@@ -127,25 +139,16 @@ export default function NewStaffForm({
     <div>
       {title && <h3 className="heading3">{title}</h3>}
       {sub_title && (
-        <p className="textRegular mt-1.5">
-          {sub_title.split("(*)").map((part, index) => (
-            <React.Fragment key={index}>
-              {part}
-              {index < sub_title.split("(*)").length - 1 && (
-                <span className="text-red-400">(*)</span>
-              )}
-            </React.Fragment>
-          ))}
-        </p>
+        <p className="textRegular mt-1.5">{sub_title}</p>
       )}
 
       <Formik
         initialValues={initialValues}
-        validationSchema={addStaffValidationSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue }) => (
-          <Form className="mt-4 grid w-full grid-cols-4 gap-4">
+          <Form className="w-full gap-4 grid grid-cols-4 mt-4">
             {apiErrors && (
               <div className="col-span-4">
                 <div className="text-red-500">{apiErrors}</div>
@@ -153,28 +156,23 @@ export default function NewStaffForm({
             )}
             <div className="col-span-4">
               <FileUploader
-                onChange={(file) => setFieldValue("avatar", file)}
-                label={t("logo_user")}
+                onChange={(file) => setFieldValue("file", file)}
+                label={t("user_photo")}
                 note={t("fileuploader_note")}
-                subdirName="staff"
                 initialImageUrl={
-                  userData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`
+                  adminData
+                    ? `${process.env.NEXT_PUBLIC_URL}/${adminData.user.avatar}`
                     : null
                 }
               />
-              <ErrorMessage
-                name="avatar"
-                component="div"
-                className="text-xs text-red-500"
-              />
             </div>
 
+            {/* First Name */}
             <div className="col-span-2">
               <Input
                 label="First Name"
                 type="text"
-                placeholder="First Name"
+                placeholder="Enter first name"
                 value={values.firstName}
                 onChange={handleChange}
                 name="firstName"
@@ -185,11 +183,13 @@ export default function NewStaffForm({
                 className="text-xs text-red-500"
               />
             </div>
+
+            {/* Last Name */}
             <div className="col-span-2">
               <Input
                 label="Last Name"
                 type="text"
-                placeholder="Last Name"
+                placeholder="Enter last name"
                 value={values.lastName}
                 onChange={handleChange}
                 name="lastName"
@@ -201,26 +201,6 @@ export default function NewStaffForm({
               />
             </div>
 
-            <div className="col-span-2">
-              <SelectField
-                label={tTable("role")}
-                name="role"
-                value={values.role}
-                onChange={(name, value) => setFieldValue(name, value)}
-                options={[
-                  { value: "admin", label: t("user_role.admin") },
-                  { value: "company", label: t("user_role.company") },
-                  { value: "staff", label: t("user_role.staff") },
-                  { value: "user", label: t("user_role.user") },
-                ]}
-                customDropdown
-              />
-              <ErrorMessage
-                name="role"
-                component="div"
-                className="text-xs text-red-500"
-              />
-            </div>
             {/* Status */}
             <div className="col-span-2">
               <SelectField
@@ -239,24 +219,6 @@ export default function NewStaffForm({
               />
               <ErrorMessage
                 name="status"
-                component="div"
-                className="text-xs text-red-500"
-              />
-            </div>
-            <div className="col-span-4">
-              <FileUploader
-                onChange={(file) => setFieldValue("resume", file)}
-                label="Attach Resume"
-                subdirName="user"
-                small
-                initialImageUrl={
-                  userData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.resume}`
-                    : null
-                }
-              />
-              <ErrorMessage
-                name="resume"
                 component="div"
                 className="text-xs text-red-500"
               />
@@ -296,32 +258,54 @@ export default function NewStaffForm({
               />
             </div>
 
-            <div className="col-span-3">
+            {/* Address */}
+            <div className="col-span-2">
               <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
+                label="Address"
+                type="text"
+                placeholder="Enter address"
+                value={values.address}
                 onChange={handleChange}
-                name="password"
+                name="address"
+              />
+              <ErrorMessage
+                name="address"
+                component="div"
+                className="text-xs text-red-500"
               />
             </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
-            <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
-            </div>
-            <div className="col-span-4 flex justify-end gap-4">
+
+            {!adminData && (
+              <>
+                <div className="col-span-3">
+                  <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter password or generate one"
+                    value={values.password}
+                    onChange={handleChange}
+                    name="password"
+                  />
+                </div>
+                <div className="col-span-1 self-end">
+                  <Button
+                    label={t("buttons.generate")}
+                    onClick={() => handleGeneratePassword(setFieldValue)}
+                    type="button"
+                    variant="dark"
+                    padding="px-4 py-2.5"
+                    textSize="text-base w-full"
+                  />
+                </div>
+                <div className="col-span-4">
+                  <ErrorMessage name="password">
+                    {(msg) => <ErrorMessageWrappers msg={msg} />}
+                  </ErrorMessage>
+                </div>
+              </>
+            )}
+
+            <div className="flex justify-end gap-4 col-span-4">
               <Button
                 label={t("buttons.close")}
                 onClick={onClose}

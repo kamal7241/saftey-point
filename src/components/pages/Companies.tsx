@@ -1,24 +1,29 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import Table from "@/components/ui/Table";
 import { useTranslations } from "next-intl";
-import Button from "../ui/Button";
-import { Add } from "../ui/icons/Add";
-import { Export } from "../ui/icons/Export";
-import Popup from "../ui/Popup";
-import Eye from "../ui/icons/Eye";
-import { Edit } from "../ui/icons/Edit";
-import { Delete } from "../ui/icons/Delete";
+import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
-import Switcher from "../ui/SmallSwitcher";
+import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
+import Popup from "../ui/Popup";
+import Switcher from "../ui/SmallSwitcher";
+import { Add } from "../ui/icons/Add";
+import { Delete } from "../ui/icons/Delete";
+import { Edit } from "../ui/icons/Edit";
+import { Export } from "../ui/icons/Export";
+import Eye from "../ui/icons/Eye";
 // import { format } from "date-fns";
-import NewCompanyForm from "../forms/NewCompanyForm";
-import PageHeader from "../global/PageHeader";
+import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/companiesService";
 import { useRouter } from "@/i18n/routing";
 import { Company } from "@/types/ui.types";
-import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/companiesService";
 import { showToast } from "@/utils/toast";
+import NewCompanyForm from "../forms/NewCompanyForm";
+import PageHeader from "../global/PageHeader";
+import StatsCard from "../ui/StatsCard";
+import ClipboardClose from "../ui/icons/ClipboardClose";
+import ClipboardTick from "../ui/icons/ClipboardTick";
+import CourtHouse from "../ui/icons/CourtHouse";
+import TimerEmpty from "../ui/icons/TimerEmpty";
 
 
 const Companies = () => {
@@ -131,6 +136,7 @@ const Companies = () => {
       console.error("Error toggling verification:", error);
     }
   };
+
   const renderRowActions = (row: Company) => (
     <div className="flex gap-2">
 
@@ -233,6 +239,34 @@ const Companies = () => {
           </div>
         </Popup>
       )}
+
+      {/* Stats Cards */}
+      <div className="my-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        <StatsCard
+          icon={<CourtHouse />}
+          color="brand"
+          number={totalCount}
+          name={t("total_companies")}
+        />
+        <StatsCard
+          icon={<ClipboardTick />}
+          color="success"
+          number={companies.filter(c => c.isVerified).length}
+          name={t("approved_companies")}
+        />
+        <StatsCard
+          icon={<TimerEmpty />}
+          color="warning"
+          number={companies.filter(c => !c.isVerified).length}
+          name={t("suspended_companies")}
+        />
+        <StatsCard
+          icon={<ClipboardClose />}
+          color="red"
+          number={companies.filter(c => c.status === "0").length}
+          name={t("inactive_companies")}
+        />
+      </div>
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
@@ -324,11 +358,17 @@ const Companies = () => {
         />
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen} onClose={() => {
+        setAddPopupOpen(false);
+        getUsers();
+      }}>
         <NewCompanyForm
           title={t("add_company")}
           sub_title={t("add_company_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
+          onClose={() => {
+            setAddPopupOpen(false);
+            getUsers();
+          }}
         />
       </Popup>
     </div>

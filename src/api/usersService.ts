@@ -7,19 +7,19 @@ export const submitIndividual = async (values: Individual) => {
         nationalIdExpiry: values.nationalIdExpiry,
         nationalIdFront: values.nationalIdFront,
         nationalIdBack: values.nationalIdBack,
-        nationality: values.nationality,
         countryId: values.nationality,
         birthday: values.birthday,
         user: {
             firstName: values.user.firstName,
-            lastName: values.user.lastName || "",
+            lastName: values.user.lastName,
             avatar: values.user.avatar || "avatar.png",
             email: values.user.email,
             phone: values.user.phone,
             address: "123 Main St",
-            password: "",
-            isVerified: values.user.isVerified || false,
-        },
+            password: values.user.password,
+            isVerified: false,
+            roleId: "1"
+        }
     };
 
     try {

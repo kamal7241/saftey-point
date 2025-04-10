@@ -1,8 +1,10 @@
 "use client";
 import {
   fetchCourseById,
+  fetchCourseCertificate,
   fetchCourseExams,
   fetchCoursePricing,
+  fetchCourseSession,
 } from "@/api/courseService";
 import type { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
@@ -42,6 +44,10 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
   const [pricingData, setPricingData] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [examData, setExamData] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [certificateData, setCertificateData] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [sessionData, setSessionData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   // const [editPopupOpen, setEditPopupOpen] = useState(false);
@@ -65,6 +71,29 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     getCourseData();
   }, [getCourseData]);
 
+  useEffect(() => {
+    const getCertificateData = async () => {
+      if (activeTab === "certificate") {
+        const data = await fetchCourseCertificate(Number(courseID));
+        if (data) {
+          setCertificateData(data);
+        }
+      }
+    };
+    getCertificateData();
+  }, [activeTab, courseID]);
+
+  useEffect(() => {
+    const getSessionData = async () => {
+      if (activeTab === "sessions") {
+        const data = await fetchCourseSession(Number(courseID));
+        if (data) {
+          setSessionData(data);
+        }
+      }
+    };
+    getSessionData();
+  }, [activeTab, courseID]);
   useEffect(() => {
     const getPricingData = async () => {
       if (activeTab === "pricing") {
@@ -181,7 +210,6 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         );
       case "pricing":
         return (
-          // TODO add missing parameters
           <div className="divide-y space-y-2">
             {pricingData.map((pricing) => (
               <div key={pricing.id} className="grid grid-cols-3 gap-6 py-4">
@@ -244,6 +272,89 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
             ))}
           </div>
         );
+      case "certificate":
+        return certificateData && certificateData.length > 0 ? (
+          <div className="divide-y space-y-2">
+            {certificateData.map((certificate) => (
+              <div key={certificate.id} className="grid grid-cols-3 gap-6 py-4">
+                <GroupInfo
+                  label={t("certificate_name")}
+                  content={certificate.title}
+                  icon={<Note />}
+                />
+                <GroupInfo
+                  label={t("validFrom")}
+                  content={new Date(certificate.validFrom).toDateString()}
+                  icon={<Calendar />}
+                />
+                <GroupInfo
+                  label={t("validTo")}
+                  content={new Date(certificate.validTo).toDateString()}
+                  icon={<Calendar />}
+                />
+                <GroupInfo
+                  label={t("issueDate")}
+                  content={new Date(certificate.issueDate).toDateString()}
+                  icon={<Calendar />}
+                />
+                <GroupInfo
+                  label={t("displaySource")}
+                  content={certificate.displaySource ? "Yes" : "No"}
+                  icon={<Note />}
+                />
+                <GroupInfo
+                  label={t("watermark")}
+                  content={certificate.watermark ? "Yes" : "No"}
+                  icon={<Note />}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>{t("no_certificate_found")}</div>
+        );
+      case "sessions":
+        return sessionData && sessionData.length > 0 ? (
+          <div className="divide-y space-y-2">
+            {sessionData.map((session) => (
+              <div key={session.id} className="grid grid-cols-3 gap-6 py-4">
+                <GroupInfo
+                  label={t("title")}
+                  content={session.title}
+                  icon={<Note />}
+                />
+                <GroupInfo
+                  label={t("description")}
+                  content={session.description}
+                  icon={<Note />}
+                />
+                <GroupInfo
+                  label={t("startDate")}
+                  content={new Date(session.startDate).toDateString()}
+                  icon={<Calendar />}
+                />
+                <GroupInfo
+                  label={t("endDate")}
+                  content={new Date(session.endDate).toDateString()}
+                  icon={<Calendar />}
+                />
+                <GroupInfo
+                  label={t("status")}
+                  content={
+                    session.status === "ACTIVE" ? (
+                      <Status status={"1"} />
+                    ) : (
+                      <Status status={"0"} />
+                    )
+                  }
+                  icon={<StatusCheck />}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div>{t("no_sessions_found")}</div>
+        );
       default:
         return null;
     }
@@ -298,18 +409,17 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
                 onClick={() =>
                   setActiveTab(
                     tab as
-                      | "course_info"
-                      | "pricing"
-                      | "exam"
-                      | "certificate"
-                      | "sessions"
+                    | "course_info"
+                    | "pricing"
+                    | "exam"
+                    | "certificate"
+                    | "sessions"
                   )
                 }
-                className={`px-4 py-3 text-lg font-medium capitalize ${
-                  activeTab === tab
+                className={`px-4 py-3 text-lg font-medium capitalize ${activeTab === tab
                     ? "border-b-2 border-primary text-primary"
                     : "text-dark"
-                }`}
+                  }`}
               >
                 {t(`tab.${tab}`)}
               </button>

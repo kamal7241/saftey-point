@@ -79,7 +79,6 @@ const Input: React.FC<CustomInputProps> = ({
         {iconSVG && <span className={`${iconEnd ? "order-2 ms-auto" : ""}`}>{iconSVG}</span>}
         {icon && <Image src={icon} alt="icon" className="nav-icon" width={20} height={20} />}
 
-        {/* Date Range Picker */}
         {type === "date" && range ? (
           <DatePicker
             selected={dateRange[0]}
@@ -90,6 +89,14 @@ const Input: React.FC<CustomInputProps> = ({
             placeholderText={placeholder || "Select date range"}
             className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
             calendarClassName="w-full"
+          />
+        ) : type === "date" ? (
+          <DatePicker
+            selected={value ? new Date(value as string) : null}
+            onChange={(date) => onChange?.(date?.toISOString() || '')}
+            placeholderText={placeholder || "Select date"}
+            className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
+            dateFormat="yyyy-MM-dd"
           />
         ) : type === "time" && timeRange ? (
           <div className="flex gap-2 w-full">

@@ -48,7 +48,21 @@ export default {
           400: "#3A70E2",
         },
         red: {
+          300: "#FFCCD2",
           400: "#EC2D30",
+          700: "#EC2D30",
+        },
+        warning: {
+          300: "#FFEAB3",
+          700: "#FE9B0E",
+        },
+        success: {
+          300: "#C0E5D1",
+          700: "#0C9D61",
+        },
+        brand: {
+          300: "#E6C0C6",
+          700: "#AA2D41",
         },
       },
       maxWidth: {
@@ -73,6 +87,14 @@ export default {
   safelist: [
     'text-blue-400',
     'text-gray-900',
+    'bg-brand-300',
+    'text-brand-700',
+    'bg-success-300',
+    'text-success-700',
+    'bg-warning-300',
+    'text-warning-700',
+    'bg-red-300',
+    'text-red-700',
     'after:bg-primary'
   ],
   plugins: [],

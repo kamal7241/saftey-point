@@ -3,6 +3,7 @@ import Input from "@/components/formsUI/Input";
 import RadioField from "@/components/formsUI/RadioField";
 import SelectField from "@/components/formsUI/SelectField";
 import Textarea from "@/components/formsUI/Textarea";
+import Calendar from "@/components/ui/icons/Calendar";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
 
@@ -96,8 +97,16 @@ export default function CourseInfo({
             type="date"
             placeholder="validity"
             value={values.validity}
-            onChange={handleChange}
+            onChange={(value) => {
+              if (typeof value === 'string') {
+                setFieldValue('validity', value);
+              } else if (value instanceof Date) {
+                setFieldValue('validity', value.toISOString());
+              }
+            }}
             name="validity"
+            iconEnd={true}
+            iconSVG={<Calendar />}
           />
           <ErrorMessage
             name="validity"

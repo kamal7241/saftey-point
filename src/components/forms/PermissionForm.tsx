@@ -96,7 +96,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             </div>
             <div className="self-stretch justify-start items-center gap-[100px] inline-flex">
               {section.permissions.map((permission, permissionIndex) => (
-                <>
+                <React.Fragment key={permissionIndex}>
                   <label
                     key={permissionIndex}
                     htmlFor={`permission-${permissionIndex}-${sectionIndex}`}
@@ -128,7 +128,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                       {permission.name}
                     </span>
                   </label>
-                </>
+                </React.Fragment>
               ))}
             </div>
           </div>

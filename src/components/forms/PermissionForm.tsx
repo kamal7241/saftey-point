@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import Input from "../formsUI/Input";
-import SelectField from "../formsUI/SelectField";
+
 import Button from "../ui/Button";
 import { useTranslations } from "next-intl";
 
@@ -15,12 +15,26 @@ type Section = {
   permissions: Permission[];
 };
 
+// Add these props to the interface
 type PermissionFormProps = {
   sections: Section[];
   title?: string;
   title2?: string;
   sub_title?: string;
   inView?: boolean;
+  formData: {
+    key: string;
+    name: string;
+    description: string;
+  };
+  onFormChange: (data: { name: string; description: string }) => void;
+  onSectionsChange: (sections: Section[]) => void;
+  onSubmit: () => void;
+  errors?: {
+    name?: string;
+    description?: string;
+    permissions?: string;
+  };
 };
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
@@ -29,16 +43,21 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   title2,
   sub_title,
   inView,
+  formData,
+  onFormChange,
+  onSectionsChange,
+  errors,
+  onSubmit,
 }) => {
   const t = useTranslations("common");
+
   const handleChange = (name: string, value: string) => {
-    console.log("handleChange", name, value);
+    onFormChange({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const submitForm = () => {
-    console.log("Form Submitted:");
-    // setIsSubmitted(true);
-  };
   return (
     <div className="flex flex-col gap-6 pb-20">
       {title && <h3 className="heading3">{title}</h3>}
@@ -58,31 +77,41 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
         <div className="flex gap-2 w-full justify-start [&>*]:w-full [&>*]:max-w-[200px]">
           <Input
             type="text"
-            placeholder={"name"}
-            value={""}
-            onChange={(e) => {
-              if (typeof e === "string") {
-                handleChange("name", e);
-              } else if ("target" in e) {
-                handleChange("name", e.target.value);
+            placeholder={t("name")}
+            value={formData.name}
+            onChange={(value) => {
+              if (typeof value === "string") {
+                handleChange("name", value);
+              } else if ("target" in value) {
+                handleChange("name", value.target.value);
               }
             }}
             name={"name"}
-            label={"name"}
+            label={t("name")}
             extraClass="w-full px-4 py-3 h-[48px]"
+            error={errors?.name}
           />
-          <SelectField
-            name={"status"}
-            value={""}
-            options={[
-              { value: "1", label: "Active" },
-              { value: "0", label: "Inactive" },
-            ]}
-            onChange={handleChange}
-            placeholder={"status"}
-            label={"status"}
+
+          <Input
+            type="text"
+            placeholder={t("description")}
+            value={formData.description}
+            onChange={(value) => {
+              if (typeof value === "string") {
+                handleChange("description", value);
+              } else if ("target" in value) {
+                handleChange("description", value.target.value);
+              }
+            }}
+            name={"description"}
+            label={t("description")}
+            extraClass="w-full px-4 py-3 h-[48px]"
+            error={errors?.description}
           />
         </div>
+      )}
+      {errors?.permissions && (
+        <p className="text-red-500 text-sm mt-2">{errors.permissions}</p>
       )}
       {title && <h3 className="heading3">{title2}</h3>}
       <div className="flex-col justify-start items-start gap-6 inline-flex">
@@ -108,7 +137,14 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                       type="checkbox"
                       id={`permission-${permissionIndex}-${sectionIndex}`}
                       className="peer hidden"
-                      defaultChecked={permission.isActive}
+                      checked={permission.isActive}
+                      onChange={(e) => {
+                        const updatedSections = [...sections];
+                        updatedSections[sectionIndex].permissions[
+                          permissionIndex
+                        ].isActive = e.target.checked;
+                        onSectionsChange(updatedSections);
+                      }}
                     />
                     <Image
                       src="/images/icons/checkbox.svg"
@@ -144,7 +180,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           />
           <Button
             label={t("buttons.submit")}
-            onClick={submitForm}
+            onClick={onSubmit}
             type="submit"
             variant="primary"
             padding="py-3 px-4"

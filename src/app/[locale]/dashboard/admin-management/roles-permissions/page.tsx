@@ -1,11 +1,7 @@
-export const runtime = "edge";
-import AddRole from "@/components/pages/AddRole";
+import ManageRoles from "@/components/pages/ManageRoles";
 
+export const runtime = "edge";
 
 export default function Page() {
-  return (
-    <div>
-      <AddRole />
-    </div>
-  );
+  return <ManageRoles />;
 }

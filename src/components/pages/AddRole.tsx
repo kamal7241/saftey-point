@@ -1,59 +1,147 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import PermissionForm from "../forms/PermissionForm";
 import { useTranslations } from "next-intl";
 import PageHeader from "../global/PageHeader";
-// import Button from "../ui/Button";
+import { createRole } from "@/api/roleService";
+import { showToast } from "@/utils/toast";
 
 export default function AddRole() {
   const t = useTranslations("common");
-  const sections = [
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    permissions: ""
+  });
+
+  const [sections, setSections] = useState([
     {
       title: "Admin Management",
       permissions: [
-        { name: "Add", isActive: false },
-        { name: "Edit", isActive: false },
+        { name: "Create", isActive: false },
         { name: "Delete", isActive: false },
-        { name: "View", isActive: true },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
+      ],
+    },
+    {
+      title: "Role Management",
+      permissions: [
+        { name: "Create", isActive: false },
+        { name: "Delete", isActive: false },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
+      ],
+    },
+    {
+      title: "Staff Management",
+      permissions: [
+        { name: "Create", isActive: false },
+        { name: "Delete", isActive: false },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
       ],
     },
     {
       title: "Company Management",
       permissions: [
-        { name: "Add", isActive: false },
-        { name: "Edit", isActive: false },
+        { name: "Create", isActive: false },
         { name: "Delete", isActive: false },
-        { name: "View", isActive: true },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
       ],
     },
     {
-      title: "User Management",
+      title: "Individual Management",
       permissions: [
-        { name: "Add", isActive: false },
-        { name: "Edit", isActive: true },
+        { name: "Create", isActive: false },
         { name: "Delete", isActive: false },
-        { name: "View", isActive: false },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
       ],
     },
     {
       title: "Courses Management",
       permissions: [
-        { name: "Add", isActive: false },
-        { name: "Edit", isActive: true },
+        { name: "Create", isActive: false },
         { name: "Delete", isActive: false },
-        { name: "View", isActive: false },
+        { name: "Update", isActive: false },
+        { name: "List", isActive: false },
+        { name: "Find", isActive: false },
       ],
     },
-    {
-      title: "Documentation",
-      permissions: [
-        { name: "Add", isActive: true },
-        { name: "Edit", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "View", isActive: false },
-      ],
-    },
-  ];
+  ]);
+
+  const [formData, setFormData] = useState({
+    key: "ADMIN",
+    name: "",
+    description: "",
+    features: [],
+  });
+
+  const handleSubmit = async () => {
+    // Validate form data
+    if (!formData.name.trim()) {
+      showToast.error("Role name is required");
+      setErrors({ ...errors, name: "Role name is required" });
+      return;
+    }
+
+    if (!formData.description.trim()) {
+      showToast.error("Role description is required");
+      setErrors({...errors, description: "Role description is required" });
+      return;
+    }
+
+    // Validate at least one permission is selected
+    const hasPermissions = sections.some(section => 
+      section.permissions.some(p => p.isActive)
+    );
+    
+    if (!hasPermissions) {
+      showToast.error("Please select at least one permission");
+      setErrors({...errors, permissions: "Please select at least one permission" });
+      return;
+    }
+
+    try {
+      const features = sections.map((section) => ({
+        key: section.title.toUpperCase().replace(/\s+/g, "_"),
+        name: section.title,
+        create: section.permissions.some(p => p.name === "Create" && p.isActive),
+        delete: section.permissions.some(p => p.name === "Delete" && p.isActive),
+        update: section.permissions.some(p => p.name === "Update" && p.isActive),
+        list: section.permissions.some(p => p.name === "List" && p.isActive),
+        find: section.permissions.some(p => p.name === "Find" && p.isActive),
+      }));
+
+      const response = await createRole({
+        ...formData,
+        features,
+      });
+
+      if (response.success) {
+        showToast.success(response.message);
+        setTimeout(() => {
+          window.location.href = "/dashboard/admin-management/roles-permissions";
+        }, 2000);
+      } else {
+        showToast.error(response.message);
+      }
+    } catch (error) {
+      showToast.error("Failed to create role");
+      console.error("Error creating role:", error);
+    }
+  };
+
+  const handleSectionsChange = (updatedSections: typeof sections) => {
+    setSections(updatedSections);
+  };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -73,6 +161,13 @@ export default function AddRole() {
             title2={t("permissions")}
             sub_title={t("form_subtitle")}
             sections={sections}
+            formData={formData}
+            onFormChange={(data) =>
+              setFormData((prevData) => ({ ...prevData, ...data }))
+            }
+            onSectionsChange={handleSectionsChange}
+            errors={errors}
+            onSubmit={handleSubmit}
           />
         </div>
       </div>

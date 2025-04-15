@@ -242,3 +242,18 @@ export interface Admin {
     isVerified: boolean;
     image?: string;
 }
+export interface  Role {
+    id: number;
+    key: string;
+    name: string;
+    description: string;
+    features: {
+      key: string;
+      name: string;
+      create: boolean;
+      delete: boolean;
+      update: boolean;
+      list: boolean;
+      find: boolean;
+    }[];
+  }  

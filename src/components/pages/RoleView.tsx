@@ -129,7 +129,7 @@ export default function RoleView({ adminId }: SingleBranchProps) {
           <GroupInfo label={t("role")} content={"Admin"} icon={<Task />} />
         </div>
         <h3 className="heading3">{t("permissions")}</h3>
-        <PermissionForm title2={t("permissions")} sections={sections} inView />
+        {/* <PermissionForm title2={t("permissions")} sections={sections} inView /> */}
       </div>
     </div>
   );

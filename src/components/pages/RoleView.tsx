@@ -11,7 +11,7 @@ import Edit2 from "../ui/icons/Edit2";
 import Task from "../ui/icons/Task";
 import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
-import PermissionForm from "../forms/PermissionForm";
+// import PermissionForm from "../forms/PermissionForm";
 // import { Edit2 } from "../ui/icons/Edit2";
 
 interface SingleBranchProps {
@@ -28,41 +28,41 @@ export default function RoleView({ adminId }: SingleBranchProps) {
   //   const handleExport = () => {
   //     console.log("Exporting data...");
   //   };
-  const sections = [
-    {
-      title: "Admin Management",
-      permissions: [
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Company Management",
-      permissions: [
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "User Management",
-      permissions: [
-        { name: "Edit", isActive: true },
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Courses Management",
-      permissions: [
-        { name: "Add", isActive: true },
-        { name: "Edit", isActive: true },
-        { name: "View", isActive: true },
-      ],
-    },
-    {
-      title: "Documentation",
-      permissions: [
-        { name: "Add", isActive: true },
-      ],
-    },
-  ];
+  // const sections = [
+  //   {
+  //     title: "Admin Management",
+  //     permissions: [
+  //       { name: "View", isActive: true },
+  //     ],
+  //   },
+  //   {
+  //     title: "Company Management",
+  //     permissions: [
+  //       { name: "View", isActive: true },
+  //     ],
+  //   },
+  //   {
+  //     title: "User Management",
+  //     permissions: [
+  //       { name: "Edit", isActive: true },
+  //       { name: "View", isActive: true },
+  //     ],
+  //   },
+  //   {
+  //     title: "Courses Management",
+  //     permissions: [
+  //       { name: "Add", isActive: true },
+  //       { name: "Edit", isActive: true },
+  //       { name: "View", isActive: true },
+  //     ],
+  //   },
+  //   {
+  //     title: "Documentation",
+  //     permissions: [
+  //       { name: "Add", isActive: true },
+  //     ],
+  //   },
+  // ];
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },

@@ -4,7 +4,7 @@ import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -37,6 +37,10 @@ const ManageRoles = () => {
   const [loading, setLoading] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    rowsPerPage: 10,
+  });
 
   const getRoles = async () => {
     setLoading(true);
@@ -138,6 +142,21 @@ const ManageRoles = () => {
     },
   ];
 
+  const paginatedRoles = useMemo(() => {
+    const startIndex = (pagination.currentPage - 1) * pagination.rowsPerPage;
+    const endIndex = startIndex + pagination.rowsPerPage;
+    return filteredRoles.slice(startIndex, endIndex);
+  }, [filteredRoles, pagination]);
+
+  const totalPages = Math.ceil(filteredRoles.length / pagination.rowsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setPagination(prev => ({
+      ...prev,
+      currentPage: page,
+    }));
+  };
+
   return (
     <div>
       <PageHeader
@@ -161,10 +180,15 @@ const ManageRoles = () => {
         </div>
 
         <Table
-          data={filteredRoles}
+          data={paginatedRoles}
           columns={columns}
           renderRowActions={renderRowActions}
           isLoading={loading}
+          pagination={{
+            currentPage: pagination.currentPage,
+            totalPages: totalPages,
+            onPageChange: handlePageChange,
+          }}
         />
       </div>
     </div>

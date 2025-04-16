@@ -128,6 +128,20 @@ export interface Country {
     image?: string;
 }
 
+export interface Currency {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    name: string;
+    exchangeRate: number;
+    image?: string;
+    symbol: string;
+    code: string;
+    isActive: boolean;
+    status?: boolean;
+}
+
 export interface SingleStaff {
     id?: number;
     status: string;
@@ -256,4 +270,4 @@ export interface  Role {
       list: boolean;
       find: boolean;
     }[];
-  }  
+  }

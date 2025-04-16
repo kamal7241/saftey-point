@@ -1,5 +1,7 @@
 export const runtime = "edge";
+import Currencies from "@/components/pages/Currencies";
+
 
 export default function Page() {
-  return <h1>currencies</h1>;
+  return <Currencies />;
 }

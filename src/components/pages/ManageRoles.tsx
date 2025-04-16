@@ -88,8 +88,7 @@ const ManageRoles = () => {
   ];
 
   const handleView = (id: number) => {
-    console.log("Viewing branch with ID:", id);
-    router.push(`/dashboard/admin-management/${id}`);
+    router.push(`/dashboard/admin-management/roles-permissions/${id}`);
   };
 
   const renderRowActions = (row: Role) => (

@@ -15,55 +15,14 @@ import StatusCheck from "../ui/icons/StatusCheck";
 // import { Edit2 } from "../ui/icons/Edit2";
 
 interface SingleBranchProps {
-  adminId: string; // Define the type for adminId
+  roleId: string;
+  roleData: any;
 }
 
-export default function RoleView({ adminId }: SingleBranchProps) {
+export default function RoleView({ roleId, roleData }: SingleBranchProps) {
   const t = useTranslations("common");
-  //   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-
-  console.log("adminId", adminId);
-  console.log("addPopupOpen", addPopupOpen);
-  //   const handleExport = () => {
-  //     console.log("Exporting data...");
-  //   };
-  // const sections = [
-  //   {
-  //     title: "Admin Management",
-  //     permissions: [
-  //       { name: "View", isActive: true },
-  //     ],
-  //   },
-  //   {
-  //     title: "Company Management",
-  //     permissions: [
-  //       { name: "View", isActive: true },
-  //     ],
-  //   },
-  //   {
-  //     title: "User Management",
-  //     permissions: [
-  //       { name: "Edit", isActive: true },
-  //       { name: "View", isActive: true },
-  //     ],
-  //   },
-  //   {
-  //     title: "Courses Management",
-  //     permissions: [
-  //       { name: "Add", isActive: true },
-  //       { name: "Edit", isActive: true },
-  //       { name: "View", isActive: true },
-  //     ],
-  //   },
-  //   {
-  //     title: "Documentation",
-  //     permissions: [
-  //       { name: "Add", isActive: true },
-  //     ],
-  //   },
-  // ];
-
+  console.log('roleData>>', roleData)
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("admin-management"), href: "/dashboard/admin-management" },

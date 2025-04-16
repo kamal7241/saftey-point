@@ -145,3 +145,34 @@ export const deleteRole = async (roleId: number) => {
     throw error;
   }
 };
+
+
+export const fetchRoleById = async (roleId: string) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/${roleId}`,
+      {
+        method: 'GET',
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+
+    if (response.status === 404) {
+      return null;
+    }
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to fetch role');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching role:', error);
+    throw error;
+  }
+};
+

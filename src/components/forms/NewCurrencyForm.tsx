@@ -27,7 +27,7 @@ const validationSchema = Yup.object({
     name: Yup.string().required('Required'),
     exchangeRate: Yup.number().required('Required').positive('Must be positive'),
     symbol: Yup.string().required('Required'),
-    code: Yup.string().required('Required').length(2, 'Must be 3 characters'),
+    code: Yup.string().required('Required'),
     isActive: Yup.string().required('Required'),
 });
 

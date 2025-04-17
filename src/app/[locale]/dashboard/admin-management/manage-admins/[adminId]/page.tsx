@@ -9,7 +9,7 @@ export default async function Page({
   const adminId = (await params).adminId;
   return (
     <>
-      <RoleView adminId={adminId} />
+      <RoleView roleId={adminId} />
     </>
   );
 }

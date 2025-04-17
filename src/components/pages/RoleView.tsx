@@ -8,21 +8,26 @@ import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
-import Task from "../ui/icons/Task";
-import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
-// import PermissionForm from "../forms/PermissionForm";
-// import { Edit2 } from "../ui/icons/Edit2";
+import Suspend from "../ui/icons/Suspend";
+import Task from "../ui/icons/Task";
+import Popup from "../ui/Popup";
 
-interface SingleBranchProps {
-  roleId: string;
-  roleData: any;
+interface RoleData {
+  name: string;
+  status: string;
+  role: string;
+  // Add more fields as needed
+}
+interface SingleRoleProps {
+  roleId?: string;
+  roleData?: RoleData;
 }
 
-export default function RoleView({ roleId, roleData }: SingleBranchProps) {
+export default function RoleView({ roleId, roleData }: SingleRoleProps) {
   const t = useTranslations("common");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  console.log('roleData>>', roleData)
+  console.log('roleId',roleId)
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("admin-management"), href: "/dashboard/admin-management" },
@@ -33,6 +38,9 @@ export default function RoleView({ roleId, roleData }: SingleBranchProps) {
   ];
   return (
     <div className="h-full">
+      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+        Form
+      </Popup>
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("view_role")}
@@ -76,7 +84,7 @@ export default function RoleView({ roleId, roleData }: SingleBranchProps) {
         <div className="flex items-center justify-between gap-8 flex-wrap">
           <GroupInfo
             label={t("name")}
-            content={"Ahmed Ail"}
+            content={roleData?.name ?? "Ahmed Ail"}
             copyIt
             icon={<Buildings2 />}
           />

@@ -150,7 +150,7 @@ export const deleteRole = async (roleId: number) => {
 export const fetchRoleById = async (roleId: string) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/${roleId}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/user-roles/${roleId}`,
       {
         method: 'GET',
         headers: {

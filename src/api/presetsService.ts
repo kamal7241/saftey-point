@@ -137,3 +137,74 @@ export const deleteCurrency = async (id: number) => {
         };
     }
 };
+
+
+export const fetchFacilities = async (offset: number = 0, limit: number = 10) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/facility?offset=${offset}&limit=${limit}`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch facilities");
+        }
+
+        return {
+            success: result.success,
+            message: result.message,
+            innerData: {
+                count: result.innerData?.count || 0,
+                facilities: Array.isArray(result.innerData?.facilities) 
+                    ? result.innerData.facilities 
+                    : [result.innerData?.facilities].filter(Boolean)
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching facilities:", error);
+        return {
+            success: false,
+            message: "Failed to fetch facilities",
+            innerData: {
+                count: 0,
+                facilities: []
+            }
+        };
+    }
+};
+
+export const fetchFacilityById = async (id: string) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/facility/${id}`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch facility");
+        }
+
+        return {
+            success: result.success,
+            message: result.message,
+            data: result.innerData.facility
+        };
+    } catch (error) {
+        console.error("Error fetching facility:", error);
+        return {
+            success: false,
+            message: "Failed to fetch facility",
+            data: null
+        };
+    }
+};

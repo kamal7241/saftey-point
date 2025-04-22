@@ -1,18 +1,12 @@
 export const runtime = "edge";
-import { fetchRoleById } from "@/api/roleService";
 import RoleView from "@/components/pages/RoleView";
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ roleId: string }>;
+  params: Promise<{ roleID: string }>;
 }) {
-  const roleId = (await params).roleId;
-  const initialData = await fetchRoleById(roleId);
+  const roleID = (await params).roleID;
 
-  return (
-    <>
-      <RoleView roleData={initialData} roleId={roleId} />
-    </>
-  );
+  return <RoleView roleId={roleID} />;
 }

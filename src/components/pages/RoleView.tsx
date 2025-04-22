@@ -1,6 +1,6 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
@@ -12,6 +12,7 @@ import StatusCheck from "../ui/icons/StatusCheck";
 import Suspend from "../ui/icons/Suspend";
 import Task from "../ui/icons/Task";
 import Popup from "../ui/Popup";
+import { fetchRoleById } from "@/api/roleService";
 
 interface RoleData {
   name: string;
@@ -20,14 +21,40 @@ interface RoleData {
   // Add more fields as needed
 }
 interface SingleRoleProps {
-  roleId?: string;
-  roleData?: RoleData;
+  roleId: string;
 }
 
-export default function RoleView({ roleId, roleData }: SingleRoleProps) {
+export default function RoleView({ roleId }: SingleRoleProps) {
   const t = useTranslations("common");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  console.log('roleId',roleId)
+  const [roleData, setRoleData] = useState<RoleData | null>(null);
+  const [loading, setLoading] = useState(true);
+  console.log("roleId", roleId);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchRoleById(roleId);
+        setRoleData(data);
+      } catch (error) {
+        console.error("Failed to fetch role:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (roleId) {
+      fetchData();
+    }
+  }, [roleId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!roleData) {
+    return <div>Role not found</div>;
+  }
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("admin-management"), href: "/dashboard/admin-management" },

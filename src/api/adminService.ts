@@ -145,7 +145,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
     }
 };
 
-export const fetchAdminById = async (adminId: number) => {
+export const fetchAdminById = async (adminId: string) => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`,

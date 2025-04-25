@@ -97,7 +97,7 @@ export const createRole = async (roleData: Omit<RoleResponse, 'id'>): Promise<{
 export const updateRole = async (roleId: number, roleData: Partial<RoleResponse>) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/v1/roles/${roleId}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/${roleId}`,
       {
         method: 'PATCH',
         headers: {
@@ -108,23 +108,45 @@ export const updateRole = async (roleId: number, roleData: Partial<RoleResponse>
       }
     );
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || 'Failed to update role');
+    // Check if the request was successful FIRST
+    if (response.ok) {
+      // If successful, return the success message directly
+      // No need to parse JSON if the API returns an empty body on success
+      return {
+        success: true,
+        message: 'Role updated successfully'
+      };
+    } else {
+      // If the request failed, THEN try to parse the error message from JSON body
+      let errorMessage = `Failed to update role (Status: ${response.status})`;
+      try {
+        const result = await response.json();
+        errorMessage = result.message || errorMessage; // Use message from response if available
+      } catch (jsonError) {
+        // If parsing the error response fails, use the status text
+        console.error("Failed to parse error response JSON:", jsonError);
+        errorMessage = `Failed to update role: ${response.statusText || response.status}`;
+      }
+      throw new Error(errorMessage);
     }
 
-    return result;
   } catch (error) {
+    // Catch network errors or errors thrown from the !response.ok block
     console.error('Error updating role:', error);
-    throw error;
+    // Return a consistent error structure or rethrow
+    return {
+        success: false,
+        message: error instanceof Error ? error.message : 'An unexpected error occurred during update.'
+    };
+    // Or rethrow if the calling function expects to catch it:
+    // throw error;
   }
 };
 
 export const deleteRole = async (roleId: number) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/v1/roles/${roleId}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/${roleId}`,
       {
         method: 'DELETE',
         headers: {
@@ -150,7 +172,7 @@ export const deleteRole = async (roleId: number) => {
 export const fetchRoleById = async (roleId: string) => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/user-roles/${roleId}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/auth/roles/${roleId}`,
       {
         method: 'GET',
         headers: {

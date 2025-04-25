@@ -21,9 +21,9 @@ type PermissionFormProps = {
   title?: string;
   title2?: string;
   sub_title?: string;
-  inView?: boolean;
+  isEditable?: boolean;
   formData: {
-    key: string;
+    // key: string; // Key might not be needed directly in the form if managed by parent
     name: string;
     description: string;
   };
@@ -42,7 +42,8 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   title,
   title2,
   sub_title,
-  inView,
+  // inView,
+  isEditable, // Use isEditable
   formData,
   onFormChange,
   onSectionsChange,
@@ -73,7 +74,8 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           ))}
         </p>
       )}
-      {!inView && (
+      {/* Show inputs only when isEditable is true */}
+      {isEditable && (
         <div className="flex gap-2 w-full justify-start [&>*]:w-full [&>*]:max-w-[200px]">
           <Input
             type="text"
@@ -113,12 +115,13 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
       {errors?.permissions && (
         <p className="text-red-500 text-sm mt-2">{errors.permissions}</p>
       )}
-      {title && <h3 className="heading3">{title2}</h3>}
+      {title2 && <h3 className="heading3">{title2}</h3>} {/* Changed from title to title2 */}
       <div className="flex-col justify-start items-start gap-6 inline-flex">
         {sections.map((section, sectionIndex) => (
           <div
             key={sectionIndex}
-            className="self-stretch h-16 flex-col justify-start items-start gap-4 flex"
+            // className="self-stretch h-16 flex-col justify-start items-start gap-4 flex" // Adjusted height to auto
+            className="self-stretch flex-col justify-start items-start gap-4 flex"
           >
             <div className="self-stretch h-6 text-[#3d4245] text-xl font-medium font-['Cairo'] leading-normal">
               {section.title}
@@ -129,8 +132,9 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                   <label
                     key={permissionIndex}
                     htmlFor={`permission-${permissionIndex}-${sectionIndex}`}
+                    // Remove pointer-events-none based on inView, control via isEditable if needed elsewhere
                     className={`flex items-center gap-2 cursor-pointer ${
-                      inView ? "pointer-events-none" : ""
+                      !isEditable ? "pointer-events-none opacity-70" : "" // Disable interaction if not editable
                     }`}
                   >
                     <input
@@ -139,13 +143,16 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
                       className="peer hidden"
                       checked={permission.isActive}
                       onChange={(e) => {
+                        if (!isEditable) return; // Prevent change if not editable
                         const updatedSections = [...sections];
                         updatedSections[sectionIndex].permissions[
                           permissionIndex
                         ].isActive = e.target.checked;
                         onSectionsChange(updatedSections);
                       }}
+                      disabled={!isEditable} // Also disable input itself
                     />
+                    {/* Use different icons or styles based on isEditable if needed */}
                     <Image
                       src="/images/icons/checkbox.svg"
                       className="peer-checked:hidden"
@@ -170,11 +177,13 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           </div>
         ))}
       </div>
-      {!inView && (
+      {/* Show buttons only when isEditable is true */}
+      {isEditable && (
         <div className="flex justify-end gap-4 col-span-4">
           <Button
             label={t("buttons.close")}
-            href={"/dashboard/admin-management"}
+            // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
+            onClick={() => { /* Add cancel logic, maybe call an onCancel prop */ }}
             variant="transparent"
             padding="py-3 px-4"
           />

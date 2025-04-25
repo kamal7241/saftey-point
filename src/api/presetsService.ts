@@ -208,3 +208,166 @@ export const fetchFacilityById = async (id: string) => {
         };
     }
 };
+
+
+interface FacilityData {
+  title: string;
+  titleArabic?: string;
+  description: string;
+  imageUrl?: string;
+}
+
+export const createFacility = async (data: FacilityData) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/facility`,
+            {
+                method: 'POST',
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            // Attempt to extract a more specific error message if available
+            const errorMessage = result.message || (result.innerData && result.innerData.message) || "Failed to create facility";
+            throw new Error(errorMessage);
+        }
+
+        return {
+            success: result.success,
+            message: result.message || "Facility created successfully",
+            data: result.innerData?.facility || null
+        };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error creating facility:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred",
+            data: null
+        };
+    }
+};
+
+export const updateFacility = async (
+    id: number,
+    values: FacilityData,
+    currentData: FacilityData
+) => {
+    console.log("Updating facility:", currentData);
+    console.log("Updating facility values:", values);
+    const apiData: Partial<FacilityData> = {};
+
+    // Compare fields and add to apiData if changed
+    if (values.title !== currentData.title) {
+        apiData.title = values.title;
+    }
+    if (values.titleArabic && values.titleArabic !== currentData.titleArabic) {
+        apiData.titleArabic = values.titleArabic;
+    }
+    if (values.description !== currentData.description) {
+        apiData.description = values.description;
+    }
+    // Compare imageUrl, handling potential null/undefined values
+    if (values.imageUrl !== currentData.imageUrl) {
+         // Ensure you handle the case where one is null/undefined and the other is an empty string if necessary
+        apiData.imageUrl = values.imageUrl;
+    }
+
+    // Corrected condition: Check if apiData is EMPTY
+    if (Object.keys(apiData).length === 0) {
+        console.log("No changes detected in facility data, skipping update.");
+        return {
+            success: false,
+            message: "No changes detected.",
+            data: { facility: currentData } // Return current data as no update occurred
+        };
+    }
+
+    // If we reach here, it means there are changes in apiData
+    console.log("Changes detected, proceeding with update:", apiData);
+
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/facility/${id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(apiData), // Send only the changed data
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const errorMessage = result.message || (result.innerData && result.innerData.message) || "Failed to update facility";
+            throw new Error(errorMessage);
+        }
+
+        // Return the structure based on the provided successful response example
+        return {
+            success: result.success,
+            message: result.message || "Facility updated successfully",
+            data: result.innerData || null // Use innerData directly as it contains the facility object
+        };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error updating facility:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred",
+            data: null
+        };
+    }
+};
+
+export const deleteFacility = async (id: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/facility/${id}`, {
+            method: "DELETE",
+            headers: {
+                "accept": "*/*", // Standard accept header
+            },
+        });
+
+        // Try to parse JSON regardless of status code, as error details might be in the body
+        let result;
+        try {
+            result = await response.json();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (e) {
+            // Handle cases where response is not JSON (e.g., 204 No Content)
+            result = { success: response.ok, message: response.statusText };
+        }
+
+
+        if (!response.ok) { // Checks for 2xx status codes
+             // Attempt to extract a more specific error message if available
+            const errorMessage = result?.message || (result?.innerData && result.innerData.message) || `Failed to delete facility (Status: ${response.status})`;
+            throw new Error(errorMessage);
+        }
+
+        // Return a consistent success response structure
+        return {
+            success: result?.success ?? true, // Default to true if success field is missing but status is ok
+            message: result?.message || "Facility deleted successfully",
+            data: result // Return the full result if needed
+         };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+        console.error("Error deleting facility:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred while deleting the facility.",
+            data: null
+        };
+    }
+};

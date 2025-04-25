@@ -54,9 +54,9 @@
     @apply scroll-smooth antialiased;
   }
 
-  ::selection {
+  /* ::selection {
     @apply bg-primary;
-  }
+  } */
 
   input:-webkit-autofill,
   textarea:-webkit-autofill,

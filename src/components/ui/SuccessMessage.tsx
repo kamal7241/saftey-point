@@ -32,7 +32,7 @@ const SuccessMessage = ({ title, msg, bigger }: SuccessMessageProps) => (
         {title}
       </h4>
       <p
-        className={`${
+        className={`m-auto ${
           bigger
             ? "text-xl font-medium text-black-400 text-pretty max-w-[250px]"
             : "text-sm"

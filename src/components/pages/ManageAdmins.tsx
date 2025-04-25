@@ -1,5 +1,5 @@
 "use client";
-import { fetchAdmins } from "@/api/adminService";
+import { fetchAdmins, deleteAdmin } from "@/api/adminService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { Admin } from "@/types/ui.types";
@@ -20,6 +20,7 @@ import Popup from "../ui/Popup";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,24 +29,29 @@ const ManageAdmins = () => {
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [adminToDelete, setAdminToDelete] = useState<number | null>(null);
 
   const limit = 10;
   const getAdmins = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchAdmins(offset, limit);
-    if ('admins' in response) {
+    if ("admins" in response) {
       setAdmins(response.admins);
       setTotalCount(response.totalCount);
     } else {
-      showToast.error("Failed to fetch admins");
+      showToast.error(tMsgs("error_fetching_admins"));
     }
     setLoading(false);
   };
 
   useEffect(() => {
     getAdmins();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const filteredAdmins = admins.filter((admin) => {
@@ -61,13 +67,13 @@ const ManageAdmins = () => {
     });
     return matchesSearch && matchesFilters;
   });
-  
+
   const columns: { header: string; accessor: keyof Admin }[] = [
     { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
-    // { header: "user_type", accessor: "type" },
+
     { header: "status", accessor: "status" },
   ];
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -81,20 +87,8 @@ const ManageAdmins = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        [
-          "ID",
-          "Name",
-          // "Role",
-          // "permissions",
-          "Status",
-        ],
-        ...filteredAdmins.map((c) => [
-          c.id,
-          c.name,
-          // c.role,
-          // c.permissions,
-          c.status,
-        ]),
+        ["ID", "Name", "Status"],
+        ...filteredAdmins.map((c) => [c.id, c.name, c.status]),
       ]
         .map((row) => row.join(","))
         .join("\n");
@@ -105,6 +99,11 @@ const ManageAdmins = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleClose = () => {
+    setAddPopupOpen(false);
+    window.location.reload();
   };
 
   const renderRowActions = (row: Admin) => (
@@ -129,22 +128,45 @@ const ManageAdmins = () => {
         noBackground={true}
         textColor="red-500"
         noLabel={true}
-        onClick={() => handleDelete(row.id)}
+        onClick={() => {
+          setAdminToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
 
   const handleView = (id: number) => {
-    console.log("Viewing branch with ID:", id);
     router.push(`/dashboard/admin-management/manage-admins/${id}`);
   };
 
   const handleEdit = (id: number) => {
-    console.log("Editing branch with ID:", id);
+    router.push(`/dashboard/admin-management/manage-admins/${id}`);
   };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting branch with ID:", id);
+  const handleDelete = async () => {
+    if (!adminToDelete) return;
+
+    try {
+      const result = await deleteAdmin(adminToDelete);
+      if (result.success) {
+        showToast.success(tMsgs("admin_deleted_successfully"));
+        await getAdmins();
+      } else {
+        showToast.error(result.error || tMsgs("error_deleting_admin"));
+        console.error("Failed to delete admin:", result.error);
+      }
+    } catch (error) {
+      showToast.error(tMsgs("error_deleting_admin"));
+      console.error("Error deleting admin:", error);
+    }
+    setShowDeleteConfirm(false);
+    setAdminToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setAdminToDelete(null);
   };
 
   const breadcrumbItems = [
@@ -162,6 +184,29 @@ const ManageAdmins = () => {
         breadcrumbItems={breadcrumbItems}
         title={t("manage-admins")}
       />
+
+      {/* Add Delete Confirmation Popup */}
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                onClick={handleDelete}
+                label={t("buttons.confirm")}
+                variant="danger"
+              />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
 
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
@@ -246,11 +291,11 @@ const ManageAdmins = () => {
         />
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen} onClose={handleClose}>
         <NewAdminForm
           title={t("add_admin")}
           sub_title={t("form_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
+          onClose={handleClose}
         />
       </Popup>
     </div>

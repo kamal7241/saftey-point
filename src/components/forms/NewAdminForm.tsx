@@ -2,7 +2,7 @@
 import Input from "@/components/formsUI/Input";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FileUploader from "../formsUI/FileUploader";
 import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
@@ -10,8 +10,9 @@ import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
 import { submitAdmin, updateAdmin } from "@/api/adminService";
 import { AdminData } from "@/types/forms.types";
-import * as Yup from 'yup';
+import * as Yup from "yup";
 import { generateStrongPassword } from "@/utils/passwordGenerator";
+import { fetchRoles, RoleResponse } from "@/api/roleService";
 
 interface NewAdminFormProps {
   title?: string;
@@ -26,25 +27,42 @@ interface FormValues {
   status: string;
   email: string;
   phoneNumber: string;
-  address: string;
   password: string;
   file: string | null;
+  roleId: string;
+}
+
+// Define Role Option type
+interface RoleOption {
+  value: string;
+  label: string;
 }
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  status: Yup.string().required('Status is required'),
-  email: Yup.string().email('Invalid email').required('Email is required'),
-  phoneNumber: Yup.string().required('Phone number is required'),
-  address: Yup.string().required('Address is required'),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  status: Yup.string().required("Status is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  roleId: Yup.string().required("Role is required"), // Add roleId validation
   password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number')
-    .matches(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
-    .required('Password is required'),
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
+    .matches(
+      /[^A-Za-z0-9]/,
+      "Password must contain at least one special character"
+    )
+    .required("Password is required"),
+});
+const validationEditSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  status: Yup.string().required("Status is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  roleId: Yup.string().required("Role is required"), // Add roleId validation
 });
 
 export default function NewAdminForm({
@@ -56,6 +74,28 @@ export default function NewAdminForm({
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
 
+  const [roles, setRoles] = useState<RoleOption[]>([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
+
+  useEffect(() => {
+    const loadRoles = async () => {
+      setLoadingRoles(true);
+      try {
+        const fetchedRoles: RoleResponse[] = await fetchRoles();
+        const roleOptions = fetchedRoles.map((role) => ({
+          value: String(role.id),
+          label: role.name,
+        }));
+        setRoles(roleOptions);
+      } catch (error) {
+        console.error("Failed to fetch roles:", error);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+    loadRoles();
+  }, []);
+
   const initialValues: FormValues = adminData
     ? {
         firstName: adminData.user.firstName,
@@ -63,9 +103,9 @@ export default function NewAdminForm({
         status: adminData.status.toLowerCase(),
         email: adminData.user.email,
         phoneNumber: adminData.user.phone,
-        address: adminData.user.address,
         password: "",
         file: adminData.user.avatar || null,
+        roleId: String(adminData.user.roleId || ""),
       }
     : {
         firstName: "",
@@ -73,9 +113,9 @@ export default function NewAdminForm({
         status: "",
         email: "",
         phoneNumber: "",
-        address: "",
         password: "",
         file: null,
+        roleId: "",
       };
 
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -87,7 +127,7 @@ export default function NewAdminForm({
     const password = generateStrongPassword();
     setFieldValue("password", password);
   };
-  
+
   const handleSubmit = async (values: FormValues) => {
     const apiData: AdminData = {
       status: values.status.toUpperCase(),
@@ -98,9 +138,9 @@ export default function NewAdminForm({
         avatar: values.file ?? "avatar.png",
         email: values.email,
         phone: values.phoneNumber,
-        address: values.address,
         password: values.password,
         isVerified: false,
+        roleId: values.roleId,
       },
     };
 
@@ -128,7 +168,9 @@ export default function NewAdminForm({
       <div className="py-10">
         <SuccessMessage
           title={"Successfully " + (adminData ? "Updated" : "Added")}
-          msg={"Admin has been successfully " + (adminData ? "updated" : "created")}
+          msg={
+            "Admin has been successfully " + (adminData ? "updated" : "created")
+          }
           bigger
         />
       </div>
@@ -138,14 +180,15 @@ export default function NewAdminForm({
   return (
     <div>
       {title && <h3 className="heading3">{title}</h3>}
-      {sub_title && (
-        <p className="textRegular mt-1.5">{sub_title}</p>
-      )}
+      {sub_title && <p className="textRegular mt-1.5">{sub_title}</p>}
 
       <Formik
         initialValues={initialValues}
-        validationSchema={validationSchema}
+        validationSchema={
+          adminData && adminData.id ? validationEditSchema : validationSchema
+        }
         onSubmit={handleSubmit}
+        enableReinitialize // Important for updating initialValues when adminData changes or roles load
       >
         {({ values, handleChange, setFieldValue }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
@@ -159,11 +202,7 @@ export default function NewAdminForm({
                 onChange={(file) => setFieldValue("file", file)}
                 label={t("user_photo")}
                 note={t("fileuploader_note")}
-                initialImageUrl={
-                  adminData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${adminData.user.avatar}`
-                    : null
-                }
+                initialImageUrl={adminData ? `${adminData.user.avatar}` : null}
               />
             </div>
 
@@ -224,6 +263,26 @@ export default function NewAdminForm({
               />
             </div>
 
+            {/* Role */}
+            <div className="col-span-2">
+              <SelectField
+                label={t("role")}
+                name="roleId"
+                value={values.roleId}
+                onChange={(name, value) => setFieldValue(name, value)}
+                options={roles}
+                // isLoading={loadingRoles}
+                placeholder={
+                  loadingRoles ? "Loading roles..." : "Select a role"
+                }
+                customDropdown
+              />
+              <ErrorMessage
+                name="roleId"
+                component="div"
+                className="text-xs text-red-500"
+              />
+            </div>
             {/* Email */}
             <div className="col-span-2">
               <Input
@@ -259,12 +318,12 @@ export default function NewAdminForm({
             </div>
 
             {/* Address */}
-            <div className="col-span-2">
+            {/* <div className="col-span-2">
               <Input
                 label="Address"
                 type="text"
                 placeholder="Enter address"
-                value={values.address}
+                value={values.address ?? ""}
                 onChange={handleChange}
                 name="address"
               />
@@ -273,7 +332,10 @@ export default function NewAdminForm({
                 component="div"
                 className="text-xs text-red-500"
               />
-            </div>
+            </div> */}
+
+            {/* Empty div to align password field correctly if needed */}
+            <div className="col-span-2"></div>
 
             {!adminData && (
               <>

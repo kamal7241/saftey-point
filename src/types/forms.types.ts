@@ -36,12 +36,13 @@ export interface AdminData {
     status: string;
     userType: string;
     user: {
+        roleId: string;
         firstName: string;
         lastName: string;
         avatar: string;
         email: string;
         phone: string;
-        address: string;
+        address?: string;
         password: string;
         isVerified: boolean;
     };

@@ -246,6 +246,8 @@ export interface AdminResponse {
 //     isVerified: boolean;
 // }
 export interface Admin {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    user: any;
     id: number;
     name: string;
     email: string;

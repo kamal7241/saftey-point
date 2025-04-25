@@ -76,7 +76,7 @@ export const updateAdmin = async (
 
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/admins/${adminId}`,
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`,
             {
                 method: "PATCH",
                 headers: {
@@ -142,5 +142,154 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
             return { success: false, error: error.message };
         }
         return { success: false, error: "An unexpected error occurred" };
+    }
+};
+
+export const fetchAdminById = async (adminId: number) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to fetch admin details");
+        }
+
+        const admin: AdminResponse = result.innerData.admin;
+
+        return {
+            success: true,
+            admin: {
+                id: admin.id,
+                name: `${admin.user.firstName} ${admin.user.lastName}`,
+                email: admin.user.email,
+                status: admin.status === "ACTIVE" ? "1" : "0",
+                userType: admin.userType,
+                type: admin.userType,
+                phone: admin.user.phone,
+                image: admin.user.avatar.startsWith('http')
+                    ? admin.user.avatar
+                    : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
+                isVerified: admin.user.isVerified,
+                user: admin.user
+            }
+        };
+
+    } catch (error: unknown) {
+        console.error("Error fetching admin by ID:", error);
+        if (error instanceof Error) {
+            return { success: false, error: error.message };
+        }
+        return { success: false, error: "An unexpected error occurred" };
+    }
+};
+
+export const deleteAdmin = async (id: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+                accept: "*/*",
+            },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to delete admin");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error deleting admin:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const resetAdminPassword = async (
+    adminId: number,
+    newPassword: string
+  ) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "accept": "*/*",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user: {
+              password: newPassword,
+            },
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to reset password.");
+      }
+
+      return { success: true, data: result };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error resetting password:", error);
+        return { success: false, error: error.message };
+      } else {
+        console.error("Unexpected error:", error);
+        return { success: false, error: "An unexpected error occurred" };
+      }
+    }
+  };
+
+export const toggleAdminVerification = async (adminId: number, isVerified: boolean) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`, // Adjusted endpoint
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: {
+                        isVerified: isVerified
+                    }
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update admin verification status");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating admin verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
     }
 };

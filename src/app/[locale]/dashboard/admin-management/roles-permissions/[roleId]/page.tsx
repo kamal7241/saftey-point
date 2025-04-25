@@ -7,6 +7,9 @@ export default async function Page({
   params: Promise<{ roleID: string }>;
 }) {
   const roleID = (await params).roleID;
-
-  return <RoleView roleId={roleID} />;
+  return (
+    <>
+      <RoleView roleId={roleID} />
+    </>
+  );
 }

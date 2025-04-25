@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react"; // Import useCallback
-import { useRouter } from "@/i18n/routing"; // Added useRouter
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "@/i18n/routing";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
@@ -11,23 +11,17 @@ import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
 import StatusCheck from "../ui/icons/StatusCheck";
 import Task from "../ui/icons/Task";
-import Popup from "../ui/Popup"; // Import Popup
+import Popup from "../ui/Popup";
 import {
   fetchRoleById,
   RoleFeature,
   RoleResponse,
   updateRole,
-  deleteRole, // Import deleteRole
-} from "@/api/roleService"; // Import updateRole and types
-import { showToast } from "@/utils/toast"; // Import showToast
-import PermissionForm from "../forms/PermissionForm"; // Import PermissionForm
+  deleteRole,
+} from "@/api/roleService";
+import { showToast } from "@/utils/toast";
+import PermissionForm from "../forms/PermissionForm";
 
-// interface RoleData {
-//   name: string;
-//   status: string;
-//   role: string;
-//   // Add more fields as needed
-// }
 type Permission = {
   name: string;
   isActive: boolean;
@@ -41,7 +35,6 @@ interface SingleRoleProps {
   roleId: string;
 }
 
-// Helper function to transform API features to form sections
 const transformFeaturesToSections = (
   features: RoleFeature[]
 ): PermissionSection[] => {
@@ -57,7 +50,6 @@ const transformFeaturesToSections = (
   }));
 };
 
-// Helper function to transform form sections back to API features
 const transformSectionsToFeatures = (
   sections: PermissionSection[]
 ): RoleFeature[] => {
@@ -68,7 +60,7 @@ const transformSectionsToFeatures = (
     }, {} as Record<string, boolean>);
 
     return {
-      key: section.title.toUpperCase().replace(/\s+/g, "_"), // Generate key from title
+      key: section.title.toUpperCase().replace(/\s+/g, "_"),
       name: section.title,
       create: permissionsMap["create"] ?? false,
       delete: permissionsMap["delete"] ?? false,
@@ -81,15 +73,14 @@ const transformSectionsToFeatures = (
 
 export default function RoleView({ roleId }: SingleRoleProps) {
   const t = useTranslations("common");
-  const tMsgs = useTranslations("messages"); // Add messages translation
-  const router = useRouter(); // Add router hook
-  const [isEditing, setIsEditing] = useState(false); // State to control edit mode
+  const tMsgs = useTranslations("messages");
+  const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
   const [roleData, setRoleData] = useState<RoleResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // State for errors
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // State for delete confirmation
+  const [error, setError] = useState<string | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // State for form data managed within RoleView
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
   const [formErrors, setFormErrors] = useState({
@@ -99,14 +90,13 @@ export default function RoleView({ roleId }: SingleRoleProps) {
   });
 
   const fetchData = useCallback(async () => {
-    // Wrap fetchData in useCallback
     setLoading(true);
     setError(null);
     try {
       const data = await fetchRoleById(roleId);
       if (data) {
         setRoleData(data);
-        // Initialize form state when data is fetched
+
         setFormData({ name: data.name, description: data.description });
         setSectionsData(transformFeaturesToSections(data.features));
       } else {
@@ -118,13 +108,13 @@ export default function RoleView({ roleId }: SingleRoleProps) {
     } finally {
       setLoading(false);
     }
-  }, [roleId]); // Add roleId as dependency
+  }, [roleId]);
 
   useEffect(() => {
     if (roleId) {
       fetchData();
     }
-  }, [roleId, fetchData]); // Include fetchData in dependency array
+  }, [roleId]);
 
   const handleFormChange = (data: { name: string; description: string }) => {
     setFormData(data);
@@ -145,7 +135,6 @@ export default function RoleView({ roleId }: SingleRoleProps) {
   };
 
   const handleSubmit = async () => {
-    // Basic Validation
     const currentErrors = { name: "", description: "", permissions: "" };
     let hasError = false;
     if (!formData.name.trim()) {
@@ -175,7 +164,7 @@ export default function RoleView({ roleId }: SingleRoleProps) {
       return;
     }
 
-    setLoading(true); // Indicate loading state
+    setLoading(true);
     try {
       const featuresToUpdate = transformSectionsToFeatures(sectionsData);
       const payload: Partial<RoleResponse> = {
@@ -184,10 +173,8 @@ export default function RoleView({ roleId }: SingleRoleProps) {
         features: featuresToUpdate,
       };
 
-      // Assuming updateRole exists in roleService.ts and takes (id, payload)
       const response = await updateRole(Number(roleId), payload);
 
-      // Check response structure - adjust based on actual API response
       if (response && response.success !== false) {
         // Check if response indicates success
         showToast.success("Role updated successfully!");
@@ -208,17 +195,16 @@ export default function RoleView({ roleId }: SingleRoleProps) {
       showToast.error(errorMessage);
       setError(errorMessage);
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    // Reset form data to original fetched data
     if (roleData) {
       setFormData({ name: roleData.name, description: roleData.description });
       setSectionsData(transformFeaturesToSections(roleData.features));
-      setFormErrors({ name: "", description: "", permissions: "" }); // Clear errors
+      setFormErrors({ name: "", description: "", permissions: "" });
     }
   };
 
@@ -260,7 +246,6 @@ export default function RoleView({ roleId }: SingleRoleProps) {
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
   };
-
 
   if (loading && !roleData) {
     // Show loading only on initial load

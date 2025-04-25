@@ -65,6 +65,7 @@ const Facilities = () => {
 
   useEffect(() => {
     getFacilities();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const filteredFacilities = facilities.filter((facility) => {

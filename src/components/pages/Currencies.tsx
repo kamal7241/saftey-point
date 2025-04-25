@@ -255,14 +255,14 @@ const Currencies = () => {
 
             <Popup isOpen={addPopupOpen} onClose={() => {
                 setAddPopupOpen(false);
-                getCurrencies(); // Add this function to refresh the list
+                getCurrencies();
             }}>
                 <NewCurrencyForm
                     title={t("add_currency")}
                     sub_title={t("add_currency_subtitle")}
                     onClose={() => {
                         setAddPopupOpen(false);
-                        getCurrencies(); // Add this function to refresh the list
+                        getCurrencies();
                     }}
                 />
             </Popup>

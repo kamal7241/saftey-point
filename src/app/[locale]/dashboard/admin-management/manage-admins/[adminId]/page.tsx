@@ -6,11 +6,11 @@ import { getTranslations } from "next-intl/server";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ adminID: string }>;
+  params: Promise<{ adminId: string }>; // Changed adminID to adminId
 }) {
-  const { adminID } = await params;
+  const { adminId } = await params; // Changed adminID to adminId
   const t = await getTranslations("common");
-  const initialData = await fetchAdminById(adminID);
+  const initialData = await fetchAdminById(adminId); // Changed adminID to adminId
 
   if (!initialData || !initialData.admin) {
     console.error("Failed to load admin data:", initialData?.error);
@@ -23,7 +23,7 @@ export default async function Page({
         ...initialData.admin,
         avatar: initialData.admin.user.avatar,
       }}
-      adminID={adminID}
+      adminID={adminId}
     />
   );
 }

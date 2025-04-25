@@ -40,7 +40,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
 
   const getAdminData = useCallback(async () => {
     try {
-      const response = await fetchAdminById(Number(adminID));
+      const response = await fetchAdminById(adminID);
        if (response && response.admin) {
          setAdminData({
            ...response.admin,

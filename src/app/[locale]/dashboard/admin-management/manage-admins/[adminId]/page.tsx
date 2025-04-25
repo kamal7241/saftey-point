@@ -10,8 +10,6 @@ export default async function Page({
 }) {
   const { adminID } = await params;
   const t = await getTranslations("common");
-
-  // Fetch initial data
   const initialData = await fetchAdminById(adminID);
 
   if (!initialData || !initialData.admin) {
@@ -19,6 +17,13 @@ export default async function Page({
     return <div className="p-4 text-red-500">{t("error_loading_data")}</div>;
   }
 
-  // If data is valid, render the component
-  return <SingleAdmin adminData={{ ...initialData.admin, avatar: initialData.admin.user.avatar }} adminID={adminID} />;
+  return (
+    <SingleAdmin
+      adminData={{
+        ...initialData.admin,
+        avatar: initialData.admin.user.avatar,
+      }}
+      adminID={adminID}
+    />
+  );
 }

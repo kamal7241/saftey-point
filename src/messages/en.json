@@ -196,6 +196,7 @@
     "assessor": "Assessor",
     "staff_details": "Staff Details",
     "resume": "Resume",
+    "error_loading_data": "Error Loading Data",
     "edit_company": "Edit Company",
     "session_time": "Time (From & To)",
     "new_password": "New Password",

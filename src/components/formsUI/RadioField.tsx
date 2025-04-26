@@ -6,7 +6,7 @@ interface RadioFieldProps {
   label: string;
   name: string;
   options: { value: string; label: string }[];
-  selectedValue: string;
+  selectedValue?: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

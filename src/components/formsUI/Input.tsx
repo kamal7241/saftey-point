@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { InputProps } from "@/types/input";
 import Image from "next/image";
 import DatePicker from "react-datepicker";
@@ -49,6 +49,15 @@ const Input: React.FC<CustomInputProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (type === "date" && range && Array.isArray(value) && value.length === 2) {
+      const newStartDate = value[0] instanceof Date ? value[0] : (value[0] ? new Date(value[0]) : null);
+      const newEndDate = value[1] instanceof Date ? value[1] : (value[1] ? new Date(value[1]) : null);
+      if (newStartDate?.getTime() !== dateRange[0]?.getTime() || newEndDate?.getTime() !== dateRange[1]?.getTime()) {
+        setDateRange([newStartDate, newEndDate]);
+      }
+    }
+  }, [value, type, range, dateRange]);
   const handleDateChange = (dates: DateRange) => {
     setDateRange(dates);
     if (onChange) {

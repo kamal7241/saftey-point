@@ -1,127 +1,245 @@
 "use client";
 import {
-  fetchCourseById,
-  fetchCourseCertificate,
-  fetchCourseExams,
-  fetchCoursePricing,
-  fetchCourseSession,
+  updateCertificate,
+  updateCourse,
+  updateCoursePricing,
 } from "@/api/courseService";
-import type { SingleCourse } from "@/types/ui.types";
+import {
+  CertificateFormValues,
+  CourseFormValues,
+  PricingFormValues,
+} from "@/types/forms.types";
+import { showToast } from "@/utils/toast";
+import { FormikValues } from "formik";
 import { useTranslations } from "next-intl";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import PageHeader from "../global/PageHeader";
-import Button from "../ui/Button";
-import CorporatePricingTable from "../ui/CorporatePricingTable";
-import GroupInfo from "../ui/GroupInfo";
-import Attach from "../ui/icons/Attach";
-import Calendar from "../ui/icons/Calendar";
-import CourseTitle from "../ui/icons/CourseTitle";
-import { Delete } from "../ui/icons/Delete";
-import { Edit } from "../ui/icons/Edit";
-import Edit2 from "../ui/icons/Edit2";
-import LanguageSquare from "../ui/icons/LanguageSquare";
-import Medical from "../ui/icons/Medical";
-import Note from "../ui/icons/Note";
-import NoteFlat from "../ui/icons/NoteFlat";
-import People from "../ui/icons/People";
-import StatusCheck from "../ui/icons/StatusCheck";
-import Suspend from "../ui/icons/Suspend";
-import Task from "../ui/icons/Task";
-import TaskBorder from "../ui/icons/TaskBorder";
-import Timer from "../ui/icons/Timer";
-import ImagePopup from "../ui/ImagePopup";
-import Status from "../ui/Status";
-import QuestionsTable from "../forms/course-steps/QuestionsTable";
+import { useCourseData } from "./SingleCourse/useCourseData";
+import CourseInfoDisplay from "./SingleCourse/CourseInfoDisplay";
+import CourseInfoForm from "./SingleCourse/CourseInfoForm";
+import PricingTabContent from "./SingleCourse/PricingTabContent";
+import ExamTabContent from "./SingleCourse/ExamTabContent";
+import CertificateTabContent from "./SingleCourse/CertificateTabContent";
+import SessionsTabContent from "./SingleCourse/SessionsTabContent";
+import CourseHeaderActions from "./SingleCourse/CourseHeaderActions";
+import CourseTabs from "./SingleCourse/CourseTabs";
+import PricingForm from "./SingleCourse/PricingForm";
+import CertificateForm from "./SingleCourse/CertificateForm";
 
 interface SingleCourseProps {
   courseID: string;
 }
 
+type ActiveTab =
+  | "course_info"
+  | "pricing"
+  | "exam"
+  | "certificate"
+  | "sessions";
+
 export default function SingleCourse({ courseID }: SingleCourseProps) {
   const t = useTranslations("common");
-  const [courseData, setCourseData] = useState<SingleCourse>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [pricingData, setPricingData] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [examData, setExamData] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [certificateData, setCertificateData] = useState<any[]>([]);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [sessionData, setSessionData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  // const [editPopupOpen, setEditPopupOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<
-    "course_info" | "pricing" | "exam" | "certificate" | "sessions"
-  >("course_info");
+  const tMsgs = useTranslations("messages");
+  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingPricing, setIsEditingPricing] = useState(false);
+  const [editingPricingId, setEditingPricingId] = useState<number | null>(null);
+  const [isEditingCertificate, setIsEditingCertificate] = useState(false);
+  const [editingCertificateId, setEditingCertificateId] = useState<
+    number | null
+  >(null);
+  const [formSubmitting, setFormSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("course_info");
 
-  const getCourseData = useCallback(async () => {
-    setLoading(true);
-    const data = await fetchCourseById(Number(courseID));
-    if (data) {
-      setCourseData(data);
-      setLoading(false);
+  const {
+    courseData,
+    pricingData,
+    examData,
+    certificateData,
+    sessionData,
+    loading: initialLoading,
+    tabLoading,
+    error,
+    refetchCourseData,
+    refetchPricingData,
+    refetchCertificateData,
+  } = useCourseData(courseID, activeTab);
+
+  const getInitialFormValues = (): Partial<CourseFormValues> => {
+    if (!courseData) return {};
+    return {
+      courseTitle: courseData.title,
+      description: courseData.description,
+      status: courseData.status,
+      prerequisites: courseData.prerequisites,
+      validity: courseData.validity
+        ? new Date(courseData.validity).toISOString().split("T")[0]
+        : "",
+      courseCover: courseData.cover,
+      medicalTest: courseData.requiresMedicalTest ? "yes" : "no",
+      maxAttendees: courseData.maxAttendees?.toString() ?? "",
+      language: courseData.language,
+      level: courseData.level?.toString(),
+    };
+  };
+
+  const getInitialPricingValues = (
+    pricingId: number
+  ): Partial<PricingFormValues> => {
+    const pricingItem = pricingData.find((item) => item.id === pricingId);
+    if (!pricingItem) return {};
+
+    return {
+      price: Number(pricingItem.price),
+      discount: Number(pricingItem.discount),
+      isTheoreticalOnly: pricingItem.isTheoreticalOnly,
+      type: pricingItem.type,
+      isCompanyTraining: pricingItem.isCompanyTraining,
+    };
+  };
+
+  const getInitialCertificateValues = (
+    certificateId: number
+  ): Partial<CertificateFormValues> => {
+    const certificateItem = certificateData.find(
+      (item) => item.id === certificateId
+    );
+    if (!certificateItem) return {};
+
+    // Map certificateItem properties to CertificateFormValues
+    // Adjust property names as needed based on CertificateFormValues and certificateItem structure
+    return {
+      certificateName: certificateItem.title,
+      validate_date_interval: [
+        certificateItem.validFrom ? new Date(certificateItem.validFrom) : null,
+        certificateItem.validTo ? new Date(certificateItem.validTo) : null,
+      ],
+      issue_date: certificateItem.issueDate
+        ? new Date(certificateItem.issueDate).toISOString().split("T")[0]
+        : "",
+      displayScore: certificateItem.displaySource ? "yes" : "no", // Assuming displaySource maps to displayScore
+      watermark: certificateItem.watermark ? "yes" : "no",
+    };
+  };
+
+  const handleSave = async (values: FormikValues) => {
+    setFormSubmitting(true);
+    const result = await updateCourse(
+      Number(courseID),
+      values as Partial<CourseFormValues>
+    );
+    setFormSubmitting(false);
+    if (result.success) {
+      showToast.success(tMsgs("course_updated_successfully"));
+      setIsEditing(false);
+      refetchCourseData();
     } else {
-      setError("Failed to fetch Course data.");
-      setLoading(false);
+      showToast.error(result.error || tMsgs("error_updating_course"));
     }
-  }, [courseID]);
+  };
 
-  useEffect(() => {
-    getCourseData();
-  }, [getCourseData]);
+  const handleSavePricing = async (values: FormikValues) => {
+    if (!editingPricingId) return;
 
-  useEffect(() => {
-    const getCertificateData = async () => {
-      if (activeTab === "certificate") {
-        const data = await fetchCourseCertificate(Number(courseID));
-        if (data) {
-          setCertificateData(data);
-        }
+    setFormSubmitting(true);
+    try {
+      const result = await updateCoursePricing(
+        Number(courseID),
+        editingPricingId,
+        values as Partial<PricingFormValues>
+      );
+
+      if (result.success) {
+        showToast.success(tMsgs("pricing_updated_successfully"));
+        setIsEditingPricing(false);
+        setEditingPricingId(null);
+        refetchPricingData();
+      } else {
+        showToast.error(result.error || tMsgs("error_updating_pricing"));
       }
-    };
-    getCertificateData();
-  }, [activeTab, courseID]);
+    } catch (error) {
+      showToast.error(tMsgs("error_updating_pricing"));
+      console.error(error);
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
 
-  useEffect(() => {
-    const getSessionData = async () => {
-      if (activeTab === "sessions") {
-        const data = await fetchCourseSession(Number(courseID));
-        if (data) {
-          setSessionData(data);
-        }
-      }
-    };
-    getSessionData();
-  }, [activeTab, courseID]);
-  useEffect(() => {
-    const getPricingData = async () => {
-      if (activeTab === "pricing") {
-        const data = await fetchCoursePricing(Number(courseID));
-        if (data) {
-          setPricingData(data);
-        }
-      }
-    };
-    getPricingData();
-  }, [activeTab, courseID]);
+  const handleSaveCertificate = async (values: FormikValues) => {
+    if (!editingCertificateId) return;
 
-  useEffect(() => {
-    const getExamData = async () => {
-      if (activeTab === "exam") {
-        const data = await fetchCourseExams(Number(courseID));
-        if (data) {
-          setExamData(data);
-        }
-      }
-    };
-    getExamData();
-  }, [activeTab, courseID]);
+    setFormSubmitting(true);
+    try {
+      // Prepare data for the API call, adjust based on API requirements
+      const apiData = {
+        title: values.certificateName,
+        validFrom: values.validate_date_interval?.[0]?.toISOString(),
+        validTo: values.validate_date_interval?.[1]?.toISOString(),
+        issueDate: values.issue_date
+          ? new Date(values.issue_date).toISOString()
+          : null,
+        displaySource: values.displayScore === "yes",
+        watermark: values.watermark === "yes",
+      };
 
-  if (loading) return <div>Loading...</div>;
-  if (error || !courseData) return <div>{error}</div>;
-  // console.log("courseData", courseData);
-  // console.log("editPopupOpen", editPopupOpen);
+      const result = await updateCertificate(
+        editingCertificateId,
+        apiData as unknown as Partial<CertificateFormValues>
+      );
+      console.log("result>>", result);
+      if (result.success) {
+        showToast.success(tMsgs("certificate_updated_successfully"));
+        setIsEditingCertificate(false);
+        setEditingCertificateId(null);
+        refetchCertificateData();
+      } else {
+        showToast.error(result.error || tMsgs("error_updating_certificate"));
+      }
+    } catch (error) {
+      showToast.error(tMsgs("error_updating_certificate"));
+      console.error(error);
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleCancelEditPricing = () => {
+    setIsEditingPricing(false);
+    setEditingPricingId(null);
+  };
+
+  const handleEditPricing = (pricingId: number) => {
+    setEditingPricingId(pricingId);
+    setIsEditingPricing(true);
+  };
+
+  const handleEditCertificate = (certificateId: number) => {
+    setEditingCertificateId(certificateId);
+    setIsEditingCertificate(true);
+  };
+
+  const handleCancelEditCertificate = () => {
+    setIsEditingCertificate(false);
+    setEditingCertificateId(null);
+  };
+
+  const handleSuspend = () => {
+    console.log("Suspend action triggered...");
+    showToast.info("Suspend functionality not implemented yet.");
+  };
+
+  const handleDelete = () => {
+    console.log("Delete action triggered...");
+    showToast.info("Delete functionality not implemented yet.");
+  };
+
+  if (initialLoading && !courseData) return <div>{t("loading")}...</div>;
+  if (error) return <div>{error}</div>;
+  if (!courseData) return <div>{t("no_course_data")}</div>;
+
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("courses"), href: "/dashboard/courses" },
@@ -130,230 +248,60 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
       href: `/dashboard/courses/${courseID}`,
     },
   ];
-  const handleSuspend = () => {
-    console.log("Exporting data...");
-  };
-  const renderContent = () => {
+
+  const renderTabContent = () => {
     switch (activeTab) {
       case "course_info":
-        return (
-          <>
-            <div className="grid grid-cols-3 gap-6">
-              <GroupInfo
-                label={t("courseTitle")}
-                content={courseData.title ?? "missing from API"}
-                icon={<CourseTitle />}
-              />
-              <GroupInfo
-                label={t("status")}
-                content={
-                  courseData?.status === "ACTIVE" ? (
-                    <Status status={"1"} />
-                  ) : (
-                    <Status status={"0"} />
-                  )
-                }
-                icon={<StatusCheck />}
-              />
-              <GroupInfo
-                label={t("prerequisites.name")}
-                content={courseData.prerequisites ?? "missing from API"}
-                icon={<CourseTitle />}
-              />
-              <GroupInfo
-                label={t("validity")}
-                content={
-                  courseData.validity
-                    ? new Date(courseData.validity).toDateString()
-                    : "missing from API"
-                }
-                icon={<Calendar />}
-              />
-              <GroupInfo
-                label={t("level.name")}
-                content={courseData.level ?? "missing from API"}
-                icon={<Task />}
-              />
-              <GroupInfo
-                label={t("courseCover")}
-                content={<ImagePopup imagePath={courseData?.cover} />}
-                icon={<Attach />}
-              />
-              <GroupInfo
-                label={t("language.name")}
-                content={courseData.language ?? "missing from API"}
-                icon={<LanguageSquare />}
-              />
-              <GroupInfo
-                label={t("maxAttendees")}
-                content={courseData.maxAttendees ?? "missing from API"}
-                icon={
-                  <span className="text-transparent">
-                    <People />
-                  </span>
-                }
-              />
-              <GroupInfo
-                label={t("medicalTest")}
-                content={courseData.requiresMedicalTest ? "Yes" : "No"}
-                icon={<Medical />}
-              />
-            </div>
-            <div className="mt-6">
-              <GroupInfo
-                label={t("description")}
-                content={courseData.description ?? "missing from API"}
-                icon={<Note />}
-              />
-            </div>
-          </>
+        return isEditing ? (
+          <CourseInfoForm
+            initialValues={getInitialFormValues()}
+            onSubmit={handleSave}
+            onCancel={handleCancelEdit}
+            isLoading={formSubmitting}
+          />
+        ) : (
+          <CourseInfoDisplay courseData={courseData} />
         );
       case "pricing":
-        return (
-          <div className="divide-y space-y-2">
-            {pricingData.map((pricing) => (
-              <div key={pricing.id} className="grid grid-cols-3 gap-6 py-4">
-                <GroupInfo
-                  label={t("price")}
-                  content={`$${pricing.price}`}
-                  icon={<Edit />}
-                />
-                <GroupInfo
-                  label={t("discount")}
-                  content={`${pricing.discount}%`}
-                  icon={<Edit />}
-                />
-                <GroupInfo
-                  label={t("type")}
-                  content={pricing.type}
-                  icon={<Edit />}
-                />
-              </div>
-            ))}
-            <div className="mt-6">
-              <CorporatePricingTable courseId={Number(courseID)} />
-            </div>
-          </div>
+        return isEditingPricing && editingPricingId ? (
+          <PricingForm
+            initialValues={getInitialPricingValues(editingPricingId)}
+            onSubmit={handleSavePricing}
+            onCancel={handleCancelEditPricing}
+            isLoading={formSubmitting}
+          />
+        ) : (
+          <PricingTabContent
+            pricingData={pricingData}
+            courseId={Number(courseID)}
+            isLoading={tabLoading}
+            onEditPricing={handleEditPricing}
+          />
         );
       case "exam":
-        return (
-          <div className="divide-y space-y-2">
-            {examData.map((exam) => (
-              <React.Fragment key={exam.id}>
-                <div className="grid grid-cols-3 gap-6 py-4">
-                  <GroupInfo
-                    label={t("examName")}
-                    content={exam.title}
-                    icon={<Note />}
-                  />
-                  <GroupInfo
-                    label={t("examType")}
-                    content={exam.examType}
-                    icon={<NoteFlat />}
-                  />
-                  <GroupInfo
-                    label={t("examDuration")}
-                    content={`${exam.duration} Mins`}
-                    icon={<Timer />}
-                  />
-                  <GroupInfo
-                    label={t("totalMarks")}
-                    content={`${exam.totalMarks}`}
-                    icon={<TaskBorder />}
-                  />
-                  <GroupInfo
-                    label={t("passMarks")}
-                    content={`${exam.passMarks}`}
-                    icon={<TaskBorder />}
-                  />
-                </div>
-                <QuestionsTable examId={exam.id} />
-              </React.Fragment>
-            ))}
-          </div>
-        );
+        return <ExamTabContent examData={examData} isLoading={tabLoading} />;
       case "certificate":
-        return certificateData && certificateData.length > 0 ? (
-          <div className="divide-y space-y-2">
-            {certificateData.map((certificate) => (
-              <div key={certificate.id} className="grid grid-cols-3 gap-6 py-4">
-                <GroupInfo
-                  label={t("certificate_name")}
-                  content={certificate.title}
-                  icon={<Note />}
-                />
-                <GroupInfo
-                  label={t("validFrom")}
-                  content={new Date(certificate.validFrom).toDateString()}
-                  icon={<Calendar />}
-                />
-                <GroupInfo
-                  label={t("validTo")}
-                  content={new Date(certificate.validTo).toDateString()}
-                  icon={<Calendar />}
-                />
-                <GroupInfo
-                  label={t("issueDate")}
-                  content={new Date(certificate.issueDate).toDateString()}
-                  icon={<Calendar />}
-                />
-                <GroupInfo
-                  label={t("displaySource")}
-                  content={certificate.displaySource ? "Yes" : "No"}
-                  icon={<Note />}
-                />
-                <GroupInfo
-                  label={t("watermark")}
-                  content={certificate.watermark ? "Yes" : "No"}
-                  icon={<Note />}
-                />
-              </div>
-            ))}
-          </div>
+        // Show CertificateForm when editing
+        return isEditingCertificate && editingCertificateId ? (
+          <CertificateForm
+            initialValues={getInitialCertificateValues(editingCertificateId)}
+            onSubmit={handleSaveCertificate}
+            onCancel={handleCancelEditCertificate}
+            isLoading={formSubmitting}
+          />
         ) : (
-          <div>{t("no_certificate_found")}</div>
+          <CertificateTabContent
+            certificateData={certificateData}
+            isLoading={tabLoading}
+            onEditCertificate={handleEditCertificate}
+          />
         );
       case "sessions":
-        return sessionData && sessionData.length > 0 ? (
-          <div className="divide-y space-y-2">
-            {sessionData.map((session) => (
-              <div key={session.id} className="grid grid-cols-3 gap-6 py-4">
-                <GroupInfo
-                  label={t("title")}
-                  content={session.title}
-                  icon={<Note />}
-                />
-                <GroupInfo
-                  label={t("description")}
-                  content={session.description}
-                  icon={<Note />}
-                />
-                <GroupInfo
-                  label={t("startDate")}
-                  content={new Date(session.startDate).toDateString()}
-                  icon={<Calendar />}
-                />
-                <GroupInfo
-                  label={t("endDate")}
-                  content={new Date(session.endDate).toDateString()}
-                  icon={<Calendar />}
-                />
-                <GroupInfo
-                  label={t("status")}
-                  content={
-                    session.status === "ACTIVE" ? (
-                      <Status status={"1"} />
-                    ) : (
-                      <Status status={"0"} />
-                    )
-                  }
-                  icon={<StatusCheck />}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div>{t("no_sessions_found")}</div>
+        return (
+          <SessionsTabContent
+            sessionData={sessionData}
+            isLoading={tabLoading}
+          />
         );
       default:
         return null;
@@ -366,67 +314,22 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         breadcrumbItems={breadcrumbItems}
         title={t("course_details")}
         actions={
-          <>
-            <Button
-              label={t("buttons.edit")}
-              onClick={() => console.log("EDIT")}
-              icon={
-                <span className="inline-block w-6">
-                  <Edit2 />
-                </span>
-              }
-              variant="primary"
-            />
-            <Button
-              label={t("buttons.suspend")}
-              onClick={handleSuspend}
-              icon={
-                <span className="inline-block w-6">
-                  <Suspend />
-                </span>
-              }
-              variant="dark"
-            />
-            <Button
-              label={t("buttons.delete")}
-              onClick={() => console.log("EDIT")}
-              icon={
-                <span className="inline-block w-6">
-                  <Delete />
-                </span>
-              }
-              variant="danger"
-            />
-          </>
+          <CourseHeaderActions
+            isEditing={isEditing}
+            activeTab={activeTab}
+            onEdit={() => setIsEditing(true)}
+            onSuspend={handleSuspend}
+            onDelete={handleDelete}
+          />
         }
       />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white">
-        <div className="flex gap-4 border-b border-gray-900 border-opacity-15 px-4">
-          {["course_info", "pricing", "certificate", "exam", "sessions"].map(
-            (tab) => (
-              <button
-                key={tab}
-                onClick={() =>
-                  setActiveTab(
-                    tab as
-                    | "course_info"
-                    | "pricing"
-                    | "exam"
-                    | "certificate"
-                    | "sessions"
-                  )
-                }
-                className={`px-4 py-3 text-lg font-medium capitalize ${activeTab === tab
-                    ? "border-b-2 border-primary text-primary"
-                    : "text-dark"
-                  }`}
-              >
-                {t(`tab.${tab}`)}
-              </button>
-            )
-          )}
-        </div>
-        <div className="p-4">{renderContent()}</div>
+        <CourseTabs
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          disabled={isEditing || isEditingPricing}
+        />
+        <div className="p-4">{renderTabContent()}</div>
       </div>
     </div>
   );

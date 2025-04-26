@@ -18,7 +18,6 @@ export default function Certificate({
   setFieldValue,
 }: CertificateProps) {
   const t = useTranslations("common");
-  console.log("values", values);
   return (
     <div>
       <div className="mt-4 grid w-full grid-cols-4 gap-x-4 gap-y-6">

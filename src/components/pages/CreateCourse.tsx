@@ -37,6 +37,7 @@ import Popup from "../ui/Popup";
 import SuccessMessage from "../ui/SuccessMessage";
 
 export default function CreateCourse() {
+  const tValidation = useTranslations("validation");
   const t = useTranslations();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
@@ -72,11 +73,11 @@ export default function CreateCourse() {
   ];
 
   const validationSchemas = [
-    getCourseInfoValidationSchema(t),
-    getPricingValidationSchema(t),
-    getCertificateValidationSchema(t),
-    getExamValidationSchema(t),
-    getSessionValidationSchema(t),
+    getCourseInfoValidationSchema(tValidation),
+    getPricingValidationSchema(tValidation),
+    getCertificateValidationSchema(tValidation),
+    getExamValidationSchema(tValidation),
+    getSessionValidationSchema(tValidation),
   ];
 
   const steps = [

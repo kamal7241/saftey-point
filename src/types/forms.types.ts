@@ -47,3 +47,20 @@ export interface AdminData {
         isVerified: boolean;
     };
 }
+
+
+export interface PricingFormValues {
+    price: number;
+    discount: number;
+    isTheoreticalOnly: boolean;
+    type: "THEORY" | "PRACTICAL" | "BOTH";
+    isCompanyTraining: boolean;
+}
+
+export interface CertificateFormValues {
+    certificateName: string;
+    validate_date_interval: [Date | null, Date | null];
+    issue_date: string; // Storing as string YYYY-MM-DD for date input compatibility
+    displayScore: "yes" | "no";
+    watermark: "yes" | "no";
+}

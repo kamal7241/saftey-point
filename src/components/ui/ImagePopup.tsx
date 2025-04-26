@@ -3,6 +3,7 @@ import Popup from "./Popup";
 import Image from "next/image";
 import Eye from "./icons/Eye";
 import ImageWithFallback from "./ImageWithFallback";
+import { useTranslations } from "next-intl";
 
 interface ImagePopupProps {
   imagePath?: string;
@@ -10,6 +11,7 @@ interface ImagePopupProps {
 }
 
 const ImagePopup: React.FC<ImagePopupProps> = ({ imagePath }) => {
+  const t = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -37,7 +39,7 @@ const ImagePopup: React.FC<ImagePopupProps> = ({ imagePath }) => {
           )}
         </button>
         <span className={`text-blue-400 underline ${hasError ? 'opacity-50' : ''}`}>
-          {imagePath?.split("/").pop()}
+          {t('view_image')}
         </span>
       </div>
       {!hasError && (

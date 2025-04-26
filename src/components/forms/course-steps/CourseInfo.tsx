@@ -120,6 +120,7 @@ export default function CourseInfo({
             label="Course Cover"
             subdirName="course"
             small
+            initialImageUrl={values ? `${process.env.NEXT_PUBLIC_URL}/${values.courseCover}` : null}
           />
           {errors.courseCover && (
             <p className="text-xs text-red-500 py-1">{errors.courseCover}</p>

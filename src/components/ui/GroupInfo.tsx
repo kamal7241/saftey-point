@@ -17,7 +17,7 @@ export default function GroupInfo({ icon, label, content, copyIt, block }: Group
   };
   return (
     <div className={`flex flex-col gap-1.5 ${block?"w-full":"w-64"}`}>
-      <div className="flexCenter capitalize text-light-400">
+      <div className="text-light-400 flex items-start justify-start gap-2">
         {icon && <span className="w-6">{icon}</span>}
         {label}
       </div>

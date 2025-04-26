@@ -15,6 +15,7 @@ interface FormPriceProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  onSuccess?: () => void;
   courseId: number;
 }
 interface FormValues {
@@ -29,6 +30,7 @@ export default function FormPrice({
   title,
   sub_title,
   onClose,
+  onSuccess,
   courseId,
 }: FormPriceProps) {
   const t = useTranslations("common");
@@ -74,6 +76,7 @@ export default function FormPrice({
       
       if (response.success) {
         setIsSubmitted(true);
+        onSuccess?.();
       } else {
         // Handle error case
         console.error("Failed to submit pricing:", response.error);

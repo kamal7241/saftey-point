@@ -194,17 +194,6 @@ export const deleteStaff = async (id: number) => {
     }
 };
 
-export const fetchCertificates = async () => {
-    const data = Array.from({ length: 50 }, (_, index) => ({
-        id: index + 1,
-        name: `User ${generateRandomString(5)}`,
-        status: Math.random() > 0.5 ? "1" : "0",
-        issue_date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-        expiry_date: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString(),
-    }));
-
-    return data;
-};
 export const fetchExams = async () => {
     const data = Array.from({ length: 50 }, (_, index) => ({
         id: index + 1,

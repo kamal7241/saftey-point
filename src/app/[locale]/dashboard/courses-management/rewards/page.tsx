@@ -1,5 +1,7 @@
 export const runtime = "edge";
+import Rewards from "@/components/pages/Rewards";
+
 
 export default function Page() {
-  return <h1>rewards</h1>;
+  return <Rewards />;
 }

@@ -34,9 +34,11 @@ const SelectField: React.FC<SelectFieldProps> = ({
   const [filteredOptions, setFilteredOptions] = useState(options);
 
   useEffect(() => {
-    const filtered = options.filter((option) =>
-      option.label.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filtered = options.filter((option) => {
+      if (!option?.label) return false;
+      if (!searchTerm) return true;
+      return option.label.toLowerCase().includes(searchTerm.toLowerCase());
+    });
     setFilteredOptions(filtered);
   }, [searchTerm, options]);
 
@@ -118,14 +120,14 @@ const SelectField: React.FC<SelectFieldProps> = ({
                     />
                     <Image
                       src="/images/icons/checkbox.svg"
-                      className="peer-checked:hidden"
+                      className={`${value === option.value ? 'hidden' : 'block'}`}
                       width="16"
                       height="16"
                       alt=""
                     />
                     <Image
                       src="/images/icons/checkbox_checked.svg"
-                      className="hidden peer-checked:block"
+                      className={`${value === option.value ? 'block' : 'hidden'}`}
                       width="16"
                       height="16"
                       alt=""

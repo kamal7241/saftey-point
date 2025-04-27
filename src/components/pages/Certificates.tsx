@@ -1,5 +1,4 @@
 "use client";
-import { fetchCertificates } from "@/api/dashboardService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { SingleCertificate } from "@/types/ui.types";
@@ -11,57 +10,65 @@ import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
-
+import { fetchCertificates } from "@/api/certificatesService";
+import { Add } from "../ui/icons/Add";
+import Popup from "../ui/Popup";
+import NewCertificateForm from "../forms/NewCertificateForm";
 
 const Certificates = () => {
   const t = useTranslations("common");
+  // const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
-
-  const [certificates, setCertificates] = useState<SingleCertificate[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [addPopupOpen, setAddPopupOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [certificates, setCertificates] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  // const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  // const [certificateToDelete, setCertificateToDelete] = useState<number | null>(null);
+
+  const limit = 10;
+
+  const getCertificates = async () => {
+    setLoading(true);
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchCertificates(offset, limit);
+    setCertificates(response.certificates);
+    setTotalCount(response.totalCount);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const getCertificates = async () => {
-      const response = await fetchCertificates();
-      const data = await response;
-      setCertificates(data);
-    };
-
     getCertificates();
-  }, []);
+  }, [currentPage]);
 
-  const filteredCertificates = certificates.filter((certificate) => {
-    const matchesSearch = certificate.name
+  const filteredCertificates = certificates.filter((cert) => {
+    const matchesSearch = cert.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return certificate[key as keyof SingleCertificate]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
+      return cert[key]?.toString().toLowerCase().includes(value.toLowerCase());
     });
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof SingleCertificate }[] = [
-    { header: "certificate_id", accessor: "id" },
-    { header: "certificate_name", accessor: "name" },
-    { header: "issue_date", accessor: "issue_date" },
-    { header: "expiry_date", accessor: "expiry_date" },
-    { header: "status", accessor: "status" },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: any = [
+    { header: "id", accessor: "id" },
+    { header: "name", accessor: "title" },
+    { header: "issue_date", accessor: "issueDate" },
+    { header: "validFrom", accessor: "validFrom" },
+    { header: "validTo", accessor: "validTo" },
+    { header: "course_id", accessor: "courseId" },
   ];
 
-  const totalPages = Math.ceil(filteredCertificates.length / 10);
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -69,25 +76,19 @@ const Certificates = () => {
   const handleResetFilters = () => {
     setFilters({});
   };
+
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        [
-          "ID",
-          "Name",
-          "Status",
-          "issue_date",
-          "expiry_date",
-        ],
+        ["ID", "Title", "Issue Date", "Valid From", "Valid To", "Course ID"],
         ...filteredCertificates.map((c) => [
           c.id,
-          c.name,
-          c.status,
-          c.issue_date,
-          c.expiry_date,
-          // c.employees,
-          // c.created,
+          c.title,
+          c.issueDate,
+          c.validFrom,
+          c.validTo,
+          c.courseId,
         ]),
       ]
         .map((row) => row.join(","))
@@ -116,7 +117,6 @@ const Certificates = () => {
   const handleView = (id: number) => {
     console.log("Viewing certificate with ID:", id);
     router.push(`/dashboard/user-management/certificates/${id}`);
-
   };
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -129,10 +129,7 @@ const Certificates = () => {
 
   return (
     <div>
-      <PageHeader
-        breadcrumbItems={breadcrumbItems}
-        title={t("certificates")}
-      />
+      <PageHeader breadcrumbItems={breadcrumbItems} title={t("certificates")} />
 
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
@@ -140,7 +137,16 @@ const Certificates = () => {
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
-
+            <Button
+              label={t("buttons.add_certificate")}
+              onClick={() => setAddPopupOpen(true)}
+              icon={
+                <span className="inline-block w-6">
+                  <Add />
+                </span>
+              }
+              variant="primary"
+            />
             {/* Filters Button */}
             <Button
               label={t("buttons.filters")}
@@ -200,19 +206,40 @@ const Certificates = () => {
           />
         )}
         <Table
-          data={filteredCertificates as (SingleCertificate & { image?: undefined })[]}
+          data={
+            filteredCertificates as (SingleCertificate & {
+              image?: undefined;
+            })[]
+          }
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
-            onPageChange: handlePageChange,
+            totalPages: Math.ceil(totalCount / limit),
+            onPageChange: (page) => setCurrentPage(page),
           }}
           sortable={true}
           rowsPerPage={10}
           renderRowActions={renderRowActions}
+          isLoading={loading}
         />
       </div>
 
+      <Popup
+        isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          getCertificates();
+        }}
+      >
+        <NewCertificateForm
+          title={t("buttons.add_certificate")}
+          sub_title={t("form_subtitle")}
+          onClose={() => {
+            setAddPopupOpen(false);
+            getCertificates();
+          }}
+        />
+      </Popup>
     </div>
   );
 };

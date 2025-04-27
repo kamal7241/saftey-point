@@ -139,6 +139,45 @@ export const deleteCurrency = async (id: number) => {
 };
 
 
+export const fetchExams = async (offset: number = 0, limit: number = 10) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/exams?offset=${offset}&limit=${limit}`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch exams");
+        }
+
+        return {
+            success: result.success,
+            message: result.message,
+            innerData: {
+                count: result.innerData?.count || 0,
+                items: Array.isArray(result.innerData?.items) 
+                    ? result.innerData.items 
+                    : [result.innerData?.items].filter(Boolean)
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching items:", error);
+        return {
+            success: false,
+            message: "Failed to fetch items",
+            innerData: {
+                count: 0,
+                items: []
+            }
+        };
+    }
+};
+
 export const fetchFacilities = async (offset: number = 0, limit: number = 10) => {
     try {
         const response = await fetch(
@@ -368,6 +407,45 @@ export const deleteFacility = async (id: number) => {
             success: false,
             message: error.message || "An unexpected error occurred while deleting the facility.",
             data: null
+        };
+    }
+};
+
+export const fetchPromoCodes = async (offset: number = 0, limit: number = 10) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/promo-codes?offset=${offset}&limit=${limit}`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch promo codes");
+        }
+
+        return {
+            success: result.success,
+            message: result.message,
+            innerData: {
+                total: result.innerData?.total || 0,
+                items: Array.isArray(result.innerData?.items) 
+                    ? result.innerData.items 
+                    : [result.innerData?.items].filter(Boolean)
+            }
+        };
+    } catch (error) {
+        console.error("Error fetching promo codes:", error);
+        return {
+            success: false,
+            message: "Failed to fetch promo codes",
+            innerData: {
+                total: 0,
+                items: []
+            }
         };
     }
 };

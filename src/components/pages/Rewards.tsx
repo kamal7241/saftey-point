@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { fetchExams } from "@/api/presetsService";
+import { fetchPromoCodes } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -12,48 +12,64 @@ import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 
-const Exams = () => {
+interface PromoCode {
+  id: number;
+  code: string;
+  description: string;
+  discountType: string;
+  discountAmount: number;
+  expiryDate: string;
+  maxUsage: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+const Rewards = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [exams, setExams] = useState<any[]>([]);
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
 
   const limit = 10;
-  const getExams = async () => {
+  const getPromoCodes = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
-    const response = await fetchExams(offset, limit);
-    console.log('response',response);
+    const response = await fetchPromoCodes(offset, limit);
     if (response.success) {
-      setExams(
-        response.innerData.items.map((exam: any) => ({
-          ...exam,
-          createdAt: new Date(exam.createdAt).toDateString(),
-          examType: exam.examType.toLowerCase(),
-          status: exam.status === "ACTIVE" ? "1" : "0"
+      setPromoCodes(
+        response.innerData.items.map((promo: any) => ({
+          id: promo.id,
+          code: promo.code,
+          description: promo.description,
+          discountType: promo.discountType,
+          discountAmount: promo.discountAmount,
+          expiryDate: new Date(promo.expiryDate).toDateString(),
+          maxUsage: promo.maxUsage,
+          isActive: promo.isActive,
+          createdAt: new Date(promo.createdAt).toDateString(),
         }))
       );
-      setTotalCount(response.innerData.count);
+      setTotalCount(response.innerData.total);
     }
     setLoading(false);
   };
 
   useEffect(() => {
-    getExams();
+    getPromoCodes();
   }, [currentPage]);
 
-  const filteredExams = exams.filter((certificate) => {
-    const matchesSearch = certificate.title
+  const filteredPromoCodes = promoCodes.filter((promo) => {
+    const matchesSearch = promo.code
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return certificate[key as keyof any]
+      return promo[key as keyof PromoCode]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
@@ -61,14 +77,15 @@ const Exams = () => {
     return matchesSearch && matchesFilters;
   });
 
-  const columns: { header: string; accessor: keyof any }[] = [
-    { header: "exam_id", accessor: "id" },
-    { header: "exam_name", accessor: "title" },
-    { header: "examType", accessor: "examType" },
-    { header: "exam_date", accessor: "createdAt" },
-    { header: "totalMarks", accessor: "totalMarks" },
-    { header: "passMarks", accessor: "passMarks" },
-    { header: "duration", accessor: "duration" },
+  const columns = [
+    { header: "id", accessor: "id" },
+    { header: "code", accessor: "code" },
+    { header: "description", accessor: "description" },
+    { header: "discountType", accessor: "discountType" },
+    { header: "discountAmount", accessor: "discountAmount" },
+    { header: "expiryDate", accessor: "expiryDate" },
+    { header: "maxUsage", accessor: "maxUsage" },
+    { header: "status", accessor: "isActive" },
   ];
 
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -78,26 +95,20 @@ const Exams = () => {
   const handleResetFilters = () => {
     setFilters({});
   };
+
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        [
-          "ID",
-          "Name",
-          "Status",
-          "assigned_to",
-          "expiry_date",
-          "exam_date",
-          "score",
-        ],
-        ...filteredExams.map((c) => [
-          c.id,
-          c.title,
-          c.status,
-          c.assigned_to,
-          c.exam_date,
-          c.score,
+        ["ID", "Code", "Description", "Discount Type", "Discount Amount", "Expiry Date", "Max Usage"],
+        ...filteredPromoCodes.map((p) => [
+          p.id,
+          p.code,
+          p.description,
+          p.discountType,
+          p.discountAmount,
+          p.expiryDate,
+          p.maxUsage,
         ]),
       ]
         .map((row) => row.join(","))
@@ -105,7 +116,7 @@ const Exams = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "exams.csv");
+    link.setAttribute("download", "promo_codes.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -124,50 +135,33 @@ const Exams = () => {
   );
 
   const handleView = (id: number) => {
-    console.log("Viewing certificate with ID:", id);
-    router.push(`/dashboard/user-management/exams/${id}`);
-
+    router.push(`/dashboard/courses-management/rewards/${id}`);
   };
+
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("user-management"), href: "/dashboard/user-management" },
-    {
-      label: t("exams"),
-      href: "/dashboard/user-management/exams",
-    },
+    { label: t("courses-management"), href: "/dashboard/courses-management" },
+    { label: t("rewards"), href: "/dashboard/courses-management/rewards" },
   ];
 
   return (
     <div>
-      <PageHeader
-        breadcrumbItems={breadcrumbItems}
-        title={t("exams")}
-      />
+      <PageHeader breadcrumbItems={breadcrumbItems} title={t("rewards")} />
 
-      {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
-          {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
-
-            {/* Filters Button */}
             <Button
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}
               variant={!filtersOpen ? "transparent" : "selected"}
             />
-
-            {/* Export Button */}
             <Button
               label={t("buttons.export")}
               onClick={handleExport}
               variant="dark"
-              icon={
-                <span className="w-6 inline-block">
-                  <Export />
-                </span>
-              }
+              icon={<Export />}
             />
           </div>
         </div>
@@ -177,40 +171,34 @@ const Exams = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
+                label: "Promo ID",
                 name: "id",
-                placeholder: "Company ID",
+                placeholder: "Promo ID",
               },
               {
                 type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
+                label: "Code",
+                name: "code",
+                placeholder: "Code",
               },
               {
                 type: "select",
                 label: "Status",
                 placeholder: "Status",
-                name: "status",
+                name: "isActive",
                 options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
+                  { value: "true", label: "Active" },
+                  { value: "false", label: "Inactive" },
                 ],
-              },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: [],
               },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
           />
         )}
+
         <Table
-          data={filteredExams}
+          data={filteredPromoCodes}
           columns={columns}
           pagination={{
             currentPage,
@@ -223,9 +211,8 @@ const Exams = () => {
           isLoading={loading}
         />
       </div>
-
     </div>
   );
 };
 
-export default Exams;
+export default Rewards;

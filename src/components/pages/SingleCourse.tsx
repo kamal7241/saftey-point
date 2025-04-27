@@ -185,7 +185,6 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         editingCertificateId,
         apiData as unknown as Partial<CertificateFormValues>
       );
-      console.log("result>>", result);
       if (result.success) {
         showToast.success(tMsgs("certificate_updated_successfully"));
         setIsEditingCertificate(false);

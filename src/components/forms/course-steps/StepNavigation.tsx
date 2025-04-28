@@ -18,10 +18,10 @@ export default function StepNavigation({
         return (
           <div
             key={index}
-            className={`flex items-start w-full ${
+            className={`flex items-start ${
               index === steps.length - 1
-                ? "after:hidden"
-                : "after:content-[''] after:w-full after:h-[1px] after:inline-block after:mt-5"
+                ? "after:hidden w-auto"
+                : "after:content-[''] after:w-full after:h-[1px] after:inline-block after:mt-5 w-full"
             } ${isActive ? "after:bg-primary" : "after:bg-gray-901"}`}
           >
             <div className="flex flex-col gap-3 items-center justify-center w-10">
@@ -35,7 +35,7 @@ export default function StepNavigation({
                       : "bg-gray-901"
                   }`}
                 >
-                  <div data-svg-wrapper className="m-auto">
+                  <div data-svg-wrapper className="m-auto text-white">
                     {isPass ? <TickCircle /> : step.icon}
                   </div>
                 </div>

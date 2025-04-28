@@ -5,6 +5,9 @@ import { getPricingValidationSchemaSingle } from "@/utils/validation/courseValid
 import { Form, Formik, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
 import Button from "../../ui/Button";
+import SelectField from "@/components/formsUI/SelectField";
+import { useEffect, useState } from "react";
+import { fetchCountries } from "@/api/dashboardService";
 
 interface PricingFormProps {
   initialValues: Partial<PricingFormValues>;
@@ -21,6 +24,16 @@ export default function PricingForm({
 }: PricingFormProps) {
   const tValidation = useTranslations("validation");
   const t = useTranslations("common");
+  const [countries, setCountries] = useState([]);
+  useEffect(() => {
+    const getCountries = async () => {
+      const response = await fetchCountries();
+      if (response.success) {
+        setCountries(response.countries);
+      }
+    };
+    getCountries();
+  }, []);
 
   return (
     <Formik
@@ -32,7 +45,29 @@ export default function PricingForm({
       {({ values, handleChange, errors, setFieldValue }) => (
         <Form>
           <div className="grid grid-cols-4 gap-4 w-full col-span-4">
-            <div className="col-span-2">
+            <div className="col-span-1">
+              <SelectField
+                label={t("country")}
+                name={`countryId`}
+                value={values.countryId ? values.countryId.toString() : ""}
+                onChange={(name, value) => setFieldValue(name, Number(value))}
+                options={
+                  countries.length > 0
+                    ? countries.map((country) => ({
+                        value: (
+                          country as { id: string | number }
+                        ).id.toString(),
+                        label: (country as { name: string }).name,
+                      }))
+                    : []
+                }
+                customDropdown
+              />
+              {errors.countryId && (
+                <p className="text-xs text-red-500 py-1">{errors.countryId}</p>
+              )}
+            </div>
+            <div className="col-span-1">
               <Input
                 name="price"
                 label={t("price")}
@@ -42,7 +77,7 @@ export default function PricingForm({
                 error={errors.price}
               />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-1">
               <Input
                 name="discount"
                 label={t("discount")}

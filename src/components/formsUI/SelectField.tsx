@@ -43,13 +43,14 @@ const SelectField: React.FC<SelectFieldProps> = ({
   }, [searchTerm, options]);
 
   const handleOptionClick = (optionValue: string) => {
+    console.log("handleOptionClick", optionValue);
+    console.log("handleOptionClick", name);
     onChange(name, optionValue);
     setIsOpen(false);
     setSearchTerm("");
   };
 
-  const selectedLabel =
-    options.find((option) => option.value === value)?.label || placeholder;
+  const selectedLabel = options.find((option) => option.value === value)?.label || placeholder;
 
   return (
     <div>

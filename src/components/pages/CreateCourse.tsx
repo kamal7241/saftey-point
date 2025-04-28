@@ -118,6 +118,7 @@ export default function CreateCourse() {
             ...mainPricingData,
             price: Number(values[`price_${index}`]),
             discount: Number(values[`discount_${index}`] || 0),
+            countryId: values[`country_${index}`] || "",
           };
           priceSetPromises.push(submitPricing(courseId, pricingData));
         }
@@ -263,7 +264,7 @@ export default function CreateCourse() {
                     onClick={prevStep}
                     disabled={currentStep === 0}
                   >
-                    Cancel
+                    {currentStep > 0 ? "Previous" : "Cancel"}
                   </button>
                   <button
                     type="submit"

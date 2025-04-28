@@ -40,7 +40,7 @@ export const getPricingValidationSchema = (t: (key: string) => string) => {
       .nullable()
       .transform((value) => (isNaN(value) ? null : value))
       .min(0, t("discount.min"))
-      .max(100, t("discount.max")),
+      .max(50, t("discount.max")),
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...Array(10).reduce((acc: Record<string, Yup.ObjectSchema<any>>, _, index) => {

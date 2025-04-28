@@ -41,6 +41,11 @@ export default function Pricing({
   const removeLastPriceSet = () => {
     if (pricingSets.length > 1) {
       setPricingSets(pricingSets.slice(0, pricingSets.length - 1));
+      // Remove the form values for the last price set
+      const lastIndex = pricingSets.length - 1;
+      setFieldValue(`country_${lastIndex}`, '');
+      setFieldValue(`price_${lastIndex}`, '');
+      setFieldValue(`discount_${lastIndex}`, '');
     }
   };
   useEffect(() => {
@@ -68,7 +73,7 @@ export default function Pricing({
                   value={values[`country_${index}`] || ""}
                   onChange={(name, value) => setFieldValue(name, value)}
                   options={countries.map((country) => ({
-                    value: (country as { code: string }).code,
+                    value: (country as { id: string }).id,
                     label: (country as { name: string }).name,
                   }))}
                   customDropdown

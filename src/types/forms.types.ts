@@ -55,6 +55,7 @@ export interface PricingFormValues {
     isTheoreticalOnly: boolean;
     type: "THEORY" | "PRACTICAL" | "BOTH";
     isCompanyTraining: boolean;
+    countryId: number;
 }
 
 export interface CertificateFormValues {

@@ -22,7 +22,7 @@ export const getCourseInfoValidationSchema = (t: (key: string) => string) => {
 export function getPricingValidationSchemaSingle(t: (key: string) => string) {
   return Yup.object().shape({
     price: Yup.number().required(t("price.required")).positive(t("price.positive")),
-    discount: Yup.number().required(t("required")).min(0, t("discount.min")).max(100, t("discount.max")),
+    discount: Yup.number().min(0, t("discount.min")).max(100, t("discount.max")),
     isTheoreticalOnly: Yup.boolean(),
     type: Yup.string().required(t("required")),
     isCompanyTraining: Yup.boolean(),
@@ -110,7 +110,7 @@ export const getSessionValidationSchema = (t: (key: string) => string) => {
     scheduleType: Yup.string()
       .required(t("session.scheduleType.required"))
       .oneOf(["theoretical", "practical"], t("session.scheduleType.invalid")),
-    session_date: Yup.string().required(t("session.date.required")),
+    session_date: Yup.array().of(Yup.string().required()).min(2).required(t("session.date.required")),
     session_time: Yup.object({
       from: Yup.date().required(t("session.time.from.required")),
       to: Yup.date().required(t("session.time.to.required"))

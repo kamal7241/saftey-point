@@ -2,8 +2,14 @@ import Level from "@/components/ui/icons/Level";
 import Teacher from "@/components/ui/icons/Teacher";
 import Validity from "@/components/ui/icons/Validity";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 import GroupInfo from "../../ui/GroupInfo";
 import Button from "@/components/ui/Button";
+import Popup from "@/components/ui/Popup";
+import CertificateForm from "./CertificateForm";
+import { FormikValues } from "formik";
+import { submitCertificate } from "@/api/courseService";
+import { showToast } from "@/utils/toast";
 
 
 interface CertificateItem {
@@ -19,22 +25,67 @@ interface CertificateItem {
 interface CertificateTabContentProps {
   certificateData: CertificateItem[];
   isLoading: boolean;
+  courseId: number;
   onEditCertificate: (certificateId: number) => void;
+  refetchCertificateData: () => void;
 }
 
 export default function CertificateTabContent({
   certificateData,
   isLoading,
+  courseId,
   onEditCertificate,
+  refetchCertificateData,
 }: CertificateTabContentProps) {
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const t = useTranslations("common");
+
+  const handleSubmit = async (values: FormikValues) => {
+    try {
+      setIsSubmitting(true);
+      const result = await submitCertificate(values, courseId.toString());
+      if (result.success) {
+        setShowAddPopup(false);
+        showToast.success(t("certificate_added_successfully"));
+        refetchCertificateData();
+      } else {
+        showToast.error(t("error_adding_certificate"));
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error("Error submitting certificate:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isLoading) {
     return <div>{t("loading")}...</div>;
   }
 
   if (!certificateData || certificateData.length === 0) {
-    return <div>{t("no_certificate_found")}</div>;
+    return (
+      <div className="flex flex-col items-center gap-4">
+        <div>{t("no_certificate_found")}</div>
+        <Button
+          type="button"
+          label={t("buttons.add_certificate")}
+          onClick={() => setShowAddPopup(true)}
+          variant="primary"
+        />
+        {showAddPopup && (
+          <Popup isOpen={showAddPopup} onClose={() => setShowAddPopup(false)}>
+            <CertificateForm
+              initialValues={{}}
+              onSubmit={handleSubmit}
+              onCancel={() => setShowAddPopup(false)}
+              isLoading={isSubmitting}
+            />
+          </Popup>
+        )}
+      </div>
+    );
   }
 
   return (

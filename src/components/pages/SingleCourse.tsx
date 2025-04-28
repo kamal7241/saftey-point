@@ -62,6 +62,8 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     refetchCourseData,
     refetchPricingData,
     refetchCertificateData,
+    refetchExamData,
+    refetchSessionData
   } = useCourseData(courseID, activeTab);
 
   const getInitialFormValues = (): Partial<CourseFormValues> => {
@@ -180,7 +182,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         displaySource: values.displayScore === "yes",
         watermark: values.watermark === "yes",
       };
-
+      debugger;
       const result = await updateCertificate(
         editingCertificateId,
         apiData as unknown as Partial<CertificateFormValues>
@@ -275,10 +277,18 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
             courseId={Number(courseID)}
             isLoading={tabLoading}
             onEditPricing={handleEditPricing}
+            refetchPricingData={refetchPricingData}
           />
         );
       case "exam":
-        return <ExamTabContent examData={examData} isLoading={tabLoading} />;
+        return (
+          <ExamTabContent
+            courseId={Number(courseID)}
+            examData={examData}
+            isLoading={tabLoading}
+            refetchExamData={refetchExamData}
+          />
+        );
       case "certificate":
         // Show CertificateForm when editing
         return isEditingCertificate && editingCertificateId ? (
@@ -293,6 +303,8 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
             certificateData={certificateData}
             isLoading={tabLoading}
             onEditCertificate={handleEditCertificate}
+            courseId={Number(courseID)}
+            refetchCertificateData={refetchCertificateData}
           />
         );
       case "sessions":
@@ -300,6 +312,8 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
           <SessionsTabContent
             sessionData={sessionData}
             isLoading={tabLoading}
+            refetchSessionData={refetchSessionData}
+            courseId={Number(courseID)}
           />
         );
       default:

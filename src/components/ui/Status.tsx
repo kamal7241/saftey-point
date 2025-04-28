@@ -10,6 +10,8 @@ const Status = ({ status }: StatusProps) => {
     switch (status) {
       case "active":
         return "text-green-400 bg-green-100";
+      case "ACTIVE":
+        return "text-green-400 bg-green-100";
       case "1":
         return "text-green-400 bg-green-100";
       case "inactive":
@@ -25,6 +27,8 @@ const Status = ({ status }: StatusProps) => {
   const getStatusName = (status: string) => {
     switch (status) {
       case "active":
+        return t("active");
+      case "ACTIVE":
         return t("active");
       case "1":
         return t("active");

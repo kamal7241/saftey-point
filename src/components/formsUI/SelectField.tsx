@@ -43,8 +43,6 @@ const SelectField: React.FC<SelectFieldProps> = ({
   }, [searchTerm, options]);
 
   const handleOptionClick = (optionValue: string) => {
-    console.log("handleOptionClick", optionValue);
-    console.log("handleOptionClick", name);
     onChange(name, optionValue);
     setIsOpen(false);
     setSearchTerm("");

@@ -6,9 +6,10 @@ interface PopupProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  width?: string;
 }
 
-const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
+const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children, width }) => {
   const popupRef = useRef<HTMLDivElement | null>(null);
 
   // const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -40,7 +41,7 @@ const Popup: React.FC<PopupProps> = ({ isOpen, onClose, children }) => {
     >
       <div
         ref={popupRef}
-        className="relative max-h-screen w-full max-w-[640px] overflow-auto rounded-lg bg-white p-6"
+        className={`relative max-h-screen w-full ${width || 'max-w-[640px]'} overflow-auto rounded-lg bg-white p-6`}
         onClick={(e) => e.stopPropagation()}
       >
         <div>{children}</div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CourseFormValues } from "@/types/forms.types";
 import { SingleCourse } from "@/types/ui.types";
 import { FormikValues } from "formik";
@@ -285,6 +286,29 @@ export const submitSession = async (values: FormikValues, courseId: string): Pro
   }
 };
 
+export const updateSession = async (
+  examId: string,
+  data: any
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v2/session/${examId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          accept: '*/*',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const result = await response.json();
+    return { success: response.ok, error: result.message };
+  } catch (error) {
+    console.error('Error updating exam:', error);
+    return { success: false, error: 'Failed to update exam' };
+  }
+};
 
 
 export const fetchCourses = async (offset: number = 0, limit: number = 10) => {
@@ -509,6 +533,30 @@ export const updateExamQuestion = async (
   }
 };
 
+export const updateExam = async (
+  examId: string,
+  data: any
+): Promise<{ success: boolean; error?: string }> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${examId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          accept: '*/*',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const result = await response.json();
+    return { success: response.ok, error: result.message };
+  } catch (error) {
+    console.error('Error updating exam:', error);
+    return { success: false, error: 'Failed to update exam' };
+  }
+};
+
 export const fetchCourseCertificate = async (courseId: number) => {
   try {
     const response = await fetch(
@@ -531,6 +579,7 @@ export const fetchCourseCertificate = async (courseId: number) => {
     return null;
   }
 };
+
 export const fetchCourseSession = async (courseId: number) => {
   try {
     const response = await fetch(
@@ -553,15 +602,6 @@ export const fetchCourseSession = async (courseId: number) => {
     return null;
   }
 };
-
-
-// export interface PricingUpdateDTO {
-//   price: number;
-//   discount?: number;
-//   isTheoreticalOnly?: boolean;
-//   type?: "BOTH" | "THEORETICAL" | "PRACTICAL";
-//   isCompanyTraining?: boolean;
-// }
 
 export const updateCoursePricing = async (
   courseId: number,
@@ -614,7 +654,7 @@ export const updateCertificate = async (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any
 ): Promise<CertificateResponse> => {
-  console.log("data", data);
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const certificateData: any = {
     title: data.title,
@@ -624,7 +664,7 @@ export const updateCertificate = async (
     displaySource: data.displayScore,
     watermark: data.watermark
   };
-  console.log("certificateData", certificateData);
+
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/v1/certificates/${certificateId}`,

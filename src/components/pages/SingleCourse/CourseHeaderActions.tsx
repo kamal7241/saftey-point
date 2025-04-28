@@ -26,8 +26,7 @@ export default function CourseHeaderActions({
 
   return (
     <>
-      {/* Conditionally hide Edit button when editing */}
-      {!isEditing && (
+      {!isEditing && activeTab !== "course_info" && (
         <Button
           label={t("buttons.edit")}
           onClick={onEdit}
@@ -37,10 +36,8 @@ export default function CourseHeaderActions({
             </span>
           }
           variant="primary"
-          disabled={activeTab !== "course_info"} // Only allow editing on course info tab
         />
       )}
-      {/* Keep Suspend and Delete buttons visible, but disable when editing */}
       <Button
         label={t("buttons.suspend")}
         onClick={onSuspend}

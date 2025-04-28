@@ -123,15 +123,19 @@ export default function SessionStep({
           <Input
             label={t("date")}
             type="date"
+            range={true}
             placeholder={t("date")}
             value={values.session_date}
-            onChange={(value) => {
-              if (typeof value === 'string') {
-                setFieldValue('session_date', value);
-              } else if (value instanceof Date) {
-                setFieldValue('session_date', value.toISOString());
-              }
-            }}
+            onChange={(dateRange) =>
+              setFieldValue("session_date", dateRange)
+            }
+            // onChange={(value) => {
+            //   if (typeof value === 'string') {
+            //     setFieldValue('session_date', value);
+            //   } else if (value instanceof Date) {
+            //     setFieldValue('session_date', value.toISOString());
+            //   }
+            // }}
             name="session_date"
             iconEnd={true}
             iconSVG={<Calendar />}

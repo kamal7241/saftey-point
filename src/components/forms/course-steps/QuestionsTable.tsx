@@ -98,7 +98,7 @@ export default function QuestionsTable({ examId }: QuestionsTableProps) {
               </tr>
             ) : questions.length === 0 ? (
               <tr>
-                <td colSpan={4} className="py-4 px-4 text-center text-gray-500">
+                <td colSpan={4} className="py-4 px-4 text-center text-black">
                   {t("no_questions_found")}
                 </td>
               </tr>

@@ -2,7 +2,6 @@
 "use client";
 import { fetchPromoCodes } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
@@ -26,7 +25,6 @@ interface PromoCode {
 
 const Rewards = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -129,14 +127,10 @@ const Rewards = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/courses-management/rewards/${row.id}`}
       />
     </div>
   );
-
-  const handleView = (id: number) => {
-    router.push(`/dashboard/courses-management/rewards/${id}`);
-  };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },

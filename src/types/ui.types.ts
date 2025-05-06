@@ -68,6 +68,16 @@ export interface Branch {
     longitude: string;
 }
 
+export interface Partner {
+    id: number;
+    name: string;
+    logo?: string | null;
+    website?: string | null;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt?: string | null;
+}
+
 
 export interface User {
     id: number;

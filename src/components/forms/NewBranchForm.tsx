@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Input from "@/components/formsUI/Input";
 import { addBranchValidationSchema } from "@/utils/validation/dashboardValidation";
@@ -10,41 +11,84 @@ import Button from "../ui/Button";
 import SuccessMessage from "../ui/SuccessMessage";
 import MapComponent from "@/components/ui/MapComponent";
 import { LatLngExpression } from "leaflet";
+import { Branch } from "@/types/ui.types";
+import { submitBranch, updateBranch } from "@/api/companiesService";
 
 interface NewBranchFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
+  branchData?: Branch | null;
 }
 
 interface FormValues {
   name: string;
   status: string;
   address: string;
-  pinLocation: [number, number];
+  pinLocation: any;
 }
 
 export default function NewBranchForm({
   title,
   sub_title,
   onClose,
+  branchData,
 }: NewBranchFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const initialValues: any = branchData
+    ? {
+      name: branchData.name,
+      status: branchData.status,
+      address: branchData.address,
+      // pinLocation: branchData.pinLocation,
+      pinLocation: [branchData.latitude, branchData.longitude],
+    }
+    : {
+      name: "",
+      status: "",
+      address: "",
+      pinLocation: [30.033333, 31.233334],
+    };
 
-  const handleSubmit = (values: FormValues) => {
-    console.log("Form Submitted:", values);
-    setIsSubmitted(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [apiErrors, setApiErrors] = useState<string | null>(null);
+
+  const handleSubmit = async (values: FormValues) => {
+    console.log("values", values);
+    const apiData: any = {
+      ...branchData,
+      name: values.name,
+      status: values.status.toUpperCase(),
+      address: values.address,
+      latitude: values.pinLocation[0].toString(),
+      longitude: values.pinLocation[1].toString(),
+    };
+console.log("apiData", apiData);
+    try {
+      let result;
+      if (branchData && branchData.id) {
+        result = await updateBranch(branchData.id, apiData);
+      } else {
+        result = await submitBranch(apiData);
+      }
+
+      if (result.success) {
+        setIsSubmitted(true);
+        setApiErrors(null);
+      } else {
+        setApiErrors(result.error || "An error occurred");
+      }
+    } catch {
+      setApiErrors("An unexpected error occurred");
+    }
   };
 
   const handleLocationSelect = (
     location: LatLngExpression,
     setFieldValue: (field: string, value: LatLngExpression) => void
   ) => {
-    // Set the selected location in the form using setFieldValue
-    console.log("location", location);
     setFieldValue("pinLocation", location);
   };
 
@@ -52,7 +96,7 @@ export default function NewBranchForm({
     return (
       <div className="py-10">
         <SuccessMessage
-          title={"Successfully Added"}
+          title={"Successfully " + (branchData ? "Updated" : "Added")}
           msg={"Thank you for filling out your information!"}
           bigger
         />
@@ -77,17 +121,17 @@ export default function NewBranchForm({
       )}
 
       <Formik
-        initialValues={{
-          name: "",
-          status: "",
-          address: "",
-          pinLocation: [30.033333, 31.233334],
-        }}
+        initialValues={initialValues}
         validationSchema={addBranchValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, setFieldValue, submitForm }) => (
+        {({ values, handleChange, setFieldValue }) => (
           <Form className="w-full gap-4 grid grid-cols-4 mt-4">
+            {apiErrors && (
+              <div className="col-span-4">
+                <div className="text-red-500">{apiErrors}</div>
+              </div>
+            )}
             {/* Name */}
             <div className="col-span-2">
               <Input
@@ -110,7 +154,7 @@ export default function NewBranchForm({
               <SelectField
                 label={tTable("status")}
                 name="status"
-                value={values.status}
+                value={values.status.toLowerCase()}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "active", label: t("company_status.active") },
@@ -156,7 +200,7 @@ export default function NewBranchForm({
                   .replace(/LatLng\(/, "")
                   .replace(/\)/, "")}
                 readOnly={true}
-                onChange={() => {}}
+                onChange={() => { }}
                 name=""
               />
               <ErrorMessage
@@ -186,7 +230,6 @@ export default function NewBranchForm({
               />
               <Button
                 label={t("buttons.submit")}
-                onClick={submitForm}
                 type="submit"
                 variant="primary"
                 padding="py-3 px-4"

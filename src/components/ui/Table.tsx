@@ -163,8 +163,8 @@ const Table = <T extends { image?: string }>({
                       className="px-4 py-2 text-start border-b border-light-100 capitalize"
                       data-column={column.accessor}
                     >
-                      {column.accessor === "status" ? (
-                        <Status status={String(row[column.accessor])} />
+                      {column.accessor === "status" || column.accessor === "isActive" ? (
+                        <Status status={String(row[column.accessor]).toString()} />
                       ) : column.accessor === "created" ? (
                         <span className="whitespace-nowrap">
                           {isNaN(

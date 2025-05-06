@@ -28,7 +28,6 @@ const Exams = () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchExams(offset, limit);
-    console.log('response',response);
     if (response.success) {
       setExams(
         response.innerData.items.map((exam: any) => ({
@@ -124,7 +123,6 @@ const Exams = () => {
   );
 
   const handleView = (id: number) => {
-    console.log("Viewing certificate with ID:", id);
     router.push(`/dashboard/user-management/exams/${id}`);
 
   };

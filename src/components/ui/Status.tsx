@@ -7,40 +7,39 @@ interface StatusProps {
 const Status = ({ status }: StatusProps) => {
   const t = useTranslations("common");
   const getStatusStyle = (status: string) => {
-    switch (status) {
-      case "active":
-        return "text-green-400 bg-green-100";
-      case "ACTIVE":
-        return "text-green-400 bg-green-100";
-      case "1":
-        return "text-green-400 bg-green-100";
-      case "inactive":
-        return "text-gray-300 bg-gray-300 bg-opacity-10";
-      case "0":
-        return "text-gray-300 bg-gray-300 bg-opacity-10";
-      case "pending":
-        return "text-yellow-500";
-      default:
-        return "text-gray-500";
-    }
+    const statusLower = status.toLowerCase();
+    
+    const styles = {
+      active: "text-green-400 bg-green-100",
+      true: "text-green-400 bg-green-100",
+      "1": "text-green-400 bg-green-100",
+      inactive: "text-gray-300 bg-gray-300 bg-opacity-10", 
+      false: "text-gray-300 bg-gray-300 bg-opacity-10", 
+      "0": "text-gray-300 bg-gray-300 bg-opacity-10",
+      pending: "text-yellow-900 bg-yellow-300 bg-opacity-50",
+      suspended: "text-gray-900 bg-gray-200 bg-opacity-60"
+    };
+
+    return styles[statusLower as keyof typeof styles] || "text-gray-500";
   };
   const getStatusName = (status: string) => {
-    switch (status) {
-      case "active":
-        return t("active");
-      case "ACTIVE":
-        return t("active");
-      case "1":
-        return t("active");
-      case "inactive":
-        return t("inactive");
-      case "0":
-        return t("inactive");
-      case "pending":
-        return t("pending");
-      default:
-        return t("default");
-    }
+    const statusMap: Record<string, string> = {
+      active: "active",
+      ACTIVE: "active",
+      true: "active",
+      "1": "active",
+      inactive: "inactive",
+      INACTIVE: "inactive",
+      false: "inactive",
+      "0": "inactive",
+      pending: "pending",
+      PENDING: "pending",
+      suspended: "suspended",
+      SUSPENDED: "suspended"
+    };
+
+    const normalizedStatus = statusMap[status];
+    return t(normalizedStatus || "default");
   };
 
   return (

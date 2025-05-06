@@ -7,12 +7,12 @@ import { routing } from "./i18n/routing";
 
 const cspHeaders = `default-src 'self' https: https://api.imtyaaz.com;
 script-src 'self' blob: 'unsafe-eval' 'unsafe-inline' https://api.imtyaaz.com;
-img-src 'self' blob: data: https://api.imtyaaz.com;
+img-src 'self' blob: data: https://api.imtyaaz.com https://*.openstreetmap.org;
 media-src 'self' blob: https://api.imtyaaz.com;
 font-src 'self' 'unsafe-eval' blob: data: webpack: https://fonts.gstatic.com;
 base-uri 'self';
-connect-src 'self' https://api.imtyaaz.com;
-script-src-elem 'self' 'unsafe-inline' https://analytics.google.com https://paypage.sandbox.ngenius-payments.com https://paypage.ngenius-payments.com https://*.ngenius-payments.com https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://connect.facebook.net https://js.createsend1.com https://*.googleapis.com https://*.google.com https://googleads.g.doubleclick.net  https://script.hotjar.com https://ap-gateway.mastercard.com https://www.googleadservices.com https://www.youtube.com;
+connect-src 'self' https://api.imtyaaz.com https://nominatim.openstreetmap.org;
+script-src-elem 'self' 'unsafe-inline' https://analytics.google.com https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://connect.facebook.net https://*.googleapis.com https://*.google.com https://googleads.g.doubleclick.net  https://script.hotjar.com https://www.googleadservices.com https://www.youtube.com;
 form-action 'self' https://api.imtyaaz.com;
 frame-src 'self' https://api.imtyaaz.com;
 object-src 'self' blob: data:;

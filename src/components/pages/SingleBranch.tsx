@@ -1,20 +1,21 @@
 "use client";
+import { deleteBranch, fetchBranchById, toggleBranchVerification } from "@/api/companiesService";
+import { useRouter } from "@/i18n/routing";
+import { Branch } from "@/types/ui.types";
+import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import NewBranchForm from "../forms/NewBranchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
+import Popup from "../ui/Popup";
 import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
 import LocationTick from "../ui/icons/LocationTick";
-import Lock from "../ui/icons/Lock";
 import Suspend from "../ui/icons/Suspend";
-import { Branch } from "@/types/ui.types";
-import { fetchBranchById, toggleBranchVerification } from "@/api/companiesService";
-import { showToast } from "@/utils/toast";
-import Popup from "../ui/Popup";
 // import { Edit2 } from "../ui/icons/Edit2";
 
 interface SingleBranchProps {
@@ -29,17 +30,36 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  console.log("branchID", branchID);
-  console.log("addPopupOpen", addPopupOpen);
-  //   const handleExport = () => {
-  //     console.log("Exporting data...");
-  //   };
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const router = useRouter();
+
+  const handleClose = async () => {
+    setAddPopupOpen(false);
+    try {
+      const newData = await fetchBranchById(branchID);
+      setMainData(newData);
+    } catch (error) {
+      console.error("Error refetching data:", error);
+    }
+  };
+  const handleDelete = async () => {
+    const result = await deleteBranch(Number(branchID));
+    if (result.success) {
+      router.push("/dashboard/company-management/branches");
+    } else {
+      setError(result.error || "Failed to delete branch.");
+    }
+    setShowDeleteConfirm(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+  };
 
 
   const handleToggleVerification = async () => {
     try {
       const result = await toggleBranchVerification(Number(branchData?.id),
-        // branchData?.status.toString()
         (mainData.status === "ACTIVE" || mainData.status == 1) ? "INACTIVE" : "ACTIVE",
       );
       if (result.success) {
@@ -76,6 +96,29 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
   if (error) return <div>{error}</div>;
   return (
     <div className="h-full">
+      <Popup isOpen={addPopupOpen} onClose={handleClose}>
+        <NewBranchForm
+          title={t("edit_branch")}
+          sub_title={t("form_subtitle")}
+          onClose={handleClose}
+          branchData={branchData}
+        />
+      </Popup>
+      <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+        <div>
+          <p className="p-5 text-center text-2xl">
+            {t("are_you_sure_delete")}
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Button onClick={handleDelete} label={t("buttons.confirm")} />
+            <Button
+              onClick={handleDeleteCancel}
+              label={t("buttons.cancel")}
+              variant="dark"
+            />
+          </div>
+        </div>
+      </Popup>
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("branch_details")}
@@ -91,7 +134,7 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
               }
               variant="primary"
             />
-            <Button
+            {/* <Button
               label={t("buttons.reset_password")}
               onClick={() => setAddPopupOpen(true)}
               icon={
@@ -100,7 +143,7 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
                 </span>
               }
               variant="secondary"
-            />
+            /> */}
             <Button
               // label={t("buttons.suspend")}
               label={t((mainData.status === "ACTIVE" || mainData.status == 1) ? "buttons.suspend" : "buttons.activate")}
@@ -115,7 +158,7 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
             />
             <Button
               label={t("buttons.delete")}
-              onClick={() => setAddPopupOpen(true)}
+              onClick={() => setShowDeleteConfirm(true)}
               icon={
                 <span className="inline-block w-6">
                   <Delete />
@@ -150,7 +193,7 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
             }
             icon={<LocationTick />}
           />
-          <GroupInfo label={t("status")} content={<Status status={mainData.status === "ACTIVE" ? "1" : "0"} />} block />
+          <GroupInfo label={t("status")} content={<Status status={mainData.status.toString()} />} block />
         </div>
       </div>
 

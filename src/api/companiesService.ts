@@ -1,4 +1,5 @@
 import { CompanyData } from "@/types/forms.types";
+import { Branch } from "@/types/ui.types";
 
 export const submitCompany = async (values: CompanyData) => {
     try {
@@ -321,6 +322,92 @@ export const toggleBranchVerification = async (branchId: number, status: string)
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error("Error updating branch verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+
+export const submitBranch = async (values: Branch) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/branch`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to submit branch");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error submitting branch:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const updateBranch = async (
+    id: number,
+    values: Branch
+) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/branch/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update branch");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating branch:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+export const deleteBranch = async (id: number) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/branch/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to delete branch");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error deleting branch:", error);
             return { success: false, error: error.message };
         } else {
             console.error("Unexpected error:", error);

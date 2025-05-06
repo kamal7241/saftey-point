@@ -66,6 +66,7 @@
         { "name": "Facility", "link": "/dashboard/presets/facility" },
         { "name": "Currencies", "link": "/dashboard/presets/currencies" },
         { "name": "Locations", "link": "/dashboard/presets/locations" },
+        { "name": "Partners", "link": "/dashboard/presets/partners" },
         { "name": "Cancellations - Refunds", "link": "/dashboard/presets/cancellations-refunds" }
       ],
       "icon": "/images/icons/navbar/user-management.svg",

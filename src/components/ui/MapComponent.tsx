@@ -55,7 +55,6 @@ const MapComponent: React.FC<MapComponentProps> = ({
         const lon = parseFloat(data[0].lon);
   
         const newPosition: LatLngExpression = [lat, lon];
-        console.log('newPosition',newPosition)
         setPosition(newPosition);
         onLocationSelect(newPosition);
         setZoom(13);

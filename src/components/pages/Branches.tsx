@@ -1,5 +1,5 @@
 "use client";
-import { fetchBranches } from "@/api/companiesService";
+import { deleteBranch, fetchBranches } from "@/api/companiesService";
 import Table from "@/components/ui/Table";
 import { Branch } from "@/types/ui.types";
 import { format } from "date-fns";
@@ -16,36 +16,40 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import { showToast } from "@/utils/toast";
 
 
 const Branches = () => {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [branchToDelete, setBranchToDelete] = useState<number | null>(null);
   const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
+  const getBranches = async () => {
+    const response = await fetchBranches();
+    const data = await response.branches;
+    setBranches(data);
+
+    const uniqueDates = Array.from(
+      new Set(data.map((item: Branch) => item.createdAt))
+    );
+
+    const formattedDates = uniqueDates.map((date) => {
+      const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
+      return { value: date, label: formattedDate };
+    });
+
+    setCreatedOptions(formattedDates as { value: string; label: string }[]);
+  };
+
   useEffect(() => {
-    const getBranches = async () => {
-      const response = await fetchBranches();
-      const data = await response.branches;
-      setBranches(data);
-      
-      const uniqueDates = Array.from(
-        new Set(data.map((item: Branch) => item.createdAt))
-      );
-
-      const formattedDates = uniqueDates.map((date) => {
-        const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
-        return { value: date, label: formattedDate };
-      });
-
-      setCreatedOptions(formattedDates as { value: string; label: string }[]);
-    };
-
     getBranches();
   }, []);
 
@@ -82,6 +86,7 @@ const Branches = () => {
   const handleResetFilters = () => {
     setFilters({});
   };
+
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
@@ -138,22 +143,36 @@ const Branches = () => {
         noBackground={true}
         textColor="red-500"
         noLabel={true}
-        onClick={() => handleDelete(row.id)}
+        // onClick={() => handleDelete(row.id)}
+        onClick={() => {
+          setBranchToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
 
-  // const handleView = (id: number) => {
-  //   console.log("Viewing branch with ID:", id);
-  //   router.push(`/dashboard/company-management/branches/${id}`);
-  // };
+  const handleDelete = async () => {
+    if (!branchToDelete) return;
 
-  // const handleEdit = (id: number) => {
-  //   console.log("Editing branch with ID:", id);
-  // };
+    try {
+      const result = await deleteBranch(branchToDelete);
+      if (result.success) {
+        showToast.success(tMsgs('company_deleted_successfully'));
+        await getBranches();
+      } else {
+        console.error("Failed to delete company:", result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting company:", error);
+    }
+    setShowDeleteConfirm(false);
+    setBranchToDelete(null);
+  };
 
-  const handleDelete = (id: number) => {
-    console.log("Deleting branch with ID:", id);
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setBranchToDelete(null);
   };
 
   const breadcrumbItems = [
@@ -172,6 +191,21 @@ const Branches = () => {
         title={t("manage-branches")}
       />
 
+      <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+        <div>
+          <p className="p-5 text-center text-2xl">
+            {t("are_you_sure_delete")}
+          </p>
+          <div className="flex items-center justify-center gap-4">
+            <Button onClick={handleDelete} label={t("buttons.confirm")} />
+            <Button
+              onClick={handleDeleteCancel}
+              label={t("buttons.cancel")}
+              variant="dark"
+            />
+          </div>
+        </div>
+      </Popup>
       {/* Table */}
       <div className="mt-6 rounded-2xl bg-white">
         <div className="flex flex-wrap-reverse items-center justify-between gap-6 p-4">
@@ -261,11 +295,19 @@ const Branches = () => {
         />
       </div>
 
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          getBranches();
+        }}
+      >
         <NewBranchForm
           title={t("add_branch")}
           sub_title={t("add_branch_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
+          onClose={() => {
+            setAddPopupOpen(false);
+            getBranches();
+          }}
         />
       </Popup>
     </div>

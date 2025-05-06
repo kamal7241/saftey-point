@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
-import StudentsShape from './icons/StudentsShape';
+import { useState } from 'react';
+import { Cell, Pie, PieChart, ResponsiveContainer, Sector } from 'recharts';
 
 const data = [
     { name: 'Groups of 20 students', value: 20, color: '#6F52ED' },
@@ -12,7 +12,7 @@ const data = [
 
 const renderActiveShape = (props: any) => {
     const RADIAN = Math.PI / 180;
-    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, percent, value } = props;
     const sin = Math.sin(-RADIAN * midAngle);
     const cos = Math.cos(-RADIAN * midAngle);
     const sx = cx + (outerRadius + 10) * cos;

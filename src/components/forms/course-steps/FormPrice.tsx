@@ -1,6 +1,6 @@
 "use client";
 import { submitCorporatePricing } from "@/api/courseService";
-import { fetchBranches, fetchCountries } from "@/api/dashboardService";
+import { fetchCountries } from "@/api/dashboardService";
 import Input from "@/components/formsUI/Input";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import SelectField from "../../formsUI/SelectField";
 import Button from "../../ui/Button";
 import SuccessMessage from "../../ui/SuccessMessage";
+import { fetchBranches } from "@/api/companiesService";
 
 interface FormPriceProps {
   title?: string;

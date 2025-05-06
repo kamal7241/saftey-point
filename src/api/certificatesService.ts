@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CertificateResponse } from "@/types/api.types";
 
 export interface Certificate {
@@ -6,7 +7,7 @@ export interface Certificate {
     validFrom: string;
     validTo: string;
     issueDate: string;
-    displaySource: boolean;
+    displayScore: boolean;
     watermark: boolean;
     courseId: number;
 }
@@ -33,7 +34,16 @@ export const fetchCertificates = async (offset: number, limit: number) => {
     }
 };
 
-export const createCertificate = async (certificateData: Omit<Certificate, 'id'>) => {
+export const createCertificate = async (certificateData: any) => {
+
+    const apiData: any = {
+        title: certificateData.title,
+        validFrom: formatDate(certificateData.validFrom),
+        validTo: formatDate(certificateData.validTo),
+        issueDate: formatDate(certificateData.issueDate),
+        displaySource: certificateData.displayScore === 'yes',
+        watermark: certificateData.watermark === 'yes'
+    };
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/certificates`,
@@ -43,7 +53,7 @@ export const createCertificate = async (certificateData: Omit<Certificate, 'id'>
                     'accept': '*/*',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(certificateData)
+                body: JSON.stringify(apiData)
             }
         );
         if (response.ok) {
@@ -105,50 +115,51 @@ export const fetchCertificateById = async (id: number) => {
 const formatDate = (dateString: string | null | undefined): string | null => {
     if (!dateString) return null;
     try {
-      return new Date(dateString).toISOString().split('T')[0];
+        return new Date(dateString).toISOString().split('T')[0];
     } catch (e) {
-      console.error("Error formatting date:", dateString, e);
-      return null;
+        console.error("Error formatting date:", dateString, e);
+        return null;
     }
-  };
-  export const updateCertificate = async (
+};
+
+export const updateCertificate = async (
     certificateId: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: any
-  ): Promise<CertificateResponse> => {
+): Promise<CertificateResponse> => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const certificateData: any = {
-      title: data.title,
-      validFrom: formatDate(data.validFrom),
-      validTo: formatDate(data.validTo),
-      issueDate: formatDate(data.issueDate),
-      displaySource: data.displayScore,
-      watermark: data.watermark
+        title: data.title,
+        validFrom: formatDate(data.validFrom),
+        validTo: formatDate(data.validTo),
+        issueDate: formatDate(data.issueDate),
+        displaySource: data.displayScore === 'yes',
+        watermark: data.watermark === 'yes'
     };
     console.log("certificateData", certificateData);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/v1/certificates/${certificateId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            accept: "*/*",
-          },
-          body: JSON.stringify(certificateData),
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/certificates/${certificateId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    accept: "*/*",
+                },
+                body: JSON.stringify(certificateData),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update certificate");
         }
-      );
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update certificate");
-      }
-      return result;
+        return result;
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        return { success: false, error: error.message };
-      }
-      return { success: false, error: 'An unexpected error occurred' };
+        if (error instanceof Error) {
+            return { success: false, error: error.message };
+        }
+        return { success: false, error: 'An unexpected error occurred' };
     }
-  };
+};

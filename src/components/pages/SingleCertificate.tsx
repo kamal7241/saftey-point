@@ -112,8 +112,8 @@ export default function SingleCertificate({
                   issueDate: certificateData.issueDate,
                   validFrom: certificateData.validFrom,
                   validTo: certificateData.validTo,
-                  watermark: certificateData.watermark,
-                  displaySource: certificateData.displaySource,
+                  watermark: certificateData.watermark?"yes":"no",
+                  displayScore: certificateData.displaySource?"yes":"no",
                 }
               : null
           }

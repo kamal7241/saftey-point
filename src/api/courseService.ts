@@ -294,7 +294,7 @@ export const updateSession = async (
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/v2/session/${examId}`,
       {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           accept: '*/*',
@@ -661,8 +661,8 @@ export const updateCertificate = async (
     validFrom: formatDate(data.validFrom),
     validTo: formatDate(data.validTo),
     issueDate: formatDate(data.issueDate),
-    displaySource: data.displayScore,
-    watermark: data.watermark
+    displaySource: data.displaySource === 'yes',
+    watermark: data.watermark === 'yes'
   };
 
   try {

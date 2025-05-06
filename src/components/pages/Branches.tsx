@@ -1,7 +1,6 @@
 "use client";
-import { fetchBranches } from "@/api/dashboardService";
+import { fetchBranches } from "@/api/companiesService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { Branch } from "@/types/ui.types";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
@@ -21,7 +20,6 @@ import Popup from "../ui/Popup";
 
 const Branches = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -126,14 +124,14 @@ const Branches = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/company-management/branches/${row.id}`}
       />
       <Button
         icon={<Edit />}
         noBackground={true}
         textColor="gray-900"
         noLabel={true}
-        onClick={() => handleEdit(row.id)}
+        href={`/dashboard/company-management/branches/${row.id}`}
       />
       <Button
         icon={<Delete />}
@@ -145,15 +143,14 @@ const Branches = () => {
     </div>
   );
 
-  const handleView = (id: number) => {
-    console.log("Viewing branch with ID:", id);
-    router.push(`/dashboard/company-management/branches/${id}`);
+  // const handleView = (id: number) => {
+  //   console.log("Viewing branch with ID:", id);
+  //   router.push(`/dashboard/company-management/branches/${id}`);
+  // };
 
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Editing branch with ID:", id);
-  };
+  // const handleEdit = (id: number) => {
+  //   console.log("Editing branch with ID:", id);
+  // };
 
   const handleDelete = (id: number) => {
     console.log("Deleting branch with ID:", id);

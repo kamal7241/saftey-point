@@ -8,7 +8,7 @@ type ButtonProps = {
   onClick?: () => void;
   className?: string;
   icon?: ReactNode;
-  variant?: "primary" | "dark" | "transparent" | "selected" | "danger" | "secondary";
+  variant?: "primary" | "dark" | "transparent" | "selected" | "danger" | "secondary" | "success";
   disabled?: boolean;
   noLabel?: boolean;
   noBackground?: boolean;
@@ -54,6 +54,9 @@ export default function Button({
   } else if (variant === "secondary") {
     variantClasses =
       "bg-blue-400 text-white border border-transparent hover:bg-opacity-80";
+  } else if (variant === "success") {
+    variantClasses =
+      "bg-green-400 text-white border border-transparent hover:bg-opacity-80";
   }
 
   if (noBackground) {

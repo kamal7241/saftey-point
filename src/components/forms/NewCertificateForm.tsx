@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import Input from "@/components/formsUI/Input";
 import { ErrorMessage, Form, Formik } from "formik";
@@ -27,8 +28,8 @@ interface FormValues {
   validFrom: string;
   validTo: string;
   issueDate: string;
-  displaySource: boolean;
-  watermark: boolean;
+  displayScore: string;
+  watermark: string;
   courseId: number;
 }
 
@@ -42,13 +43,13 @@ export default function NewCertificateForm({
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const initialValues: FormValues = certificateData
+  const initialValues: any = certificateData
     ? {
         title: certificateData.title,
         validFrom: certificateData.validFrom,
         validTo: certificateData.validTo,
         issueDate: certificateData.issueDate,
-        displaySource: certificateData.displaySource,
+        displayScore: certificateData.displayScore,
         watermark: certificateData.watermark,
         courseId: certificateData.id,
       }
@@ -57,8 +58,8 @@ export default function NewCertificateForm({
         validFrom: "",
         validTo: "",
         issueDate: "",
-        displaySource: false,
-        watermark: false,
+        displayScore: "no",
+        watermark: "no",
         courseId: 0,
       };
 
@@ -248,7 +249,7 @@ export default function NewCertificateForm({
                   { value: "yes", label: t("yes") },
                   { value: "no", label: t("no") },
                 ]}
-                selectedValue={values.displaySource ? "yes" : "no"}
+                selectedValue={values.displayScore}
                 onChange={handleChange}
               />
               <ErrorMessage
@@ -266,7 +267,7 @@ export default function NewCertificateForm({
                   { value: "yes", label: t("yes") },
                   { value: "no", label: t("no") },
                 ]}
-                selectedValue={values.watermark ? "yes" : "no"}
+                selectedValue={values.watermark}
                 onChange={handleChange}
               />
               <ErrorMessage

@@ -62,7 +62,7 @@ export interface Branch {
     updatedAt: string;
     deletedAt: string | null;
     name: string;
-    status: string;
+    status: string | number;
     address: string;
     latitude: string;
     longitude: string;
@@ -197,7 +197,6 @@ export interface SingleCourse {
     image?: string;
     cover?: string;
 }
-
 
 
 export interface SingleCompany {

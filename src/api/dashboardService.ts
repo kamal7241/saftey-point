@@ -255,34 +255,3 @@ export const fetchCountries = async () => {
         };
     }
 };
-
-export const fetchBranches = async () => {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/v1/branch?offset=0&limit=100`,
-        {
-          headers: {
-            accept: "*/*",
-          },
-        }
-      );
-      const result = await response.json();
-  
-      if (!result.success) {
-        throw new Error("Failed to fetch branches");
-      }
-  
-      return {
-        success: true,
-        branches: result.innerData.branches,
-        message: result.message,
-      };
-    } catch (error) {
-      console.error("Error fetching branches:", error);
-      return {
-        success: false,
-        branches: [],
-        message: error instanceof Error ? error.message : "Failed to fetch branches",
-      };
-    }
-  };

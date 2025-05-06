@@ -172,41 +172,41 @@ export const updateCompany = async (
 export const resetCompanyPassword = async (
     companyId: number,
     newPassword: string
-  ) => {
+) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "accept": "*/*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user: {
-              password: newPassword,
-            },
-          }),
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: {
+                        password: newPassword,
+                    },
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to reset password.");
         }
-      );
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to reset password.");
-      }
-  
-      return { success: true, data: result };
+
+        return { success: true, data: result };
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error resetting password:", error);
-        return { success: false, error: error.message };
-      } else {
-        console.error("Unexpected error:", error);
-        return { success: false, error: "An unexpected error occurred" };
-      }
+        if (error instanceof Error) {
+            console.error("Error resetting password:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
     }
-  };
+};
 
 export const toggleCompanyVerification = async (companyId: number, isVerified: boolean) => {
     try {
@@ -236,6 +236,91 @@ export const toggleCompanyVerification = async (companyId: number, isVerified: b
     } catch (error: unknown) {
         if (error instanceof Error) {
             console.error("Error updating company verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+
+
+export const fetchBranches = async () => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/branch?offset=0&limit=100`,
+            {
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch branches");
+        }
+
+        return {
+            success: true,
+            branches: result.innerData.branches,
+            message: result.message,
+        };
+    } catch (error) {
+        console.error("Error fetching branches:", error);
+        return {
+            success: false,
+            branches: [],
+            message: error instanceof Error ? error.message : "Failed to fetch branches",
+        };
+    }
+};
+
+
+export const fetchBranchById = async (branchID: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/branch/${branchID}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Failed to fetch branch details");
+        }
+
+        const branch = result.innerData.branch;
+        return branch;
+    } catch (error) {
+        console.error("Error fetching branch by ID:", error);
+        return null;
+    }
+};
+
+export const toggleBranchVerification = async (branchId: number, status: string) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/branch/${branchId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: status
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update branch verification status");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating branch verification:", error);
             return { success: false, error: error.message };
         } else {
             console.error("Unexpected error:", error);

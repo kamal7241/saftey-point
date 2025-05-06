@@ -118,7 +118,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
       issue_date: certificateItem.issueDate
         ? new Date(certificateItem.issueDate).toISOString().split("T")[0]
         : "",
-      displayScore: certificateItem.displaySource ? "yes" : "no", // Assuming displaySource maps to displayScore
+      displayScore: certificateItem.displaySource ? "yes" : "no",
       watermark: certificateItem.watermark ? "yes" : "no",
     };
   };
@@ -179,10 +179,11 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
         issueDate: values.issue_date
           ? new Date(values.issue_date).toISOString()
           : null,
-        displaySource: values.displayScore === "yes",
-        watermark: values.watermark === "yes",
+        displaySource: values.displayScore,
+        watermark: values.watermark,
       };
-      debugger;
+      console.log('apiData>>',apiData);
+      console.log('VALUES>>',values);
       const result = await updateCertificate(
         editingCertificateId,
         apiData as unknown as Partial<CertificateFormValues>

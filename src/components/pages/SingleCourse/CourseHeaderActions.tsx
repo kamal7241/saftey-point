@@ -26,7 +26,7 @@ export default function CourseHeaderActions({
 
   return (
     <>
-      {!isEditing && activeTab !== "course_info" && (
+      {!isEditing && activeTab == "course_info" && (
         <Button
           label={t("buttons.edit")}
           onClick={onEdit}

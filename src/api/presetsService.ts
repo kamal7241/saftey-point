@@ -160,8 +160,8 @@ export const fetchExams = async (offset: number = 0, limit: number = 10) => {
             message: result.message,
             innerData: {
                 count: result.innerData?.count || 0,
-                items: Array.isArray(result.innerData?.items) 
-                    ? result.innerData.items 
+                items: Array.isArray(result.innerData?.items)
+                    ? result.innerData.items
                     : [result.innerData?.items].filter(Boolean)
             }
         };
@@ -199,8 +199,8 @@ export const fetchFacilities = async (offset: number = 0, limit: number = 10) =>
             message: result.message,
             innerData: {
                 count: result.innerData?.count || 0,
-                facilities: Array.isArray(result.innerData?.facilities) 
-                    ? result.innerData.facilities 
+                facilities: Array.isArray(result.innerData?.facilities)
+                    ? result.innerData.facilities
                     : [result.innerData?.facilities].filter(Boolean)
             }
         };
@@ -250,10 +250,10 @@ export const fetchFacilityById = async (id: string) => {
 
 
 interface FacilityData {
-  title: string;
-  titleArabic?: string;
-  description: string;
-  imageUrl?: string;
+    title: string;
+    titleArabic?: string;
+    description: string;
+    imageUrl?: string;
 }
 
 export const createFacility = async (data: FacilityData) => {
@@ -282,7 +282,7 @@ export const createFacility = async (data: FacilityData) => {
             message: result.message || "Facility created successfully",
             data: result.innerData?.facility || null
         };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error("Error creating facility:", error);
         return {
@@ -314,7 +314,7 @@ export const updateFacility = async (
     }
     // Compare imageUrl, handling potential null/undefined values
     if (values.imageUrl !== currentData.imageUrl) {
-         // Ensure you handle the case where one is null/undefined and the other is an empty string if necessary
+        // Ensure you handle the case where one is null/undefined and the other is an empty string if necessary
         apiData.imageUrl = values.imageUrl;
     }
 
@@ -357,7 +357,7 @@ export const updateFacility = async (
             message: result.message || "Facility updated successfully",
             data: result.innerData || null // Use innerData directly as it contains the facility object
         };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error("Error updating facility:", error);
         return {
@@ -381,7 +381,7 @@ export const deleteFacility = async (id: number) => {
         let result;
         try {
             result = await response.json();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
             // Handle cases where response is not JSON (e.g., 204 No Content)
             result = { success: response.ok, message: response.statusText };
@@ -389,7 +389,7 @@ export const deleteFacility = async (id: number) => {
 
 
         if (!response.ok) { // Checks for 2xx status codes
-             // Attempt to extract a more specific error message if available
+            // Attempt to extract a more specific error message if available
             const errorMessage = result?.message || (result?.innerData && result.innerData.message) || `Failed to delete facility (Status: ${response.status})`;
             throw new Error(errorMessage);
         }
@@ -399,8 +399,8 @@ export const deleteFacility = async (id: number) => {
             success: result?.success ?? true, // Default to true if success field is missing but status is ok
             message: result?.message || "Facility deleted successfully",
             data: result // Return the full result if needed
-         };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
         console.error("Error deleting facility:", error);
         return {
@@ -432,8 +432,8 @@ export const fetchPromoCodes = async (offset: number = 0, limit: number = 10) =>
             message: result.message,
             innerData: {
                 total: result.innerData?.total || 0,
-                items: Array.isArray(result.innerData?.items) 
-                    ? result.innerData.items 
+                items: Array.isArray(result.innerData?.items)
+                    ? result.innerData.items
                     : [result.innerData?.items].filter(Boolean)
             }
         };
@@ -446,6 +446,113 @@ export const fetchPromoCodes = async (offset: number = 0, limit: number = 10) =>
                 total: 0,
                 items: []
             }
+        };
+    }
+};
+
+export const fetchPromoByCode = async (code: string) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/promo-codes/${code}`, {
+            headers: {
+                accept: "*/*",
+            },
+        });
+        const result = await response.json();
+        // if (!result.success) {
+        //     throw new Error(result.message || "Failed to fetch promo code");
+        // }
+        return result;
+    } catch (error: any) {
+        console.error("Error fetching promo code by code:", error);
+        return {
+            success: false,
+            message: error.message || "Failed to fetch promo code",
+            innerData: null
+        };
+    }
+};
+
+export const updatePromoCode = async (code: string, promoData: any) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/promo-codes/${code}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                accept: "*/*",
+            },
+            body: JSON.stringify(promoData),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to update promo code. Status: ${response.status}`);
+        }
+
+        // If response has no body, just return a generic success
+        return {
+            success: true,
+            message: "Promo code updated successfully",
+            innerData: null,
+        };
+    } catch (error: any) {
+        console.error("Error updating promo code:", error);
+        return {
+            success: false,
+            message: error.message || "Failed to update promo code",
+            innerData: null,
+        };
+    }
+};
+
+
+export const addPromoCode = async (promoData: any) => {
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/promo-codes`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                accept: "*/*",
+            },
+            body: JSON.stringify(promoData),
+        });
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.message || "Failed to add promo code");
+        }
+        return result;
+    } catch (error: any) {
+        console.error("Error adding promo code:", error);
+        return {
+            success: false,
+            message: error.message || "Failed to add promo code",
+            innerData: null
+        };
+    }
+};
+
+export const deletePromoCode = async (id: number) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/promo-codes/${id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    accept: "*/*",
+                },
+            }
+        );
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.message || "Failed to delete promo-codes");
+        }
+        return {
+            success: true,
+            message: result.message,
+        };
+    } catch (error) {
+        console.error("Error deleting promo-codes:", error);
+        return {
+            success: false,
+            message: error instanceof Error ? error.message : "Failed to delete promo-codes",
         };
     }
 };

@@ -10,6 +10,9 @@ import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
+import { Add } from "../ui/icons/Add";
+import Popup from "../ui/Popup";
+import NewPromoForm from "../forms/NewPromoForm";
 
 interface PromoCode {
   id: number;
@@ -30,6 +33,7 @@ const Rewards = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
 
@@ -127,7 +131,7 @@ const Rewards = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        href={`/dashboard/courses-management/rewards/${row.id}`}
+        href={`/dashboard/courses-management/rewards/${row.code}`}
       />
     </div>
   );
@@ -142,10 +146,37 @@ const Rewards = () => {
     <div>
       <PageHeader breadcrumbItems={breadcrumbItems} title={t("rewards")} />
 
+
+      <Popup
+        isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          getPromoCodes();
+        }}
+      >
+        <NewPromoForm
+          title={t("add_promo_code")}
+          sub_title={t("form_subtitle")}
+          onClose={() => {
+            setAddPopupOpen(false);
+            getPromoCodes();
+          }}
+        />
+      </Popup>
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
+            <Button
+              label={t("buttons.add_promo_code")}
+              onClick={() => setAddPopupOpen(true)}
+              icon={
+                <span className="w-6 inline-block">
+                  <Add />
+                </span>
+              }
+              variant="primary"
+            />
             <Button
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}

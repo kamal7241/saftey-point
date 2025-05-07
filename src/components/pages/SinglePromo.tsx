@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { useState } from "react";
+import { deletePromoCode, fetchPromoByCode } from "@/api/presetsService";
+import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import NewPromoForm from "../forms/NewPromoForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
 import Popup from "../ui/Popup";
-import { showToast } from "@/utils/toast";
-import NewPromoForm from "../forms/NewPromoForm";
-import { deletePromoCode, fetchPromoByCode } from "@/api/presetsService";
-import { useRouter } from "@/i18n/routing";
 
 interface PromoData {
     id: number;
@@ -34,7 +34,6 @@ interface SinglePromoProps {
 
 export default function SinglePromo({ promoData, promoCode }: SinglePromoProps) {
     const t = useTranslations("common");
-    const tMsgs = useTranslations("messages");
     const [mainData, setMainData] = useState<PromoData>(promoData);
     const [addPopupOpen, setAddPopupOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { addPromoCode, updatePromoCode } from "@/api/presetsService";
 import Input from "@/components/formsUI/Input";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
@@ -7,7 +8,6 @@ import React, { useState } from "react";
 import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
 import SuccessMessage from "../ui/SuccessMessage";
-import { addPromoCode, updatePromoCode } from "@/api/presetsService";
 
 interface NewPromoFormProps {
     title?: string;
@@ -40,7 +40,6 @@ export default function NewPromoForm({
     promoData
 }: NewPromoFormProps) {
     const t = useTranslations("common");
-    const tTable = useTranslations("tables");
 
     const initialValues: FormValues = promoData
         ? {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Country } from "@/types/ui.types";
 
 export const fetchCountries = async (offset: number = 0, limit: number = 10) => {

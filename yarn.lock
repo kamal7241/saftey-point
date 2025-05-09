@@ -3968,6 +3968,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-otp-input@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "react-otp-input@npm:3.1.1"
+  peerDependencies:
+    react: ">=16.8.6 || ^17.0.0 || ^18.0.0"
+    react-dom: ">=16.8.6 || ^17.0.0 || ^18.0.0"
+  checksum: 10c0/0b8c7a1a9c49225c75ed3a91be71512c39761bcd1a6d1e6fdd3afadecade1e3b75dac53717dc72b513fcf4881686e6d498d4b6c1412472f8741c46da01d5a804
+  languageName: node
+  linkType: hard
+
 "react-smooth@npm:^4.0.4":
   version: 4.0.4
   resolution: "react-smooth@npm:4.0.4"
@@ -4253,8 +4263,10 @@ __metadata:
     react-dom: "npm:^19.0.0"
     react-hot-toast: "npm:^2.5.2"
     react-leaflet: "npm:^5.0.0"
+    react-otp-input: "npm:^3.1.1"
     react-toastify: "npm:^11.0.2"
     recharts: "npm:^2.15.3"
+    tailwind-merge: "npm:^3.2.0"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5"
     yup: "npm:^1.5.0"
@@ -4725,6 +4737,13 @@ __metadata:
   version: 6.2.0
   resolution: "tabbable@npm:6.2.0"
   checksum: 10c0/ced8b38f05f2de62cd46836d77c2646c42b8c9713f5bd265daf0e78ff5ac73d3ba48a7ca45f348bafeef29b23da7187c72250742d37627883ef89cbd7fa76898
+  languageName: node
+  linkType: hard
+
+"tailwind-merge@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "tailwind-merge@npm:3.2.0"
+  checksum: 10c0/294f6c2db0df74405bff126107107426c3126a70a1717d78e8d6811db65546c9bb3d61282bdb8d9fbded23f6bc8ec3e8e61031a4f53265f90b7f3dba558f88f4
   languageName: node
   linkType: hard
 

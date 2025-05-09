@@ -46,3 +46,6 @@ next-env.d.ts
 
 # Mac system files
 *.swp
+
+
+/.yarn/

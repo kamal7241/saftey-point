@@ -67,7 +67,6 @@ const Partners = () => {
         { header: "name", accessor: "name" },
         { header: "website", accessor: "website" },
         { header: "created", accessor: "createdAt" },
-        { header: "status", accessor: "status" },
     ];
 
     const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -92,7 +91,8 @@ const Partners = () => {
 
     const breadcrumbItems = [
         { label: t("home"), href: "/" },
-        { label: t("partners"), href: "/dashboard/partners" },
+        { label: t("presets"), href: "/dashboard/presets" },
+        { label: t("partner"), href: "/dashboard/presets/partners" },
     ];
 
     return (
@@ -138,17 +138,7 @@ const Partners = () => {
                                 label: "Name",
                                 name: "name",
                                 placeholder: "Partner Name",
-                            },
-                            {
-                                type: "select",
-                                label: "Status",
-                                name: "isActive",
-                                placeholder: "Status",
-                                options: [
-                                    { value: "true", label: "Active" },
-                                    { value: "false", label: "Inactive" },
-                                ],
-                            },
+                            }
                         ]}
                         onApply={handleApplyFilters}
                         onReset={handleResetFilters}

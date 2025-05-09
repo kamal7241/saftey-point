@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { createPartner, updatePartner } from "@/api/partnerService";
+import { Partner } from "@/types/ui.types";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import { useState } from "react";
 import * as Yup from "yup";
+import FileUploader from "../formsUI/FileUploader";
 import Input from "../formsUI/Input";
 import Button from "../ui/Button";
+import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
-import FileUploader from "../formsUI/FileUploader";
-import { Partner } from "@/types/ui.types";
-import { createPartner, updatePartner } from "@/api/partnerService";
 
 
 interface NewPartnerFormProps {
@@ -28,7 +29,7 @@ interface FormValues {
 // Validation Schema
 const validationSchema = Yup.object({
   name: Yup.string().required("Required"),
-  logo: Yup.mixed().required("Must be a valid URL").nullable(),
+  logo: Yup.mixed().required("Logo Required"),
   website: Yup.string().url("Must be a valid URL").required("Required"),
 });
 
@@ -72,6 +73,9 @@ export default function NewPartnerForm({
       }
       if (result.success) {
         setIsSubmitted(true);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       } else {
         setApiErrors(
           result.message ||
@@ -124,7 +128,9 @@ export default function NewPartnerForm({
                 onChange={handleChange}
                 name="name"
               />
-              <ErrorMessage name="name" component="div" className="text-xs text-red-500" />
+              <ErrorMessage name="name">
+                {(msg) => <ErrorMessageWrappers msg={msg} />}
+              </ErrorMessage>
             </div>
             <div className="col-span-2">
               <Input
@@ -135,16 +141,20 @@ export default function NewPartnerForm({
                 onChange={handleChange}
                 name="website"
               />
-              <ErrorMessage name="website" component="div" className="text-xs text-red-500" />
+              <ErrorMessage name="website">
+                {(msg) => <ErrorMessageWrappers msg={msg} />}
+              </ErrorMessage>
             </div>
             <div className="col-span-2">
               <FileUploader
                 onChange={(file) => setFieldValue("logo", file)}
                 label={t("logo")}
                 note={t("fileuploader_note")}
-                initialImageUrl={partnerData ? `${process.env.NEXT_PUBLIC_URL}/${partnerData.logo}` : null}
+                initialImageUrl={partnerData && partnerData.logo ? `${process.env.NEXT_PUBLIC_URL}/${partnerData.logo}` : null}
               />
-              <ErrorMessage name="logo" component="div" className="text-xs text-red-500" />
+              <ErrorMessage name="logo">
+                {(msg) => <ErrorMessageWrappers msg={msg} />}
+              </ErrorMessage>
             </div>
             <div className="flex justify-end gap-4 col-span-2 mt-4">
               <Button

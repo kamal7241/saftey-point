@@ -14,7 +14,6 @@ import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 // import { format } from "date-fns";
 import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/companiesService";
-import { useRouter } from "@/i18n/routing";
 import { Company } from "@/types/ui.types";
 import { showToast } from "@/utils/toast";
 import NewCompanyForm from "../forms/NewCompanyForm";
@@ -29,7 +28,6 @@ import TimerEmpty from "../ui/icons/TimerEmpty";
 const Companies = () => {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -59,7 +57,7 @@ const Companies = () => {
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true; // Ignore empty filter fields
+      if (!value) return true;
       return company[key as keyof Company]
         ?.toString()
         .toLowerCase()
@@ -149,14 +147,14 @@ const Companies = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/company-management/companies/${row.id}`}
       />
       <Button
         icon={<Edit />}
         noBackground={true}
         textColor="gray-900"
         noLabel={true}
-        onClick={() => handleEdit(row.id)}
+        href={`/dashboard/company-management/companies/${row.id}`}
       />
       <Button
         icon={<Delete />}
@@ -170,18 +168,6 @@ const Companies = () => {
       />
     </div>
   );
-
-  const handleView = (id: number) => {
-    console.log("Viewing company with ID:", id);
-    router.push(`/dashboard/company-management/companies/${id}`);
-
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Editing company with ID:", id);
-    router.push(`/dashboard/company-management/companies/${id}`);
-  };
-
 
   const handleDelete = async () => {
     if (!companyToDelete) return;
@@ -208,11 +194,8 @@ const Companies = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/company-management" },
-    {
-      label: t("manage-companies"),
-      href: "/company-management/manage-companies",
-    },
+    { label: t("company-management"), href: "/dashboard/company-management/companies" },
+    { label: t("manage-companies"), href: "/dashboard/company-management/companies" },
   ];
 
   return (

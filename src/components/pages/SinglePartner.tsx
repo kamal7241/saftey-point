@@ -58,7 +58,7 @@ const SinglePartner = ({ partnerData, partnerID }: SinglePartnerProps) => {
       const result = await deletePartner(currentPartnerData.id);
       if (result.success) {
         showToast.success(tMsgs("partner_deleted_successfully"));
-        router.push("/dashboard/presets/partner");
+        router.push("/dashboard/presets/partners");
       } else {
         setError(result.message || tMsgs("error_deleting_partner"));
         showToast.error(result.message || tMsgs("error_deleting_partner"));

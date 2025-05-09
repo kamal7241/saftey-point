@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CompanyData } from "@/types/forms.types";
 import { Branch } from "@/types/ui.types";
 
@@ -39,8 +40,8 @@ export const fetchCompanies = async (offset: number = 0, limit: number = 10) => 
         }
 
         return {
-            companies: result.innerData.companies.map((company: CompanyData) => ({
-                id: company.id,
+            companies: result.innerData.companies.map((company: any) => ({
+                id: company.user.id,
                 name: `${company.user.firstName} ${company.user.lastName}`,
                 email: company.user.email,
                 status: company.status === "ACTIVE" ? "1" : "0",

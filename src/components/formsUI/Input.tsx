@@ -14,6 +14,7 @@ type TimeRange = { from: Date | null; to: Date | null };
 type CustomInputProps = InputProps & { 
   range?: boolean; 
   timeRange?: boolean;
+  min?: number;
   onChange?: (value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange) => void;
 };
 
@@ -36,6 +37,7 @@ const Input: React.FC<CustomInputProps> = ({
   togglePasswordVisibility,
   range,
   timeRange,
+  min,
 }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>([null, null]);
@@ -145,6 +147,7 @@ const Input: React.FC<CustomInputProps> = ({
             name={name}
             readOnly={readOnly}
             onKeyDown={onKeyDown}
+            min={min}
             className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px] appearance-none"
           />
         )}

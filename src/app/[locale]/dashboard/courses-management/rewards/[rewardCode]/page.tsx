@@ -1,5 +1,6 @@
 export const runtime = "edge";
-import NotDevelopedYet from "@/components/NotDevelopedYet";
+import { fetchPromoByCode } from "@/api/presetsService";
+import SinglePromo from "@/components/pages/SinglePromo";
 
 export default async function Page({
   params,
@@ -7,8 +8,6 @@ export default async function Page({
   params: Promise<{ rewardCode: string }>;
 }) {
   const rewardCode = (await params).rewardCode;
-  // Fetch initial data
-  // const initialData = await fetchBranchById(rewardCode);
-  console.log(rewardCode);
-  return <NotDevelopedYet />;
+  const result = await fetchPromoByCode(rewardCode);
+  return <SinglePromo promoData={result.innerData} promoCode={rewardCode} />;
 }

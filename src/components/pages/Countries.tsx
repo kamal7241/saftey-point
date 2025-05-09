@@ -1,6 +1,6 @@
 "use client";
+import { fetchCountries } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { Country } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -10,12 +10,10 @@ import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
-import { fetchCountries } from "@/api/presetsService";
 
 
 const Countries = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -105,16 +103,10 @@ const Countries = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.code)}
+        href={`/dashboard/presets/locations/${row.code}`}
       />
     </div>
   );
-
-  const handleView = (id: string) => {
-    console.log("Viewing certificate with ID:", id);
-    router.push(`/dashboard/presets/locations/${id}`);
-
-  };
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("user-management"), href: "/dashboard/user-management" },

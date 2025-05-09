@@ -1,11 +1,8 @@
 export const runtime = "edge";
-import NotDevelopedYet from "@/components/NotDevelopedYet";
+import AboutPage from "@/components/pages/AboutPage";
 
 export default function page() {
   return (
-    <div className="flex justify-center flex-col gap-5 text-lg items-center py-5">
-      About
-      <NotDevelopedYet />
-    </div>
+    <AboutPage />
   );
 }

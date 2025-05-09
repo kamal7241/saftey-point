@@ -146,7 +146,7 @@ export default function DashboardLayout({
             <div className="flex flex-col items-stretch px-6 pt-4">
               <div className="h-full">{children}</div>
             </div>
-            <div className="mt-auto pt-6">
+            <div className="mt-auto pt-6 sticky bottom-0">
               <Footer />
             </div>
           </main>

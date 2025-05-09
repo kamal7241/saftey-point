@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="px-6 py-1.5 bg-white shadow-custom">
+    <footer className="px-6 py-1.5 bg-white shadow-custom3">
       <div className="flex items-center justify-between">
         <div className="flexCenter">
           <Image

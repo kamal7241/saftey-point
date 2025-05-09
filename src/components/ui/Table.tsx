@@ -34,7 +34,7 @@ const Table = <T extends { image?: string }>({
   pagination = {
     currentPage: 1,
     totalPages: 1,
-    onPageChange: () => {},
+    onPageChange: () => { },
   },
   sortable,
   rowsPerPage = 10,
@@ -165,7 +165,7 @@ const Table = <T extends { image?: string }>({
                     >
                       {column.accessor === "status" || column.accessor === "isActive" ? (
                         <Status status={String(row[column.accessor]).toString()} />
-                      ) : column.accessor === "created" ? (
+                      ) : (column.accessor === "created" || column.accessor === "createdAt") ? (
                         <span className="whitespace-nowrap">
                           {isNaN(
                             new Date(String(row[column.accessor])).getTime()
@@ -182,6 +182,10 @@ const Table = <T extends { image?: string }>({
                             />
                           )}
                           <span>{String(row[column.accessor])}</span>
+                        </div>
+                      ) : column.accessor === "website" ? (
+                        <div>
+                          <a href={String(row[column.accessor])} target="_blank" className="lowercase underline">{String(row[column.accessor])}</a>
                         </div>
                       ) : Array.isArray(row[column.accessor]) ? (
                         (row[column.accessor] as string[]).join(", ")
@@ -212,9 +216,8 @@ const Table = <T extends { image?: string }>({
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className={`p-2 text-gray-300 hover:opacity-100 ${
-                currentPage <= 1 ? "opacity-30 pointer-events-none" : ""
-              } cursor-pointer`}
+              className={`p-2 text-gray-300 hover:opacity-100 ${currentPage <= 1 ? "opacity-30 pointer-events-none" : ""
+                } cursor-pointer`}
             >
               <KeyboardArrowLeft />
             </button>
@@ -229,9 +232,8 @@ const Table = <T extends { image?: string }>({
               ) : (
                 <button
                   onClick={() => handlePageChange(Number(page))}
-                  className={`px-4 py-2 rounded ${
-                    page === currentPage ? "!text-black-400" : ""
-                  }`}
+                  className={`px-4 py-2 rounded ${page === currentPage ? "!text-black-400" : ""
+                    }`}
                 >
                   {page}
                 </button>

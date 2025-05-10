@@ -230,7 +230,7 @@ const Rewards = () => {
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: (page) => setCurrentPage(page),
           }}
-          sortable={true}
+          
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}

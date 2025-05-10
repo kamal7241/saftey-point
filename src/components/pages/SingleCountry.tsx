@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -5,48 +6,99 @@ import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
 import Status from "../ui/Status";
-import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
 import Suspend from "../ui/icons/Suspend";
+import { toggleCountryStatus, fetchCountryByCode } from "@/api/presetsService";
 
-import CalendarRemove from "../ui/icons/CalendarRemove";
-import CalendarTick from "../ui/icons/CalendarTick";
+import { Country } from "@/types/ui.types";
 import ClipboardTick from "../ui/icons/ClipboardTick";
 import DocumentText from "../ui/icons/DocumentText";
 import StatusCheck from "../ui/icons/StatusCheck";
-import Image from "next/image";
-// import { Edit2 } from "../ui/icons/Edit2";
+import Popup from "../ui/Popup";
+import NewCountryForm from "../forms/NewCountryForm";
 
 interface SingleCountryProps {
-  countryID: string; // Define the type for countryID
+  countryData: Country;
+  countryID: string;
 }
 
 export default function SingleCountry({
   countryID,
+  countryData,
 }: SingleCountryProps) {
   const t = useTranslations("common");
-  //   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [currentCountry, setCurrentCountry] = useState<Country>(countryData);
 
-  console.log("countryID", countryID);
-  console.log("addPopupOpen", addPopupOpen);
-  //   const handleExport = () => {
-  //     console.log("Exporting data...");
-  //   };
+  const handleClose = () => {
+    setAddPopupOpen(false);
+    window.location.reload();
+  };
+
+  const handleSuspendCountry = async () => {
+    setError(null);
+    try {
+      const result = await toggleCountryStatus(Number(countryData.id), !currentCountry.isActive);
+      if (result.success) {
+        // Refetch country data
+        const refreshed = await fetchCountryByCode(countryID);
+        if (refreshed.success && refreshed.data) {
+          setCurrentCountry(refreshed.data);
+        }
+      } else {
+        setError(result.message || "Failed to update country status");
+      }
+    } catch (error) {
+      setError("An unexpected error occurred");
+    }
+    setShowSuspendConfirm(false);
+  };
+
+  const handleSuspendCancel = () => {
+    setShowSuspendConfirm(false);
+  };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("user-management"), href: "/dashboard/user-management" },
+    { label: t("presets"), href: "/dashboard/presets" },
     {
-      label: t("view_countrys"),
-      href: "/dashboard/country-management/countrys",
+      label: t("country"),
+      href: "",
     },
   ];
   return (
     <div className="h-full">
+      <Popup isOpen={addPopupOpen} onClose={handleClose}>
+        <NewCountryForm
+          title={t("edit_country")}
+          sub_title={t("form_subtitle")}
+          onClose={handleClose}
+          countryData={currentCountry}
+        />
+      </Popup>
+      {showSuspendConfirm && (
+        <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t(currentCountry.isActive ? "are_you_sure_suspend" : "are_you_sure_activate")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleSuspendCountry} label={t("buttons.confirm")}/>
+              <Button
+                onClick={handleSuspendCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+            {error && <div className="text-red-500 text-center mt-2">{error}</div>}
+          </div>
+        </Popup>
+      )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
-        title={t("view_countrys")}
+        title={t("view_country")}
         actions={
           <>
             <Button
@@ -60,70 +112,52 @@ export default function SingleCountry({
               variant="primary"
             />
             <Button
-              label={t("buttons.suspend")}
-              onClick={() => setAddPopupOpen(true)}
+              label={t(currentCountry.isActive ? "buttons.suspend" : "buttons.activate")}
+              onClick={() => setShowSuspendConfirm(true)}
               icon={
-                <span className="inline-block w-6">
+                <span className={`inline-block w-6 ${(currentCountry.isActive) ? "" : "rotate-180"}`}>
                   <Suspend />
                 </span>
               }
-              variant="dark"
-            />
-            <Button
-              label={t("buttons.delete")}
-              onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Delete />
-                </span>
-              }
-              variant="danger"
+              variant={(currentCountry.isActive) ? "dark" : "success"}
             />
           </>
         }
       />
       <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
-        <h1 className="heading3">{t("view_countrys")}</h1>
+        <h1 className="heading3">{t("view_country")}</h1>
 
         <div className="flex flex-col gap-10">
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("country_id")}
-              content={"44973"}
+              label={t("country_code")}
+              content={currentCountry.code}
               icon={<DocumentText />}
             />
             <GroupInfo
               label={t("country_name")}
-              content={"Country of Appreciation"}
+              content={currentCountry.name}
               copyIt
               icon={<ClipboardTick />}
             />
             <GroupInfo
               label={t("status")}
-              content={<Status status={"1"} />}
+              content={<Status status={currentCountry.isActive.toString()} />}
               icon={<StatusCheck />}
             />
           </div>
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("issue_date")}
-              content={"2024 / 12 / 11"}
-              icon={<CalendarTick />}
+              label={t("emoji")}
+              content={currentCountry.emoji}
+              icon={<DocumentText />}
             />
             <GroupInfo
-              label={t("expiry_date")}
-              content={"2026 / 12 / 11"}
-              icon={<CalendarRemove />}
+              label={t("phone_code")}
+              content={currentCountry.phoneCode}
+              icon={<DocumentText />}
             />
           </div>
-          <h3 className="heading3">{t("view_countrys")}</h3>
-          <Image
-            src="/images/cert-template.jpg"
-            alt="cert-template"
-            width={853}
-            height={627}
-            className="my-4"
-          />
         </div>
       </div>
     </div>

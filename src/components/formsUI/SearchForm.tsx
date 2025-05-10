@@ -2,12 +2,14 @@ import { Formik, Form } from "formik";
 import { useState } from "react";
 import Input from "./Input";
 import { SearchNormal } from "../ui/icons/SearchNormal";
+import { useTranslations } from "next-intl";
 
 interface SearchFormProps {
   onSearch: (searchTerm: string) => void; // Function to handle search
 }
 
 const SearchForm = ({ onSearch }: SearchFormProps) => {
+  const t = useTranslations('common');
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchSubmit = (values: { search: string }) => {
@@ -34,13 +36,9 @@ const SearchForm = ({ onSearch }: SearchFormProps) => {
           <Input
             type="text"
             required={false}
-            placeholder="Search..."
+            placeholder={t("search_placeholder")}
             value={values.search}
             iconSVG={<SearchNormal />}
-            // onChange={(e) => {
-            //   setFieldValue("search", e.target.value);
-            //   submitForm();
-            // }}
             onChange={(e) => {
               if (typeof e === "string") {
                 setFieldValue("search", e);

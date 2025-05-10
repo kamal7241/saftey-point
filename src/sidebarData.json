@@ -67,7 +67,7 @@
         { "name": "Currencies", "link": "/dashboard/presets/currencies" },
         { "name": "Locations", "link": "/dashboard/presets/locations" },
         { "name": "Partners", "link": "/dashboard/presets/partners" },
-        { "name": "Cancellations - Refunds", "link": "/dashboard/presets/cancellations-refunds" }
+        { "name": "Cancellations - Refunds", "link": "/dashboard/presets/cancellations-refunds", "comingSoon": true }
       ],
       "icon": "/images/icons/navbar/user-management.svg",
       "activeIcon": "/images/icons/navbar/user-management-active.svg"

@@ -10,6 +10,9 @@ import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
+import Popup from "../ui/Popup";
+import { Add } from "../ui/icons/Add";
+import NewCountryForm from "../forms/NewCountryForm";
 
 
 const Countries = () => {
@@ -17,18 +20,19 @@ const Countries = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [addPopupOpen, setAddPopupOpen] = useState(false);
 
   const [countries, setCountries] = useState<Country[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
 
+  const getCountries = async () => {
+    const response = await fetchCountries();
+    const data = await response.countries;
+    setCountries(data);
+  };
   useEffect(() => {
-    const getCountries = async () => {
-      const response = await fetchCountries();
-      const data = await response.countries;
-      setCountries(data);
-    };
 
     getCountries();
   }, []);
@@ -129,6 +133,16 @@ const Countries = () => {
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
+            <Button
+              label={t("buttons.add_country")}
+              onClick={() => setAddPopupOpen(true)}
+              icon={
+                <span className="inline-block w-6">
+                  <Add />
+                </span>
+              }
+              variant="primary"
+            />
 
             {/* Filters Button */}
             <Button
@@ -156,32 +170,27 @@ const Countries = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
-                name: "id",
-                placeholder: "Company ID",
+                label: "Code",
+                name: "code",
+                placeholder: t('search_by_code'),
               },
               {
                 type: "text",
                 label: "Name",
                 name: "name",
-                placeholder: "Name",
+                placeholder: t('search_by_name'),
               },
               {
-                type: "select",
-                label: "Status",
-                placeholder: "Status",
-                name: "status",
-                options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ],
+                type: "text",
+                label: "Phone Code",
+                name: "phoneCode",
+                placeholder: t('search_by_phone_code'),
               },
               {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: [],
+                type: "text",
+                label: "Emoji",
+                name: "emoji",
+                placeholder: t('search_by_emoji'),
               },
             ]}
             onApply={handleApplyFilters}
@@ -196,12 +205,27 @@ const Countries = () => {
             totalPages,
             onPageChange: handlePageChange,
           }}
-          sortable={true}
           rowsPerPage={10}
           renderRowActions={renderRowActions}
         />
       </div>
 
+
+      <Popup isOpen={addPopupOpen}
+        onClose={() => {
+          setAddPopupOpen(false);
+          getCountries();
+        }}
+      >
+        <NewCountryForm
+          title={t("add_country")}
+          sub_title={t("form_subtitle")}
+          onClose={() => {
+            setAddPopupOpen(false);
+            getCountries();
+          }}
+        />
+      </Popup>
     </div>
   );
 };

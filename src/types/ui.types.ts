@@ -131,6 +131,8 @@ export interface IndividualResponse {
     isVerified: boolean;
 }
 export interface Country {
+    isActive: boolean;
+    id: number;
     code: string;
     name: string;
     phoneCode: string;

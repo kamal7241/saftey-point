@@ -194,7 +194,7 @@ const Companies = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management/companies" },
+    { label: t("company-management"), href: "/dashboard/company-management" },
     { label: t("manage-companies"), href: "/dashboard/company-management/companies" },
   ];
 
@@ -334,7 +334,7 @@ const Companies = () => {
             onPageChange: (page) => setCurrentPage(page),
 
           }}
-          sortable={true}
+          
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}

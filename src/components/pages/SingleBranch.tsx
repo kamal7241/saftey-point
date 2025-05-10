@@ -134,18 +134,7 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
               }
               variant="primary"
             />
-            {/* <Button
-              label={t("buttons.reset_password")}
-              onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Lock />
-                </span>
-              }
-              variant="secondary"
-            /> */}
             <Button
-              // label={t("buttons.suspend")}
               label={t((mainData.status === "ACTIVE" || mainData.status == 1) ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={
@@ -153,7 +142,6 @@ export default function SingleBranch({ branchID, branchData }: SingleBranchProps
                   <Suspend />
                 </span>
               }
-              // variant="dark"
               variant={(mainData.status === "ACTIVE" || mainData.status == 1) ? "dark" : "success"}
             />
             <Button

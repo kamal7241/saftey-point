@@ -217,7 +217,7 @@ const StaffManagement = () => {
             onPageChange: (page) => setCurrentPage(page),
   
           }}
-          sortable={true}
+          
           rowsPerPage={10}
           renderRowActions={renderRowActions}
         />

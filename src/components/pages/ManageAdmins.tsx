@@ -284,7 +284,7 @@ const ManageAdmins = () => {
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: setCurrentPage,
           }}
-          sortable={true}
+          
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}

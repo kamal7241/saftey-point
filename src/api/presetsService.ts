@@ -24,6 +24,149 @@ export const fetchCountries = async (offset: number = 0, limit: number = 10) => 
     }
 };
 
+export const fetchCountryByCode = async (id: string) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries/${id}`
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            throw new Error("Failed to fetch country");
+        }
+
+        return {
+            success: result.success,
+            message: result.message,
+            data: result.innerData.country
+        };
+    } catch (error) {
+        console.error("Error fetching country:", error);
+        return {
+            success: false,
+            message: "Failed to fetch country",
+            data: null
+        };
+    }
+};
+interface CountryData {
+    name: string;
+    code: string;
+    phoneCode: string;
+    emoji?: string;
+}
+
+export const createCountry = async (data: CountryData) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries`,
+            {
+                method: 'POST',
+                headers: {
+                    'accept': '*/*',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            }
+        );
+        const result = await response.json();
+
+        if (!result.success) {
+            const errorMessage = result.message || "Failed to create country";
+            throw new Error(errorMessage);
+        }
+
+        return {
+            success: result.success,
+            message: result.message || "Country created successfully",
+            data: result.innerData
+        };
+    } catch (error: any) {
+        console.error("Error creating country:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred",
+            data: null
+        };
+    }
+};
+
+export const updateCountry = async (
+    id: number,
+    data: Partial<CountryData>
+) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries/${id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const errorMessage = result.message || "Failed to update country";
+            throw new Error(errorMessage);
+        }
+
+        return {
+            success: result.success,
+            message: result.message || "Country updated successfully",
+            data: result.innerData
+        };
+    } catch (error: any) {
+        console.error("Error updating country:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred",
+            data: null
+        };
+    }
+};
+export const toggleCountryStatus = async (id: number, isActive: boolean) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries/${id}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ isActive:isActive }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const errorMessage = result.message || "Failed to update country status";
+            throw new Error(errorMessage);
+        }
+
+        return {
+            success: result.success,
+            message: result.message || "Country status updated successfully",
+            data: result.innerData
+        };
+    } catch (error: any) {
+        console.error("Error updating country status:", error);
+        return {
+            success: false,
+            message: error.message || "An unexpected error occurred",
+            data: null
+        };
+    }
+};
+
+
+
 export const fetchCurrencies = async (offset: number = 0, limit: number = 10) => {
     try {
         const response = await fetch(
@@ -273,7 +416,6 @@ export const createFacility = async (data: FacilityData) => {
         const result = await response.json();
 
         if (!result.success) {
-            // Attempt to extract a more specific error message if available
             const errorMessage = result.message || (result.innerData && result.innerData.message) || "Failed to create facility";
             throw new Error(errorMessage);
         }
@@ -299,11 +441,7 @@ export const updateFacility = async (
     values: FacilityData,
     currentData: FacilityData
 ) => {
-    console.log("Updating facility:", currentData);
-    console.log("Updating facility values:", values);
     const apiData: Partial<FacilityData> = {};
-
-    // Compare fields and add to apiData if changed
     if (values.title !== currentData.title) {
         apiData.title = values.title;
     }
@@ -313,24 +451,18 @@ export const updateFacility = async (
     if (values.description !== currentData.description) {
         apiData.description = values.description;
     }
-    // Compare imageUrl, handling potential null/undefined values
     if (values.imageUrl !== currentData.imageUrl) {
-        // Ensure you handle the case where one is null/undefined and the other is an empty string if necessary
         apiData.imageUrl = values.imageUrl;
     }
 
-    // Corrected condition: Check if apiData is EMPTY
     if (Object.keys(apiData).length === 0) {
         console.log("No changes detected in facility data, skipping update.");
         return {
             success: false,
             message: "No changes detected.",
-            data: { facility: currentData } // Return current data as no update occurred
+            data: { facility: currentData }
         };
     }
-
-    // If we reach here, it means there are changes in apiData
-    console.log("Changes detected, proceeding with update:", apiData);
 
     try {
         const response = await fetch(

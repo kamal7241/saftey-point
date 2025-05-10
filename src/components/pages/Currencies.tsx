@@ -247,7 +247,7 @@ const Currencies = () => {
                         totalPages,
                         onPageChange: handlePageChange,
                     }}
-                    sortable={true}
+                    
                     rowsPerPage={10}
                     renderRowActions={renderRowActions}
                 />

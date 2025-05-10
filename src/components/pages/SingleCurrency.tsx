@@ -16,6 +16,7 @@ import MoneyIcon from "../ui/icons/MoneyIcon";
 import CodeIcon from "../ui/icons/CodeIcon";
 import StatusCheck from "../ui/icons/StatusCheck";
 import NewCurrencyForm from "../forms/NewCurrencyForm";
+import SomethingWentWrong from "../ui/SomethingWentWrong";
 
 interface SingleCurrencyProps {
     currencyData: Currency;
@@ -65,7 +66,7 @@ export default function SingleCurrency({ currencyData, currencyID }: SingleCurre
         { label: currencyDetails?.name || "", href: "#" },
     ];
 
-    if (!currencyDetails) return <div>{t("error_loading_data")}</div>;
+    if (!currencyDetails) return <SomethingWentWrong />;
     if (error) return <div>{error}</div>;
 
     return (

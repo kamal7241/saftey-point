@@ -9,9 +9,8 @@ import Button from "../ui/Button";
 import SuccessMessage from "../ui/SuccessMessage";
 import FileUploader from "../formsUI/FileUploader";
 
-// Define or import a type for a single facility
 interface SingleFacility {
-  id: number; // Assuming facility has an ID
+  id: number;
   title: string;
   titleArabic?: string;
   description: string;
@@ -22,7 +21,7 @@ interface NewFacilityFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
-  facilityData?: SingleFacility | null; // Add facilityData prop
+  facilityData?: SingleFacility | null;
 }
 
 interface FormValues {
@@ -32,7 +31,6 @@ interface FormValues {
   imageUrl: string | null;
 }
 
-// Validation Schema - Assuming it works for both add and edit
 const validationSchema = Yup.object({
   title: Yup.string().required("Required"),
   titleArabic: Yup.string(), // Optional
@@ -41,7 +39,7 @@ const validationSchema = Yup.object({
 });
 
 export default function NewFacilityForm({
-  title: propTitle, // Rename prop to avoid conflict
+  title: propTitle,
   sub_title,
   onClose,
   facilityData,
@@ -50,34 +48,31 @@ export default function NewFacilityForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [apiErrors, setApiErrors] = useState<string | null>(null);
 
-  // Determine title based on mode (add/edit)
   const formTitle =
     propTitle || (facilityData ? "Edit Facility" : "Add New Facility");
 
-  // Set initial values based on facilityData
   const initialValues = (facilityData as FormValues)
     ? {
-        title: facilityData?.title || "",
-        titleArabic: facilityData?.titleArabic || "",
-        description: facilityData?.description || "",
-        imageUrl: facilityData?.imageUrl || null,
-      }
+      title: facilityData?.title || "",
+      titleArabic: facilityData?.titleArabic || "",
+      description: facilityData?.description || "",
+      imageUrl: facilityData?.imageUrl || null,
+    }
     : {
-        title: "",
-        titleArabic: "",
-        description: "",
-        imageUrl: null,
-      };
+      title: "",
+      titleArabic: "",
+      description: "",
+      imageUrl: null,
+    };
 
   const handleSubmit = async (values: FormValues) => {
-console.log('values>>',values);
     const apiData: SingleFacility = {
-        title: values.title,
-        titleArabic: values.titleArabic,
-        description: values.description,
-        imageUrl: values.imageUrl??"",
-        id: facilityData?.id || 0,
-      };
+      title: values.title,
+      titleArabic: values.titleArabic,
+      description: values.description,
+      imageUrl: values.imageUrl ?? "",
+      id: facilityData?.id || 0,
+    };
 
     setApiErrors(null);
 
@@ -91,22 +86,17 @@ console.log('values>>',values);
           imageUrl: facilityData.imageUrl,
           id: facilityData.id,
         };
-        // Update existing facility, passing currentData
         result = await updateFacility(facilityData.id, apiData, currentData);
       } else {
-        // Create new facility
         result = await createFacility(apiData);
       }
-console.log('result>>',result);
-      // Handle result based on succes
       if (result.success) {
         setIsSubmitted(true);
       } else {
         setApiErrors(
           result.message ||
-            `An error occurred while ${
-              facilityData ? "updating" : "creating"
-            } the facility.`
+          `An error occurred while ${facilityData ? "updating" : "creating"
+          } the facility.`
         );
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -120,9 +110,8 @@ console.log('result>>',result);
       <div className="py-10">
         <SuccessMessage
           title={facilityData ? "Successfully Updated" : "Successfully Added"}
-          msg={`Facility has been ${
-            facilityData ? "updated" : "created"
-          } successfully!`}
+          msg={`Facility has been ${facilityData ? "updated" : "created"
+            } successfully!`}
           bigger
         />
         <div className="flex justify-center mt-4">
@@ -164,7 +153,7 @@ console.log('result>>',result);
                 onChange={handleChange}
                 // onBlur={handleBlur}
                 name="title"
-                // error={touched.title && errors.title}
+              // error={touched.title && errors.title}
               />
               <ErrorMessage
                 name="title"
@@ -182,7 +171,7 @@ console.log('result>>',result);
                 onChange={handleChange}
                 // onBlur={handleBlur}
                 name="titleArabic"
-                // error={touched.titleArabic && errors.titleArabic}
+              // error={touched.titleArabic && errors.titleArabic}
               />
               <ErrorMessage
                 name="titleArabic"
@@ -199,7 +188,7 @@ console.log('result>>',result);
                 value={values.description}
                 onChange={handleChange}
                 name="description"
-                // error={touched.description && errors.description}
+              // error={touched.description && errors.description}
               />
               <ErrorMessage
                 name="description"

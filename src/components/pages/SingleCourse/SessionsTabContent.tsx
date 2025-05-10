@@ -124,7 +124,7 @@ export default function SessionsTabContent({
             }}
           />
         )}
-        sortable={true}
+        
       />
 
       {showEditPopup && currentSession && (

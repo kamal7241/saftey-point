@@ -21,6 +21,7 @@ import NewCompanyForm from "../forms/NewCompanyForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
 import { fetchComapnyById } from "@/api/companiesService";
 import { showToast } from "@/utils/toast";
+import SomethingWentWrong from "../ui/SomethingWentWrong";
 
 interface SingleCompanyProps {
   companyData: SingleCompany;
@@ -110,19 +111,18 @@ export default function SingleCompany({ companyData, companyID }: SingleCompanyP
   };
 
   const handleSuspendCancel = () => {
-      setShowSuspendConfirm(false);
+    setShowSuspendConfirm(false);
   };
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management" },
+    { label: t("company-management"), href: "/dashboard/company-management/companies" },
     {
       label: t("manage-companies"),
       href: "/dashboard/company-management/manage-companies",
     },
   ];
 
-  if (!userData) return <div>{t("error_loading_data")}</div>;
-  if (error) return <div>{error}</div>;
+  if (!userData || error) return <SomethingWentWrong />;
   return (
     <div className="h-full">
       <Popup isOpen={addPopupOpen} onClose={handleClose}>

@@ -148,7 +148,7 @@ const Table = <T extends { image?: string }>({
                 {renderRowActions && (
                   <th className="px-3 py-[18px] text-start border-b border-light-100">
                     <span className="text-sm font-medium font-Cairo text-primary capitalize">
-                      Actions
+                      {t('actions')}
                     </span>
                   </th>
                 )}

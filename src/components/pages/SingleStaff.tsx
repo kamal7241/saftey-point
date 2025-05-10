@@ -21,6 +21,7 @@ import Status from "../ui/Status";
 import Note from "../ui/icons/Note";
 import Teacher from "../ui/icons/Teacher";
 import NewStaffForm from "../forms/NewStaffForm";
+import SomethingWentWrong from "../ui/SomethingWentWrong";
 
 interface SingleStaffProps {
   staffData: SingleStaff;
@@ -58,7 +59,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
     },
   ];
 
-  if (!userData) return <div>{t("error_loading_data")}</div>;
+  if (!userData) return <SomethingWentWrong />;
   return (
     <div className="h-full">
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>

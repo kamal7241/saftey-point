@@ -13,6 +13,7 @@ type SidebarItem = {
   children?: SidebarItem[];
   icon?: string;
   activeIcon?: string;
+  comingSoon?: boolean;
 };
 const toTranslationKey = (name: string) =>
   name
@@ -93,6 +94,7 @@ const Sidebar = () => {
       );
 
       const isOpen = openItems[item.name] ?? false;
+      const isComingSoon = item.comingSoon;
       return (
         <li key={item.name} className="relative whitespace-nowrap">
           {item.children && item.children.length > 0 ? (
@@ -111,6 +113,14 @@ const Sidebar = () => {
                 <ArrowDown />
               </span>
             </button>
+          ) : isComingSoon ? (
+            <div
+              className="w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-1 cursor-not-allowed opacity-60 text-xs"
+              title="Coming Soon"
+            >
+              {renderMenuItem(item, false, false)}
+              <span className="ms-2 text-[10px] bg-gray-200 rounded px-2 py-0.5 whitespace-nowrap">Coming Soon</span>
+            </div>
           ) : (
             <Link
               href={item.link}

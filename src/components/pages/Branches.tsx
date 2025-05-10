@@ -177,7 +177,7 @@ const Branches = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management/companies" },
+    { label: t("company-management"), href: "/dashboard/company-management" },
     { label: t("manage-branches"), href: "/dashboard/company-management/branches" },
   ];
 
@@ -286,7 +286,7 @@ const Branches = () => {
             totalPages,
             onPageChange: handlePageChange,
           }}
-          sortable={true}
+          
           rowsPerPage={10}
           renderRowActions={renderRowActions}
         />

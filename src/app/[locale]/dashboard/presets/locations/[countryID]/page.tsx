@@ -1,4 +1,5 @@
 export const runtime = "edge";
+import { fetchCountryByCode } from "@/api/presetsService";
 import SingleCountry from "@/components/pages/SingleCountry";
 
 export default async function Page({
@@ -7,5 +8,6 @@ export default async function Page({
   params: Promise<{ countryID: string }>;
 }) {
   const countryID = (await params).countryID;
-  return <SingleCountry countryID={countryID} />;
+  const response = await fetchCountryByCode(countryID);
+  return <SingleCountry countryID={countryID} countryData={response.data} />;
 }

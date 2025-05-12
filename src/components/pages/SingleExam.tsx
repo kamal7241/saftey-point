@@ -1,14 +1,10 @@
 "use client";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import { Delete } from "../ui/icons/Delete";
 import DocumentText from "../ui/icons/DocumentText";
 import Edit2 from "../ui/icons/Edit2";
-import Lock from "../ui/icons/Lock";
-import Suspend from "../ui/icons/Suspend";
 
 interface SingleExamProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -19,10 +15,10 @@ interface SingleExamProps {
 export default function SingleExam({ examID, examData }: SingleExamProps) {
   const t = useTranslations("common");
 
-  const [addPopupOpen, setAddPopupOpen] = useState(false);
+  // const [addPopupOpen, setAddPopupOpen] = useState(false);
 
   console.log("examID", examID);
-  console.log("addPopupOpen", addPopupOpen);
+  // console.log("addPopupOpen", addPopupOpen);
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },

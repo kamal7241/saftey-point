@@ -99,7 +99,7 @@
     "name": "name",
     "dashboard": "Dashboard",
     "role": "Role",
-    "search_by_code":"Search by Code",
+    "search_by_code": "Search by Code",
     "search_by_name": "Search by Name",
     "search_by_phone_code": "Search by Phone Code",
     "search_by_emoji": "Search by Emoji",
@@ -155,7 +155,7 @@
     "front_id": "Front ID",
     "back_id": "Back ID",
     "total_companies": "Total Companies",
-    "approved_companies": "Approved Companies", 
+    "approved_companies": "Approved Companies",
     "suspended_companies": "Suspended Companies",
     "inactive_companies": "Inactive Companies",
     "add_branch": "Add Branch",
@@ -168,7 +168,7 @@
     "discount_amount": "Discount Amount",
     "is_active": "Is Active",
     "max_usage": "Maximum Usage",
-    "minimum_order_amount": "Minimum Order Amount", 
+    "minimum_order_amount": "Minimum Order Amount",
     "maximum_discount_amount": "Maximum Discount Amount",
     "role_details": "Role Details",
     "logo": "Logo",
@@ -481,7 +481,8 @@
     },
     "validity": {
       "required": "Validity date is required",
-      "futureDate": "Validity date must be in the future"
+      "futureDate": "Validity date must be in the future",
+      "pastDate": "Validity date must be in the past"
     },
     "courseCover": {
       "required": "Course cover is required"
@@ -558,6 +559,81 @@
           "required": "End time is required"
         }
       }
+    },
+    "firstName": {
+      "name": "First Name",
+      "required": "First name is required",
+      "placeholder": "Enter first name"
+    },
+    "lastName": {
+      "name": "Last Name",
+      "required": "Last name is required",
+      "placeholder": "Enter last name"
+    },
+    "userType": {
+      "name": "User Type",
+      "required": "User type is required",
+      "placeholder": "Select user type"
+    },
+    "email": {
+      "name": "Email",
+      "required": "Email is required",
+      "placeholder": "Enter email address"
+    },
+    "phoneNumber": {
+      "name": "Phone Number",
+      "required": "Phone number is required",
+      "placeholder": "Enter phone number"
+    },
+    "nationalId": {
+      "name": "National ID",
+      "required": "National ID is required",
+      "placeholder": "Enter national ID"
+    },
+    "passport": {
+      "name": "Passport"
+    },
+    "identityType": {
+      "name": "Identity Type",
+      "required": "Identity type is required",
+      "placeholder": "Select identity type"
+    },
+    "password": {
+      "name": "Password",
+      "required": "Password is required",
+      "letters": "Password must contain at least one letter",
+      "numbers": "Password must contain at least one number",
+      "placeholder": "Enter password"
+    },
+    "nationalIdExpiry": {
+      "name": "National ID Expiry Date",
+      "required": "National ID expiry date is required",
+      "placeholder": "Select expiry date"
+    },
+    "nationality": {
+      "name": "Nationality",
+      "required": "Nationality is required",
+      "placeholder": "Select nationality"
+    },
+    "birthday": {
+      "name": "Birthday",
+      "required": "Birthday is required",
+      "placeholder": "Select birthday"
+    },
+    "nationalIdFront": {
+      "name": "National ID Front Image",
+      "required": "National ID front image is required",
+      "placeholder": "Upload front image"
+    },
+    "nationalIdBack": {
+      "name": "National ID Back Image",
+      "required": "National ID back image is required",
+      "placeholder": "Upload back image"
+    },
+    "jobTitle": {
+      "name": "Job Title",
+      "required": "Job Title is required",
+      "placeholder": "Enter job title"
     }
   },
   "messages": {
@@ -585,7 +661,7 @@
     "password_reset_success": "Password reset successfully!",
     "error_resetting_password": "Error resetting password",
     "admin_suspended_successfully": "Admin suspended successfully",
-    "admin_activated_successfully": "Admin activated successfully", 
+    "admin_activated_successfully": "Admin activated successfully",
     "error_updating_status": "Error updating status",
     "admin_deleted_successfully": "Admin deleted successfully",
     "error_deleting_admin": "Error deleting admin",
@@ -608,7 +684,7 @@
     "error_updating_exam": "Error updating exam",
     "session_added_successfully": "Session added successfully",
     "error_adding_session": "Error adding session",
-    "session_updated_successfully": "Session updated successfully", 
+    "session_updated_successfully": "Session updated successfully",
     "error_updating_session": "Error updating session"
   }
 }

@@ -228,9 +228,9 @@ export default function NewUserForm({
             </div>
             <div className="col-span-2">
               <Input
-                label="First Name"
+                label={tValidation('firstName.name')}
                 type="text"
-                placeholder="First Name"
+                placeholder={tValidation('firstName.name')}
                 value={values.firstName}
                 onChange={handleChange}
                 name="firstName"
@@ -243,9 +243,9 @@ export default function NewUserForm({
             </div>
             <div className="col-span-2">
               <Input
-                label="Last Name"
+                label={tValidation('lastName.name')}
                 type="text"
-                placeholder="Last Name"
+                placeholder={tValidation('lastName.name')}
                 value={values.lastName}
                 onChange={handleChange}
                 name="lastName"
@@ -259,7 +259,7 @@ export default function NewUserForm({
             {/* type */}
             <div className="col-span-2">
               <SelectField
-                label={tTable("user_type")}
+                label={tValidation('userType.name')}
                 name="type"
                 value={values.type}
                 onChange={(name, value) => setFieldValue(name, value)}
@@ -322,11 +322,11 @@ export default function NewUserForm({
             {values.type && (
               <div className="col-span-4">
                 <RadioField
-                  label="Identity Type"
+                  label={tValidation('identityType.name')}
                   name="identityType"
                   options={[
-                    { value: "national_id", label: "National ID" },
-                    { value: "passport", label: "Passport" },
+                    { value: "national_id", label: tValidation('nationalId.name') },
+                    { value: "passport", label: tValidation('passport.name') },
                   ]}
                   selectedValue={values.identityType}
                   onChange={handleChange}
@@ -341,9 +341,9 @@ export default function NewUserForm({
             {/* National ID */}
             <div className="col-span-4">
               <Input
-                label="National ID"
+                label={tValidation('nationalId.name')}
                 type="text"
-                placeholder="Enter National ID"
+                placeholder={tValidation('nationalId.placeholder')}
                 value={values.nationalId}
                 onChange={handleChange}
                 name="nationalId"
@@ -358,7 +358,7 @@ export default function NewUserForm({
             <div className="col-span-2">
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdFront", file)}
-                label="National ID Front"
+                label={tValidation('nationalIdFront.name')}
                 subdirName="user"
                 small
                 initialImageUrl={
@@ -377,7 +377,7 @@ export default function NewUserForm({
             <div className="col-span-2">
               <FileUploader
                 onChange={(file) => setFieldValue("nationalIdBack", file)}
-                label="National ID Back"
+                label={tValidation('nationalIdBack.name')}
                 subdirName="user"
                 small
                 initialImageUrl={
@@ -395,9 +395,9 @@ export default function NewUserForm({
             {/* Nationality */}
             <div className="col-span-2">
               <Input
-                label="Nationality"
+                label={tValidation('nationality.name')}
                 type="text"
-                placeholder="Enter Nationality"
+                placeholder={tValidation('nationality.placeholder')}
                 value={values.nationality}
                 onChange={handleChange}
                 name="nationality"
@@ -410,9 +410,9 @@ export default function NewUserForm({
             </div>
             <div className="col-span-2">
               <Input
-                label={tTable("expiry_date")}
+                label={tValidation('nationalIdExpiry.name')}
                 type="date"
-                placeholder="Enter Expiry Date"
+                placeholder={tValidation('nationalIdExpiry.placeholder')}
                 value={values.nationalIdExpiry}
                 onChange={(value) => {
                   if (typeof value === "string") {
@@ -434,9 +434,9 @@ export default function NewUserForm({
 
             <div className="col-span-4">
               <Input
-                label="Birthday"
+                label={tValidation('birthday.name')}
                 type="date"
-                placeholder="Enter Birthday"
+                placeholder={tValidation('birthday.placeholder')}
                 value={values.birthday}
                 onChange={(value) => {
                   if (typeof value === "string") {
@@ -457,9 +457,9 @@ export default function NewUserForm({
             </div>
             <div className="col-span-4">
               <Input
-                label="Job Title"
+                label={tValidation('jobTitle.name')}
                 type="text"
-                placeholder="Job Title"
+                placeholder={tValidation('jobTitle.name')}
                 value={values.jobTitle}
                 onChange={handleChange}
                 name="jobTitle"
@@ -474,9 +474,9 @@ export default function NewUserForm({
             {/* Email */}
             <div className="col-span-2">
               <Input
-                label="Email"
+                label={tValidation('email.name')}
                 type="email"
-                placeholder="Enter email address"
+                placeholder={tValidation('email.placeholder')}
                 value={values.email}
                 onChange={handleChange}
                 name="email"
@@ -490,9 +490,9 @@ export default function NewUserForm({
             {/* Phone Number */}
             <div className="col-span-2">
               <Input
-                label="Phone Number"
+                label={tValidation('phoneNumber.name')}
                 type="text"
-                placeholder="Enter phone number"
+                placeholder={tValidation('phoneNumber.placeholder')}
                 value={values.phoneNumber}
                 onChange={handleChange}
                 name="phoneNumber"
@@ -507,9 +507,9 @@ export default function NewUserForm({
               <>
                 <div className="col-span-3">
                   <Input
-                    label="Password"
+                    label={tValidation('password.name')}
                     type="password"
-                    placeholder="Enter password or generate one"
+                    placeholder={tValidation('password.placeholder')}
                     value={values.password}
                     onChange={handleChange}
                     name="password"

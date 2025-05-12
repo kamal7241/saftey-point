@@ -22,26 +22,26 @@ export const editCompanyValidationSchema = Yup.object({
 // export const addUserValidationSchema = Yup.object({
 export const addUserValidationSchema = (t: (key: string) => string) => {
   return Yup.object({
-    firstName: Yup.string().required("First Name is required"),
-    lastName: Yup.string().required("Last Name is required"),
-    type: Yup.string().required("Type is required"),
-    status: Yup.string().required("Status is required"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
-    phoneNumber: Yup.string().required("Phone number is required"),
-    nationalId: Yup.string().required("National ID is required"),
-    identityType: Yup.string().required("Identity Type is required"),
+    firstName: Yup.string().required(t("firstName.required")),
+    lastName: Yup.string().required(t("lastName.required")),
+    type: Yup.string().required(t("type.required")),
+    status: Yup.string().required(t("status.required")),
+    email: Yup.string().email(t("invalid_type")).required(t("email.required")),
+    phoneNumber: Yup.string().required(t("phoneNumber.required")),
+    nationalId: Yup.string().required(t("nationalId.required")),
+    identityType: Yup.string().required(t("identityType.required")),
     password: Yup.string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters")
-      .matches(/[a-zA-Z]/, "Password can only contain letters")
-      .matches(/[0-9]/, "Password must contain a number"),
-    nationalIdExpiry: Yup.date().required("National ID Expiry is required")
+      .required(t("password.required"))
+      .min(8, t("password_min_length"))
+      .matches(/[a-zA-Z]/, t("password.letters"))
+      .matches(/[0-9]/, t("password.numbers")),
+    nationalIdExpiry: Yup.date().required(t("nationalIdExpiry.required"))
       .min(new Date(), t("validity.futureDate")),
-    nationality: Yup.string().required("Nationality is required"),
-    birthday: Yup.date().required("Birthday is required")
+    nationality: Yup.string().required(t("nationality.required")),
+    birthday: Yup.date().required(t("birthday.required"))
       .max(new Date(), t("validity.pastDate")),
-    nationalIdFront: Yup.mixed().required("National ID Front is required"),
-    nationalIdBack: Yup.mixed().required("National ID Back is required"),
+    nationalIdFront: Yup.mixed().required(t("nationalIdFront.required")),
+    nationalIdBack: Yup.mixed().required(t("nationalIdBack.required")),
   });
 };
 
@@ -64,21 +64,23 @@ export const addStaffValidationSchema = Yup.object({
 });
 
 
-export const editUserValidationSchema = Yup.object({
-  firstName: Yup.string().required("First Name is required"),
-  lastName: Yup.string().required("Last Name is required"),
-  type: Yup.string().required("Type is required"),
-  status: Yup.string().required("Status is required"),
-  email: Yup.string().email("Invalid email format").required("Email is required"),
-  phoneNumber: Yup.string().required("Phone number is required"),
-  nationalId: Yup.string().required("National ID is required"),
-  identityType: Yup.string().required("Identity Type is required"),
-  nationalIdExpiry: Yup.date().required("National ID Expiry is required"),
-  nationality: Yup.string().required("Nationality is required"),
-  birthday: Yup.date().required("Birthday is required"),
-  nationalIdFront: Yup.mixed().required("National ID Front is required"),
-  nationalIdBack: Yup.mixed().required("National ID Back is required"),
-});
+export const editUserValidationSchema = (t: (key: string) => string) => {
+  return Yup.object({
+    firstName: Yup.string().required(t("firstName.required")),
+    lastName: Yup.string().required(t("lastName.required")),
+    type: Yup.string().required(t("userType.required")),
+    status: Yup.string().required(t("status.required")),
+    email: Yup.string().email(t("invalid_type")).required(t("email.required")),
+    phoneNumber: Yup.string().required(t("phoneNumber.required")),
+    nationalId: Yup.string().required(t("nationalId.required")),
+    identityType: Yup.string().required(t("identityType.required")),
+    nationalIdExpiry: Yup.date().required(t("nationalIdExpiry.required")),
+    nationality: Yup.string().required(t("nationality.required")),
+    birthday: Yup.date().required(t("birthday.required")),
+    nationalIdFront: Yup.mixed().required(t("nationalIdFront.required")),
+    nationalIdBack: Yup.mixed().required(t("nationalIdBack.required")),
+  });
+};
 
 export const addBranchValidationSchema = Yup.object({
   name: Yup.string().required("Name is required"),

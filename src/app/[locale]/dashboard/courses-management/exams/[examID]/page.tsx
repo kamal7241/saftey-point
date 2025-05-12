@@ -1,4 +1,5 @@
 export const runtime = "edge";
+import { fetchExamById } from "@/api/courseService";
 import SingleExam from "@/components/pages/SingleExam";
 
 export default async function Page({
@@ -7,5 +8,6 @@ export default async function Page({
   params: Promise<{ examID: string }>;
 }) {
   const examID = (await params).examID;
-  return <SingleExam examID={examID} />;
+  const response = await fetchExamById(examID);
+  return <SingleExam examData={response.data} examID={examID} />;
 }

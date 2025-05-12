@@ -2,7 +2,6 @@
 "use client";
 import { fetchExams } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
@@ -14,7 +13,6 @@ import Eye from "../ui/icons/Eye";
 
 const Exams = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -117,22 +115,15 @@ const Exams = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/user-management/exams/${row.id}`}
       />
     </div>
   );
 
-  const handleView = (id: number) => {
-    router.push(`/dashboard/user-management/exams/${id}`);
-
-  };
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("user-management"), href: "/dashboard/user-management" },
-    {
-      label: t("exams"),
-      href: "/dashboard/user-management/exams",
-    },
+    { label: t("exams"), href: "/dashboard/user-management/exams" },
   ];
 
   return (

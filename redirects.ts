@@ -11,11 +11,6 @@ export const redirects = async () => {
         permanent: true,
       },
       {
-        source: '/dashboard/user-management',
-        destination: '/dashboard/user-management/users',
-        permanent: true,
-      },
-      {
         source: '/dashboard/courses-management',
         destination: '/dashboard/courses-management/list',
         permanent: true,

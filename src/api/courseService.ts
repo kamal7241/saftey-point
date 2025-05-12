@@ -461,6 +461,32 @@ export const fetchCoursePricing = async (courseId: number): Promise<PricingItem[
   }
 };
 
+export const fetchExamById = async (id: string) => {
+  try {
+      const response = await fetch(
+          `${process.env.NEXT_PUBLIC_URL}/api/v1/exams/${id}`
+      );
+      const result = await response.json();
+
+      if (!result.success) {
+          throw new Error("Failed to fetch exam");
+      }
+
+      return {
+          success: result.success,
+          message: result.message,
+          data: result.innerData
+      };
+  } catch (error) {
+      console.error("Error fetching exam:", error);
+      return {
+          success: false,
+          message: "Failed to fetch exam",
+          data: null
+      };
+  }
+};
+
 export const fetchCourseExams = async (courseId: number): Promise<CourseExam[] | null> => {
   try {
     const response = await fetch(

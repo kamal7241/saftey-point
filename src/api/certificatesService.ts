@@ -42,7 +42,8 @@ export const createCertificate = async (certificateData: any) => {
         validTo: formatDate(certificateData.validTo),
         issueDate: formatDate(certificateData.issueDate),
         displaySource: certificateData.displayScore === 'yes',
-        watermark: certificateData.watermark === 'yes'
+        watermark: certificateData.watermark === 'yes',
+        courseId: certificateData.courseId
     };
     try {
         const response = await fetch(

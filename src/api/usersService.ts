@@ -174,7 +174,7 @@ export const fetchUsers = async (offset: number = 0, limit: number = 10) => {
                 id: individual.id,
                 name: `${individual.firstName} ${individual.lastName}`,
                 email: individual.email,
-                status: individual.status === "ACTIVE" ? "1" : "0",
+                status: individual.isVerified ? "1" : "0",
                 type: individual.userType,
                 phone: individual.phone,
                 image: individual.avatar.startsWith('http') 
@@ -256,6 +256,42 @@ export const toggleUserVerification = async (userId: number, isVerified: boolean
                 body: JSON.stringify({
                     user: {
                         isVerified: isVerified
+                    }
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update user verification status");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating user verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const toggleUserStatus = async (userId: number, status: string) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${userId}`,
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user: {
+                        status: status
                     }
                 }),
             }

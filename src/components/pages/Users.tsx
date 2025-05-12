@@ -1,8 +1,8 @@
 "use client";
 import { deleteIndividual, fetchUsers, toggleUserVerification } from "@/api/usersService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { SingleUser } from "@/types/ui.types";
+import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import NewUserForm from "../forms/NewUserForm";
@@ -17,13 +17,11 @@ import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 import Switcher from "../ui/SmallSwitcher";
-import { showToast } from "@/utils/toast";
 
 
 const Users = () => {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -146,14 +144,14 @@ const Users = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/user-management/users/${row.id}`}
       />
       <Button
         icon={<Edit />}
         noBackground={true}
         textColor="gray-900"
         noLabel={true}
-        onClick={() => handleEdit(row.id)}
+        href={`/dashboard/user-management/users/${row.id}`}
       />
       <Button
         icon={<Delete />}
@@ -167,18 +165,6 @@ const Users = () => {
       />
     </div>
   );
-
-  const handleView = (id: number) => {
-    console.log("Viewing user with ID:", id);
-    router.push(`/dashboard/user-management/users/${id}`);
-
-  };
-
-  const handleEdit = (id: number) => {
-    console.log("Editing user with ID:", id);
-    router.push(`/dashboard/user-management/users/${id}`);
-  };
-
 
   const handleDelete = async () => {
     if (!userToDelete) return;
@@ -209,10 +195,10 @@ const Users = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("user-management"), href: "/user-management" },
+    { label: t("user-management"), href: "/dashboard/user-management" },
     {
       label: t("users"),
-      href: "/user-management/users",
+      href: "/dashboard/user-management/users",
     },
   ];
 

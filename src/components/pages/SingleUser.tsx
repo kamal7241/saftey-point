@@ -1,5 +1,5 @@
 "use client";
-import { deleteIndividual, fetchUserById, resetUserPassword, toggleUserVerification } from "@/api/usersService";
+import { deleteIndividual, fetchUserById, resetUserPassword, toggleUserStatus, toggleUserVerification } from "@/api/usersService";
 import { IndividualResponse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -41,6 +41,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
   const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+  const [showStatusConfirm, setShowStatusConfirm] = useState(false);
   const router = useRouter();
 
   const getUserData = useCallback(async () => {
@@ -126,6 +127,33 @@ export default function SingleUser({ userID }: SingleUserProps) {
   const handleSuspendCancel = () => {
     setShowSuspendConfirm(false);
   };
+  const handleStatusCancel = () => {
+    setShowStatusConfirm(false);
+  };
+  const handleToggleStatus = async () => {
+    try {
+      const result = await toggleUserStatus(
+        Number(userData?.id),
+        userData?.status === "ACTIVE" ? "INACTIVE" : "ACTIVE"
+      );
+      if (result.success) {
+        const newData = await fetchUserById(Number(userID));
+        setUserData(newData);
+        showToast.success(tMsgs(
+          userData?.status === "ACTIVE"
+            ? "user_suspended_successfully"
+            : "user_activated_successfully"
+        ));
+      } else {
+        setError(result.error || "Failed to update user status");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+    setShowStatusConfirm(false);
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -199,6 +227,23 @@ export default function SingleUser({ userID }: SingleUserProps) {
           </div>
         </Popup>
       )}
+      {showStatusConfirm && (
+        <Popup isOpen={showStatusConfirm} onClose={handleStatusCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t(userData?.status === "ACTIVE" ? "are_you_sure_suspend" : "are_you_sure_activate")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleToggleStatus} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleStatusCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("user_details")}
@@ -222,6 +267,12 @@ export default function SingleUser({ userID }: SingleUserProps) {
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
             />
+            {/* <Button
+              label={t(userData?.status === "ACTIVE" ? "buttons.deactivate" : "buttons.activate")}
+              onClick={() => setShowStatusConfirm(true)}
+              icon={<span className="inline-block w-6"><Suspend /></span>}
+              variant="dark"
+            /> */}
             <Button
               label={t("buttons.delete")}
               onClick={() => setShowDeleteConfirm(true)}
@@ -290,14 +341,15 @@ export default function SingleUser({ userID }: SingleUserProps) {
                 icon={<Buildings2 />}
               />
             )}
+            {/* <GroupInfo
+              label={t("status")}
+              content={<Status status={userData?.status.toString() ?? ""} />
+              }
+              icon={<StatusCheck />}
+            /> */}
             <GroupInfo
               label={t("status")}
-              content={
-                userData?.status === "ACTIVE" ? (
-                  <Status status={"1"} />
-                ) : (
-                  <Status status={"0"} />
-                )
+              content={<Status status={userData?.isVerified.toString() ?? ""} />
               }
               icon={<StatusCheck />}
             />

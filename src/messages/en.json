@@ -309,6 +309,7 @@
     "no_sessions_found": "no sessions found",
     "corporates_address": "Corporates Address",
     "add_country": "Add Country",
+    "isVerified": "Verified",
     "question_type": {
       "name": "Question Type",
       "mcq": "Multiple Choice",
@@ -402,6 +403,7 @@
       "add": "Add",
       "add_facility": "Add Facility",
       "activate": "Activate",
+      "deactivate": "Deactivate",
       "add_question": "Add Question",
       "edit_question": "Edit Question",
       "create_exam": "Create Exam",

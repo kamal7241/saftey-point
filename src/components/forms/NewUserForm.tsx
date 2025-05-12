@@ -16,6 +16,7 @@ import RadioField from "../formsUI/RadioField";
 import { submitIndividual, updateIndividual } from "@/api/usersService";
 import { Individual, IndividualResponse } from "@/types/ui.types";
 import { generateStrongPassword } from "@/utils/passwordGenerator";
+import Calendar from "../ui/icons/Calendar";
 
 interface NewUserFormProps {
   title?: string;
@@ -50,6 +51,7 @@ export default function NewUserForm({
 }: NewUserFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
+  const tValidation = useTranslations("validation");
 
   const initialValues: FormValues = userData
     ? {
@@ -64,7 +66,7 @@ export default function NewUserForm({
       identityType: userData.identityType.toLowerCase() || "national_id",
       password: "",
       avatar: userData.avatar || "avatar.png",
-      nationalIdExpiry: userData.nationalIdExpiry || "2025-01-01",
+      nationalIdExpiry: userData.nationalIdExpiry,
       nationality: userData.countryId || "",
       birthday: userData.birthday || "",
       nationalIdFront: userData.nationalIdFront || "",
@@ -82,7 +84,7 @@ export default function NewUserForm({
       identityType: "national_id",
       password: "",
       avatar: "",
-      nationalIdExpiry: "2025-01-01",
+      nationalIdExpiry: "",
       nationality: "",
       birthday: "",
       nationalIdFront: "",
@@ -200,7 +202,7 @@ export default function NewUserForm({
         validationSchema={
           userData && userData.id
             ? editUserValidationSchema
-            : addUserValidationSchema
+            : addUserValidationSchema(tValidation)
         }
         onSubmit={handleSubmit}
       >
@@ -412,8 +414,16 @@ export default function NewUserForm({
                 type="date"
                 placeholder="Enter Expiry Date"
                 value={values.nationalIdExpiry}
-                onChange={handleChange}
+                onChange={(value) => {
+                  if (typeof value === "string") {
+                    setFieldValue("nationalIdExpiry", value);
+                  } else if (value instanceof Date) {
+                    setFieldValue("nationalIdExpiry", value.toISOString());
+                  }
+                }}
                 name="nationalIdExpiry"
+                iconEnd={true}
+                iconSVG={<Calendar />}
               />
               <ErrorMessage
                 name="nationalIdExpiry"
@@ -428,8 +438,16 @@ export default function NewUserForm({
                 type="date"
                 placeholder="Enter Birthday"
                 value={values.birthday}
-                onChange={handleChange}
+                onChange={(value) => {
+                  if (typeof value === "string") {
+                    setFieldValue("birthday", value);
+                  } else if (value instanceof Date) {
+                    setFieldValue("birthday", value.toISOString());
+                  }
+                }}
                 name="birthday"
+                iconEnd={true}
+                iconSVG={<Calendar />}
               />
               <ErrorMessage
                 name="birthday"

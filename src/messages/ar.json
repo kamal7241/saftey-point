@@ -309,6 +309,7 @@
     "no_sessions_found": "لم يتم العثور على جلسات",
     "corporates_address": "عنوان الشركات",
     "add_country": "أضف دولة",
+    "isVerified": "تم التحقق منه",
     "question_type": {
       "name": "نوع السؤال",
       "mcq": "الاختيار من متعدد",
@@ -402,6 +403,7 @@
       "add": "يضيف",
       "add_facility": "إضافة منشأة",
       "activate": "فعل",
+      "deactivate": "إلغاء التنشيط",
       "add_question": "أضف سؤالا",
       "edit_question": "تعديل السؤال",
       "create_exam": "إنشاء امتحان",

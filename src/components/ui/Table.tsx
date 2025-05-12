@@ -41,6 +41,7 @@ const Table = <T extends { image?: string }>({
   isLoading = false,
 }: TableProps<T>) => {
   const t = useTranslations("tables");
+  const tCommon = useTranslations("common");
   const [sortConfig, setSortConfig] = useState<{
     key: keyof T | null;
     direction: "asc" | "desc" | null;
@@ -186,6 +187,10 @@ const Table = <T extends { image?: string }>({
                       ) : column.accessor === "website" ? (
                         <div>
                           <a href={String(row[column.accessor])} target="_blank" className="lowercase underline">{String(row[column.accessor])}</a>
+                        </div>
+                      ) : column.header === "user_type" ? (
+                        <div>
+                          <span>{tCommon(`user_type.${String(row[column.accessor]).toLowerCase()}`)}</span>
                         </div>
                       ) : Array.isArray(row[column.accessor]) ? (
                         (row[column.accessor] as string[]).join(", ")

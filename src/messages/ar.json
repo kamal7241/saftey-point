@@ -310,6 +310,7 @@
     "corporates_address": "عنوان الشركات",
     "add_country": "أضف دولة",
     "isVerified": "تم التحقق منه",
+    "user_id":"ID المستخدم",
     "question_type": {
       "name": "نوع السؤال",
       "mcq": "الاختيار من متعدد",

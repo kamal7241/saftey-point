@@ -310,6 +310,7 @@
     "corporates_address": "Corporates Address",
     "add_country": "Add Country",
     "isVerified": "Verified",
+    "user_id":"User ID",
     "question_type": {
       "name": "Question Type",
       "mcq": "Multiple Choice",

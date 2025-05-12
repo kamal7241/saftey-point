@@ -270,32 +270,25 @@ const Users = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
+                label: t("user_id"),
                 name: "id",
-                placeholder: "Company ID",
+                placeholder: t("user_id"),
               },
               {
                 type: "text",
-                label: "Name",
+                label: t("name"),
                 name: "name",
-                placeholder: "Name",
+                placeholder: t("name"),
               },
               {
                 type: "select",
-                label: "Status",
-                placeholder: "Status",
+                label: t("status"),
+                placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
+                  { value: "1", label: t('user_status.active') },
+                  { value: "0", label: t('user_status.inactive') },
                 ],
-              },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: [],
               },
             ]}
             onApply={handleApplyFilters}

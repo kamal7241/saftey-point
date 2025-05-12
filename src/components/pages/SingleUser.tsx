@@ -319,7 +319,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
               label={t("userType")}
-              content={userData?.userType}
+              content={t(`user_type.${userData?.userType.toLowerCase()}`)}
               icon={<UserSquare />}
             />
             {userData?.userType !== "INDIVIDUAL" && (

@@ -26,7 +26,7 @@ const Switcher = ({ isChecked, onChange }: SwitcherProps) => {
       >
         <span
           className={`w-2/4 aspect-square rounded-full bg-white duration-200 ${
-            isChecked ? "translate-x-full" : ""
+            isChecked ? "ltr:translate-x-full rtl:-translate-x-full" : ""
           }`}
         ></span>
       </span>

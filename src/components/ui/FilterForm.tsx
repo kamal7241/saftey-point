@@ -99,9 +99,10 @@ const FilterForm: React.FC<FilterFormProps> = ({
                 name={field.name}
                 value={formState[field.name] ?? ""}
                 options={field.options ?? []}
-                onChange={(selectedValue) =>
-                  handleChange(field.name, selectedValue)
-                }
+                onChange={(name, value) => handleChange(name, value)}
+                // onChange={(selectedValue) =>
+                //   handleChange(formState[field.name], selectedValue)
+                // }
                 placeholder={field.placeholder ?? ""}
                 extraClass="w-full px-4 py-3 h-[48px]"
               />

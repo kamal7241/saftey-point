@@ -41,7 +41,11 @@ export const addUserValidationSchema = (t: (key: string) => string) => {
     birthday: Yup.date().required(t("birthday.required"))
       .max(new Date(), t("validity.pastDate")),
     nationalIdFront: Yup.mixed().required(t("nationalIdFront.required")),
-    nationalIdBack: Yup.mixed().required(t("nationalIdBack.required")),
+    nationalIdBack: Yup.mixed().when('identityType', {
+      is: 'national_id',
+      then: (schema) => schema.required(t("nationalIdBack.required")),
+      otherwise: (schema) => schema
+    }),
   });
 };
 

@@ -76,7 +76,7 @@ export default function NewUserForm({
       firstName: "",
       lastName: "",
       jobTitle: "",
-      type: "",
+      type: "individual",
       status: "",
       email: "",
       phoneNumber: "",
@@ -107,13 +107,17 @@ export default function NewUserForm({
     const mappedValues: Individual = {
       identityType: values.identityType,
       nationalId: values.nationalId,
-      nationalIdExpiry: values.nationalIdExpiry,
+      nationalIdExpiry: values?.nationalIdExpiry
+        ? new Date(values.nationalIdExpiry).toISOString().slice(0, 10)
+        : "",
       nationalIdFront: values.nationalIdFront,
       nationalIdBack: values.nationalIdBack,
       nationality: values.nationality,
-      birthday: values.birthday,
+      birthday: values?.birthday
+        ? new Date(values.birthday).toISOString().slice(0, 10)
+        : "",
       status: values.status || "pending",
-      userType: values.type,
+      userType: values.type || "individual",
       user: {
         id: userData?.userId || 0,
         firstName: values.firstName,
@@ -130,13 +134,13 @@ export default function NewUserForm({
     const currentData: Individual = {
       identityType: userData?.identityType || "",
       nationalId: userData?.nationalId || "",
-      nationalIdExpiry: userData?.nationalIdExpiry || "",
+      nationalIdExpiry: userData?.nationalIdExpiry ? userData.nationalIdExpiry.split("T")[0] : "",
       nationalIdFront: userData?.nationalIdFront || "",
       nationalIdBack: userData?.nationalIdBack || "",
       nationality: userData?.countryId || "",
-      birthday: userData?.birthday || "",
+      birthday: userData?.birthday ? userData.birthday.split("T")[0] : "",
       status: userData?.status || "",
-      userType: userData?.userType || "",
+      userType: userData?.userType || "individual",
       user: {
         id: userData?.userId || 0,
         firstName: userData?.firstName || "",
@@ -201,7 +205,7 @@ export default function NewUserForm({
         initialValues={initialValues}
         validationSchema={
           userData && userData.id
-            ? editUserValidationSchema
+            ? editUserValidationSchema(tValidation)
             : addUserValidationSchema(tValidation)
         }
         onSubmit={handleSubmit}
@@ -319,7 +323,7 @@ export default function NewUserForm({
               </div>
             )}
             {/* Identity Type */}
-            {values.type && (
+            {values.type === "individual" && (
               <div className="col-span-4">
                 <RadioField
                   label={tValidation('identityType.name')}
@@ -328,7 +332,7 @@ export default function NewUserForm({
                     { value: "national_id", label: tValidation('nationalId.name') },
                     { value: "passport", label: tValidation('passport.name') },
                   ]}
-                  selectedValue={values.identityType}
+                  selectedValue={values.identityType ?? "national_id"}
                   onChange={handleChange}
                 />
                 <ErrorMessage
@@ -373,25 +377,26 @@ export default function NewUserForm({
                 className="text-xs text-red-500"
               />
             </div>
-            {/* National ID Back */}
-            <div className="col-span-2">
-              <FileUploader
-                onChange={(file) => setFieldValue("nationalIdBack", file)}
-                label={tValidation('nationalIdBack.name')}
-                subdirName="user"
-                small
-                initialImageUrl={
-                  userData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`
-                    : null
-                }
-              />
-              <ErrorMessage
-                name="nationalIdBack"
-                component="div"
-                className="text-xs text-red-500"
-              />
-            </div>
+            {values.identityType === "national_id" && (
+              <div className="col-span-2">
+                <FileUploader
+                  onChange={(file) => setFieldValue("nationalIdBack", file)}
+                  label={tValidation('nationalIdBack.name')}
+                  subdirName="user"
+                  small
+                  initialImageUrl={
+                    userData
+                      ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.nationalIdBack}`
+                      : null
+                  }
+                />
+                <ErrorMessage
+                  name="nationalIdBack"
+                  component="div"
+                  className="text-xs text-red-500"
+                />
+              </div>
+            )}
             {/* Nationality */}
             <div className="col-span-2">
               <Input

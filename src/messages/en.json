@@ -243,6 +243,7 @@
     "examType": "Exam Type",
     "examDuration": "Exam Duration",
     "examName": "Exam Name",
+    "examId": "Exam ID",
     "passMarks": "Pass Marks",
     "totalMarks": "Total Marks",
     "instructions": "Instructions",

@@ -1,9 +1,9 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { useState, useCallback, useEffect } from "react";
-import { useRouter } from "@/i18n/routing"; // Added useRouter
-import { fetchFacilityById, deleteFacility } from "@/api/presetsService"; // Assuming these API functions exist
-import { showToast } from "@/utils/toast"; // Added showToast
+import { useRouter } from "@/i18n/routing";
+import { fetchFacilityById, deleteFacility } from "@/api/presetsService";
+import { showToast } from "@/utils/toast";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
@@ -11,13 +11,10 @@ import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
 import Note from "../ui/icons/Note";
-import StatusCheck from "../ui/icons/StatusCheck";
 import Popup from "../ui/Popup";
-import Status from "../ui/Status";
-import NewFacilityForm from "../forms/NewFacilityForm"; // Assuming this form component exists
+import NewFacilityForm from "../forms/NewFacilityForm";
 import ImageWithFallback from "../ui/ImageWithFallback";
 
-// Define a more specific type for facility data if possible
 interface Facility {
   id: number;
   title: string;
@@ -191,13 +188,13 @@ const SingleFacility = ({ facilityData, facilityID }: SingleFacilityProps) => {
               content={currentFacilityData.description}
               icon={<Note />}
             />
-            <GroupInfo
+            {/* <GroupInfo
               label={t("status")}
               content={
                 <Status status={currentFacilityData.deletedAt ? "0" : "1"} />
               }
               icon={<StatusCheck />}
-            />
+            /> */}
           </div>
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo

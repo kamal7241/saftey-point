@@ -355,13 +355,13 @@ export default function RoleView({ roleId }: SingleRoleProps) {
                 icon={<Buildings2 />}
               />
               <GroupInfo
-                label={t("description")} // Added description display
+                label={t("description")}
                 content={roleData.description}
-                icon={<Task />} // Using Task icon, adjust if needed
+                icon={<Task />}
               />
               <GroupInfo
                 label={t("status")}
-                content={<Status status={"1"} />} // Assuming status is always active for view
+                content={<Status status={"1"} />}
                 icon={<StatusCheck />}
               />
               {/* <GroupInfo label={t("role")} content={roleData.key} icon={<Task />} /> */}

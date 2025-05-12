@@ -166,32 +166,21 @@ const Exams = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
+                label: t('examId'),
                 name: "id",
-                placeholder: "Company ID",
+                placeholder: t('examId'),
               },
               {
                 type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
+                label: t('examName'),
+                name: "title",
+                placeholder: t('examName'),
               },
               {
-                type: "select",
-                label: "Status",
-                placeholder: "Status",
-                name: "status",
-                options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ],
-              },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: [],
+                type: "text",
+                label: t('examType'),
+                name: "examType",
+                placeholder: t('examType'),
               },
             ]}
             onApply={handleApplyFilters}
@@ -206,7 +195,7 @@ const Exams = () => {
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: (page) => setCurrentPage(page),
           }}
-          
+
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}

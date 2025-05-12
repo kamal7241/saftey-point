@@ -43,7 +43,7 @@ const Branches = () => {
 
     const formattedDates = uniqueDates.map((date) => {
       const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
-      return { value: date, label: formattedDate };
+      return { value: formattedDate, label: formattedDate };
     });
 
     setCreatedOptions(formattedDates as { value: string; label: string }[]);

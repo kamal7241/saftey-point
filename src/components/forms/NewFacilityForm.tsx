@@ -204,7 +204,7 @@ export default function NewFacilityForm({
                   label={t("logo")}
                   note={t("fileuploader_note")}
                   initialImageUrl={
-                    facilityData
+                    facilityData && facilityData.imageUrl
                       ? `${process.env.NEXT_PUBLIC_URL}/${facilityData && facilityData.imageUrl}`
                       : null
                   }

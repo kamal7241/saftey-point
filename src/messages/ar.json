@@ -243,6 +243,7 @@
     "examType": "نوع الامتحان",
     "examDuration": "مدة الامتحان",
     "examName": "اسم الامتحان",
+    "examId": "ID الامتحان",
     "passMarks": "علامات المرور",
     "totalMarks": "إجمالي علامات",
     "instructions": "تعليمات",

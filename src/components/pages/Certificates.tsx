@@ -1,24 +1,21 @@
 "use client";
+import { fetchCertificates } from "@/api/certificatesService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { SingleCertificate } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import NewCertificateForm from "../forms/NewCertificateForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
+import { Add } from "../ui/icons/Add";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
-import { fetchCertificates } from "@/api/certificatesService";
-import { Add } from "../ui/icons/Add";
 import Popup from "../ui/Popup";
-import NewCertificateForm from "../forms/NewCertificateForm";
 
 const Certificates = () => {
   const t = useTranslations("common");
-  // const tMsgs = useTranslations("messages");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -109,15 +106,11 @@ const Certificates = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/user-management/certificates/${row.id}`}
       />
     </div>
   );
 
-  const handleView = (id: number) => {
-    console.log("Viewing certificate with ID:", id);
-    router.push(`/dashboard/user-management/certificates/${id}`);
-  };
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("user-management"), href: "/dashboard/user-management" },
@@ -217,10 +210,10 @@ const Certificates = () => {
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: (page) => setCurrentPage(page),
           }}
-          
           rowsPerPage={10}
           renderRowActions={renderRowActions}
           isLoading={loading}
+          // sortable
         />
       </div>
 

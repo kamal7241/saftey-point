@@ -131,7 +131,7 @@ const Rewards = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        href={`/dashboard/courses-management/rewards/${row.code}`}
+        href={`/dashboard/courses-management/rewards/${row.id}`}
       />
     </div>
   );

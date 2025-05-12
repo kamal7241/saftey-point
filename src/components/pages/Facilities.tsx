@@ -1,9 +1,10 @@
 "use client";
 import { fetchFacilities } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
+import NewFacilityForm from "../forms/NewFacilityForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -12,7 +13,6 @@ import { Add } from "../ui/icons/Add";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-import NewFacilityForm from "../forms/NewFacilityForm";
 
 interface Facility {
   id: number;
@@ -24,12 +24,10 @@ interface Facility {
   createdAt: string;
   updatedAt?: string;
   deletedAt?: string | null;
-  status?: string;
 }
 
 const Facilities = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   // const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,24 +39,36 @@ const Facilities = () => {
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
   const limit = 10;
   const getFacilities = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchFacilities(offset, limit);
-    console.log("response", response);
+    const data = await response.innerData.facilities;
     if (response.success) {
       setFacilities(
         response.innerData.facilities.map((facility: Facility) => ({
           ...facility,
           name: facility.title,
           image: facility.imageUrl,
-          createdAt: new Date(facility.createdAt).toDateString(),
+          createdAt: format(new Date(facility.createdAt as string), "yyyy / MM / dd"),
           status: facility.deletedAt ? "0" : "1", // Set status based on deletedAt
         }))
       );
       setTotalCount(response.innerData.count);
+
+      const uniqueDates = Array.from(
+        new Set(data.map((item: Facility) => item.createdAt))
+      );
+  
+      const formattedDates = uniqueDates.map((date) => {
+        const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
+        return { value: formattedDate, label: formattedDate };
+      });
+  
+      setCreatedOptions(formattedDates as { value: string; label: string }[]);
     }
     setLoading(false);
   };
@@ -86,7 +96,6 @@ const Facilities = () => {
     { header: "name", accessor: "title" },
     { header: "description", accessor: "description" },
     { header: "created", accessor: "createdAt" },
-    { header: "status", accessor: "status" },
   ];
 
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -97,8 +106,33 @@ const Facilities = () => {
     setFilters({});
   };
 
-  const handleView = (id: number) => {
-    router.push(`/dashboard/presets/facility/${id}`);
+
+  const handleExport = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        [
+          "ID",
+          "Name",
+          "Description",
+          "Created At",
+        ],
+        ...filteredFacilities.map((c) => [
+          c.id,
+          c.title,
+          c.description,
+          c.createdAt,
+        ]),
+      ]
+        .map((row) => row.join(","))
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Facilities.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const renderRowActions = (row: Facility) => (
@@ -108,7 +142,7 @@ const Facilities = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        href={`/dashboard/presets/facility/${row.id}`}
       />
     </div>
   );
@@ -143,7 +177,7 @@ const Facilities = () => {
             />
             <Button
               label={t("buttons.export")}
-              onClick={() => {}}
+              onClick={handleExport}
               variant="dark"
               icon={
                 <span className="w-6 inline-block">
@@ -165,13 +199,10 @@ const Facilities = () => {
               },
               {
                 type: "select",
-                label: "Status",
-                name: "isActive",
-                placeholder: "Status",
-                options: [
-                  { value: "true", label: "Active" },
-                  { value: "false", label: "Inactive" },
-                ],
+                label: "Created",
+                placeholder: "Created",
+                name: "createdAt",
+                options: createdOptions,
               },
             ]}
             onApply={handleApplyFilters}

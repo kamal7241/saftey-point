@@ -6,6 +6,7 @@ import Image from "next/image";
 interface Option {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 interface SelectFieldProps {
@@ -76,7 +77,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
             >
               <option value="">{placeholder}</option>
               {options.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.value} value={option.value} disabled={option.disabled}>
                   {option.label}
                 </option>
               ))}
@@ -108,14 +109,16 @@ const SelectField: React.FC<SelectFieldProps> = ({
                 filteredOptions.map((option) => (
                   <li
                     key={option.value}
-                    className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer gap-2.5 text-gray-600"
-                    onClick={() => handleOptionClick(option.value)}
+                    className={`flex items-center px-3 py-2 gap-2.5 text-gray-600 ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer'}`}
+                    onClick={() => !option.disabled && handleOptionClick(option.value)}
+                    aria-disabled={option.disabled}
                   >
                     <input
                       type="checkbox"
                       checked={value === option.value}
                       readOnly
                       className="peer hidden"
+                      disabled={option.disabled}
                     />
                     <Image
                       src="/images/icons/checkbox.svg"

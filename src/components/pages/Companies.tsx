@@ -1,5 +1,6 @@
 "use client";
 import Table from "@/components/ui/Table";
+import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
@@ -38,14 +39,27 @@ const Companies = () => {
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState<number | null>(null);
+  const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
   const limit = 10;
   const getUsers = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchCompanies(offset, limit);
+    const data = await response.companies;
     setCompanies(response.companies);
     setTotalCount(response.totalCount);
+
+    const uniqueDates = Array.from(
+      new Set(data.map((item: Company) => item.created))
+    );
+
+    const formattedDates = uniqueDates.map((date) => {
+      const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
+      return { value: formattedDate, label: formattedDate };
+    });
+
+    setCreatedOptions(formattedDates as { value: string; label: string }[]);
     setLoading(false);
   };
   useEffect(() => {
@@ -56,15 +70,21 @@ const Companies = () => {
     const matchesSearch = company.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+  
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-      return company[key as keyof Company]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
+  
+      const companyValue = company[key as keyof Company];
+      if (typeof companyValue === 'string') {
+        return companyValue.toLowerCase() === value.toLowerCase(); // Exact match for strings
+      }
+  
+      return companyValue?.toString().toLowerCase() === value.toLowerCase(); // Fallback for other types
     });
+  
     return matchesSearch && matchesFilters;
   });
+  
 
   const columns: { header: string; accessor: keyof Company }[] = [
     { header: "company_id", accessor: "id" },
@@ -116,13 +136,13 @@ const Companies = () => {
     document.body.removeChild(link);
   };
 
-  const handleToggleVerification = async (companyId: number, isVerified: boolean) => {
+  const handleToggleVerification = async (companyId: number, status: string) => {
     try {
-      const result = await toggleCompanyVerification(companyId, isVerified);
+      const result = await toggleCompanyVerification(companyId, (status === "ACTIVE") ? "INACTIVE" : "ACTIVE",);
       if (result.success) {
 
         showToast.success(tMsgs(
-          isVerified
+          (status === "ACTIVE")
             ? "company_suspended_successfully"
             : "company_activated_successfully"
         ));
@@ -139,8 +159,8 @@ const Companies = () => {
     <div className="flex gap-2">
 
       <Switcher
-        isChecked={row.isVerified ?? false}
-        onChange={(checked) => handleToggleVerification(row.id, checked)}
+        isChecked={(row.status === "ACTIVE")}
+        onChange={() => handleToggleVerification(row.id, row.status.toString())}
       />
       <Button
         icon={<Eye />}
@@ -234,19 +254,19 @@ const Companies = () => {
         <StatsCard
           icon={<ClipboardTick />}
           color="success"
-          number={companies.filter(c => c.isVerified).length}
+          number={companies.filter(c => c.status==="ACTIVE").length}
           name={t("approved_companies")}
         />
         <StatsCard
           icon={<TimerEmpty />}
           color="warning"
-          number={companies.filter(c => !c.isVerified).length}
+          number={companies.filter(c => c.status==="SUSPENDED").length}
           name={t("suspended_companies")}
         />
         <StatsCard
           icon={<ClipboardClose />}
           color="red"
-          number={companies.filter(c => c.status === "0").length}
+          number={companies.filter(c => c.status === "INACTIVE").length}
           name={t("inactive_companies")}
         />
       </div>
@@ -309,17 +329,19 @@ const Companies = () => {
                 placeholder: "Status",
                 name: "status",
                 options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
+                  { value: "ACTIVE", label: t("user_status.active") },
+                  { value: "INACTIVE", label: t("user_status.inactive") },
+                  { value: "PENDING", label: t("user_status.pending") },
+                  { value: "SUSPENDED", label: t("user_status.suspended") },
                 ],
               },
-              // {
-              //   type: "select",
-              //   label: "Created",
-              //   placeholder: "Created",
-              //   name: "created",
-              //   options: createdOptions,
-              // },
+              {
+                type: "select",
+                label: "Created",
+                placeholder: "Created",
+                name: "createdAt",
+                options: createdOptions,
+              },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}
@@ -334,7 +356,7 @@ const Companies = () => {
             onPageChange: (page) => setCurrentPage(page),
 
           }}
-          
+
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}

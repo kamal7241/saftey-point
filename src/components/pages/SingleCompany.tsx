@@ -89,7 +89,8 @@ export default function SingleCompany({ companyData, companyID }: SingleCompanyP
     try {
       const result = await toggleCompanyVerification(
         Number(userData?.id),
-        !userData?.user.isVerified
+        // userData?.status
+        (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
       );
       if (result.success) {
         const newData = await fetchComapnyById(companyID);
@@ -263,11 +264,7 @@ export default function SingleCompany({ companyData, companyID }: SingleCompanyP
           <GroupInfo
             label={t("status")}
             content={
-              userData?.status === "ACTIVE" ? (
-                <Status status={"1"} />
-              ) : (
-                <Status status={"0"} />
-              )
+              <Status status={userData.status.toString()} />
             }
             icon={<StatusCheck />}
           />

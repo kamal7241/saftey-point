@@ -30,7 +30,7 @@ export interface Company {
     id: number;
     name: string;
     location: string;
-    status: string;
+    status: string | number;
     branches: number;
     employees: number;
     created?: string;
@@ -212,7 +212,7 @@ export interface SingleCourse {
 
 
 export interface SingleCompany {
-    id?: number;
+    id: number;
     status: string;
     userType: string;
     image?: string;

@@ -42,7 +42,7 @@ export default function NewCompanyForm({
   const initialValues: FormValues = companyData
     ? {
       companyName: companyData.user.firstName,
-      status: companyData.status.toLowerCase(),
+      status: companyData.status,
       email: companyData.user.email,
       phoneNumber: companyData.user.phone,
       password: "",
@@ -170,7 +170,7 @@ export default function NewCompanyForm({
                 label={t("logo_company")}
                 note={t("fileuploader_note")}
                 initialImageUrl={
-                  companyData
+                  companyData && companyData.user.avatar
                     ? `${process.env.NEXT_PUBLIC_URL}/${companyData.user.avatar}`
                     : null
                 }
@@ -199,14 +199,14 @@ export default function NewCompanyForm({
               <SelectField
                 label={tTable("status")}
                 name="status"
-                value={values.status}
+                value={companyData ? values.status:"active"}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "active", label: t("company_status.active") },
-                  { value: "inactive", label: t("company_status.inactive") },
-                  { value: "pending", label: t("company_status.pending") },
-                  { value: "suspended", label: t("company_status.suspended") },
-                  { value: "expired", label: t("company_status.expired") },
+                  { value: "inactive", label: t("company_status.inactive"), disabled: !companyData },
+                  { value: "pending", label: t("company_status.pending"), disabled: !companyData  },
+                  { value: "suspended", label: t("company_status.suspended"), disabled: !companyData  },
+                  { value: "expired", label: t("company_status.expired"), disabled: !companyData  },
                 ]}
                 customDropdown
               />

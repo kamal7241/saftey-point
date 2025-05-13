@@ -41,10 +41,11 @@ export const fetchCompanies = async (offset: number = 0, limit: number = 10) => 
 
         return {
             companies: result.innerData.companies.map((company: any) => ({
-                id: company.user.id,
-                name: `${company.user.firstName} ${company.user.lastName}`,
+                id: company.id,
+                created: `${company.createdAt}`,
+                name: `${company.name}`,
                 email: company.user.email,
-                status: company.status === "ACTIVE" ? "1" : "0",
+                status: company.status,
                 type: company.userType,
                 phone: company.user.phone,
                 isVerified: company.user.isVerified,
@@ -210,7 +211,7 @@ export const resetCompanyPassword = async (
     }
 };
 
-export const toggleCompanyVerification = async (companyId: number, isVerified: boolean) => {
+export const toggleCompanyVerification = async (companyId: number, status: string) => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/company/${companyId}`,
@@ -221,9 +222,7 @@ export const toggleCompanyVerification = async (companyId: number, isVerified: b
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user: {
-                        isVerified: isVerified
-                    }
+                    status: status
                 }),
             }
         );

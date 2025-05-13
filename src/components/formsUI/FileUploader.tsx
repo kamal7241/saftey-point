@@ -6,6 +6,7 @@ import Image from "next/image";
 import UploadImg from "../ui/icons/UploadImg";
 import AttachCircle from "../ui/icons/AttachCircle";
 import Spinner from "../ui/icons/Spinner";
+import ImageWithFallback from "../ui/ImageWithFallback";
 
 interface FileUploaderProps {
   label?: string;
@@ -17,7 +18,7 @@ interface FileUploaderProps {
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
-  label = "Logo Company",
+  label = "Logo",
   note = "Click on the image to change it. Note: Choose only JPG, PNG images and no more than 5MB in size.",
   onChange,
   subdirName = "common",
@@ -48,9 +49,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       console.log("Upload response:", result);
 
       if (response.ok && result.success && result.innerData?.fileName) {
-        const fullFileUrl = `${BASE_URL}${
-          result.innerData.fileName?.startsWith("/") ? "" : "/"
-        }${result.innerData.fileName}`;
+        const fullFileUrl = `${BASE_URL}${result.innerData.fileName?.startsWith("/") ? "" : "/"
+          }${result.innerData.fileName}`;
         setFileUrl(fullFileUrl);
         if (onChange) {
           onChange(result.innerData?.fileName);
@@ -91,15 +91,13 @@ const FileUploader: React.FC<FileUploaderProps> = ({
 
   return (
     <div
-      className={`relative ${
-        small
+      className={`relative ${small
           ? "rounded-lg text-gray-300 border border-gray-200 px-3 py-auto mt-[26px] leading-[50px]"
           : "rounded-lg border border-dashed border-opacity-30 border-gray-300 p-4"
-      } ${
-        dragging
+        } ${dragging
           ? "bg-opacity-75 bg-gray-200"
           : "bg-opacity-30 bg-gray-201 hover:bg-opacity-60"
-      }`}
+        }`}
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -166,12 +164,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <div className="flex items-center gap-3">
           {fileUrl ? (
             <div className="relative h-20 w-20 flex-none overflow-hidden">
-              <Image
+              {/* <Image
                 src={`${fileUrl}`}
                 alt="Safety Image Uploaded file"
                 fill
                 className="h-full w-full cursor-pointer rounded-full object-cover"
                 onClick={triggerFileInput}
+              /> */}
+              <ImageWithFallback
+                src={`${fileUrl}`}
+                alt="Safety Image Uploaded file"
+                width={70}
+                height={70}
+                className="rounded-full object-cover w-20 h-20"
               />
             </div>
           ) : (

@@ -101,10 +101,11 @@ export default function SingleUser({ userID }: SingleUserProps) {
 
   const handleToggleVerification = async () => {
     try {
-      const result = await toggleUserVerification(
-        Number(userData?.id),
-        !userData?.isVerified
-      );
+      // const result = await toggleUserVerification(
+      //   Number(userData?.id),
+      //   !userData?.isVerified
+      // );
+      const result = await toggleUserVerification(Number(userData?.id), (userData?.status.toLowerCase() === "active") ? "INACTIVE" : "ACTIVE");
       if (result.success) {
         const newData = await fetchUserById(Number(userID));
         setUserData(newData);

@@ -166,33 +166,29 @@ const Certificates = () => {
             fields={[
               {
                 type: "text",
-                label: "Company ID",
+                label: t("certificate_id"),
                 name: "id",
-                placeholder: "Company ID",
+                placeholder: t("certificate_id"),
               },
               {
                 type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
+                label: t("name"),
+                name: "title",
+                placeholder: t("name"),
               },
               {
-                type: "select",
-                label: "Status",
-                placeholder: "Status",
-                name: "status",
-                options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ],
+                type: "text",
+                label: t("course_id"),
+                name: "courseId",
+                placeholder: t("course_id"),
               },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "created",
-                options: [],
-              },
+              // {
+              //   type: "select",
+              //   label: "Created",
+              //   placeholder: "Created",
+              //   name: "created",
+              //   options: [],
+              // },
             ]}
             onApply={handleApplyFilters}
             onReset={handleResetFilters}

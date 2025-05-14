@@ -174,7 +174,7 @@ export const fetchUsers = async (offset: number = 0, limit: number = 10) => {
                 id: individual.id,
                 name: `${individual.firstName} ${individual.lastName}`,
                 email: individual.email,
-                status: individual.isVerified ? "1" : "0",
+                status: individual.status,
                 type: individual.userType,
                 phone: individual.phone,
                 image: individual.avatar.startsWith('http') 
@@ -243,7 +243,7 @@ export const resetUserPassword = async (userId: number, newPassword: string) => 
     }
 };
 
-export const toggleUserVerification = async (userId: number, isVerified: boolean) => {
+export const toggleUserVerification = async (userId: number, status: string) => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/individual/${userId}`,
@@ -254,8 +254,8 @@ export const toggleUserVerification = async (userId: number, isVerified: boolean
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    user: {
-                        isVerified: isVerified
+                    individual: {
+                        status: status
                     }
                 }),
             }

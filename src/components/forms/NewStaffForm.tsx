@@ -1,8 +1,8 @@
 "use client";
-import { submitStaff, updateStaff } from "@/api/dashboardService";
+import { submitStaff, updateStaff } from "@/api/staffService";
 import Input from "@/components/formsUI/Input";
 import { SingleStaff } from "@/types/ui.types";
-import { addStaffValidationSchema } from "@/utils/validation/dashboardValidation";
+import { addStaffValidationSchema, editStaffValidationSchema } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -50,7 +50,7 @@ export default function NewStaffForm({
       phoneNumber: userData.user.phone || "",
       password: "",
       resume: null,
-      role: "",
+      role: userData.userType,
       avatar: userData.user.avatar,
     }
     : {
@@ -76,12 +76,10 @@ export default function NewStaffForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [apiErrors, setApiErrors] = useState<string | null>(null);
   const handleSubmit = async (values: FormValues) => {
-    console.log("Form Submitted:", values);
-
     const mappedValues: SingleStaff = {
       resume: values.resume ?? "",
       status: values.status || "pending",
-      userType: "ADMIN",
+      userType: values.role || "staff",
       user: {
         id: userData ? userData.user.id : 0,
         firstName: values.firstName,
@@ -100,8 +98,6 @@ export default function NewStaffForm({
     } else {
       result = await submitStaff(mappedValues);
     }
-
-    console.log("result>>>", result);
     if (result && result.success === true) {
       setIsSubmitted(true);
       setApiErrors(null);
@@ -141,7 +137,7 @@ export default function NewStaffForm({
 
       <Formik
         initialValues={initialValues}
-        validationSchema={addStaffValidationSchema}
+        validationSchema={userData ? editStaffValidationSchema : addStaffValidationSchema}
         onSubmit={handleSubmit}
       >
         {({ values, handleChange, setFieldValue }) => (
@@ -205,7 +201,7 @@ export default function NewStaffForm({
               <SelectField
                 label={tTable("role")}
                 name="role"
-                value={values.role}
+                value={values.role.toLowerCase()}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "admin", label: t("user_role.admin") },
@@ -226,7 +222,7 @@ export default function NewStaffForm({
               <SelectField
                 label={tTable("status")}
                 name="status"
-                value={values.status}
+                value={values.status.toLowerCase()}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "active", label: t("user_status.active") },
@@ -295,32 +291,35 @@ export default function NewStaffForm({
                 className="text-xs text-red-500"
               />
             </div>
-
-            <div className="col-span-3">
-              <Input
-                label="Password"
-                type="password"
-                placeholder="Enter password or generate one"
-                value={values.password}
-                onChange={handleChange}
-                name="password"
-              />
-            </div>
-            <div className="col-span-1 self-end">
-              <Button
-                label={t("buttons.generate")}
-                onClick={() => handleGeneratePassword(setFieldValue)}
-                type="button"
-                variant="dark"
-                padding="px-4 py-2.5"
-                textSize="text-base w-full"
-              />
-            </div>
-            <div className="col-span-4">
-              <ErrorMessage name="password">
-                {(msg) => <ErrorMessageWrappers msg={msg} />}
-              </ErrorMessage>
-            </div>
+            {!userData && (
+              <>
+                <div className="col-span-3">
+                  <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter password or generate one"
+                    value={values.password}
+                    onChange={handleChange}
+                    name="password"
+                  />
+                </div>
+                <div className="col-span-1 self-end">
+                  <Button
+                    label={t("buttons.generate")}
+                    onClick={() => handleGeneratePassword(setFieldValue)}
+                    type="button"
+                    variant="dark"
+                    padding="px-4 py-2.5"
+                    textSize="text-base w-full"
+                  />
+                </div>
+                <div className="col-span-4">
+                  <ErrorMessage name="password">
+                    {(msg) => <ErrorMessageWrappers msg={msg} />}
+                  </ErrorMessage>
+                </div>
+              </>
+            )}
             <div className="col-span-4 flex justify-end gap-4">
               <Button
                 label={t("buttons.close")}

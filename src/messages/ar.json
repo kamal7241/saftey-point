@@ -312,6 +312,7 @@
     "corporates_address": "عنوان الشركات",
     "add_country": "أضف دولة",
     "isVerified": "تم التحقق منه",
+    "edit_staff": "تعديل الموظف",
     "user_id":"ID المستخدم",
     "question_type": {
       "name": "نوع السؤال",

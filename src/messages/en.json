@@ -125,6 +125,7 @@
     "course": "Course",
     "view_certificates": "View Certificates",
     "certificate_id": "Certificate ID",
+    "course_id": "Course ID",
     "certificate_name": "Certificate Name",
     "issue_date": "Issue Date",
     "expiry_date": "Expiry Date",
@@ -312,6 +313,7 @@
     "corporates_address": "Corporates Address",
     "add_country": "Add Country",
     "isVerified": "Verified",
+    "edit_staff": "Edit Staff",
     "user_id":"User ID",
     "question_type": {
       "name": "Question Type",

@@ -80,6 +80,9 @@ const Users = () => {
     setFilters({});
   };
   const handleExport = () => {
+    const startIdx = (currentPage - 1) * limit;
+    const endIdx = startIdx + limit;
+    const paginatedUsers = filteredUsers.slice(startIdx, endIdx);
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
@@ -88,16 +91,18 @@ const Users = () => {
           "Name",
           "Status",
           "Email",
-          "Employees",
-          "Created",
+          "Phone Number",
+          "User Type",
+          "Identity Type",
         ],
-        ...filteredUsers.map((c) => [
+        ...paginatedUsers.map((c) => [
           c.id,
           c.name,
           c.status,
           c.email,
-          // c.employees,
-          // c.created,
+          c.phone,
+          c.type,
+          c.identityType,
         ]),
       ]
         .map((row) => row.join(","))
@@ -111,20 +116,16 @@ const Users = () => {
     document.body.removeChild(link);
   };
 
-  const handleToggleVerification = async (userId: number, isVerified: boolean) => {
+  const handleToggleVerification = async (userId: number, status: string) => {
     try {
-      const result = await toggleUserVerification(userId, isVerified);
+      const result = await toggleUserVerification(userId, (status === "ACTIVE") ? "INACTIVE" : "ACTIVE");
       if (result.success) {
         showToast.success(tMsgs(
-          isVerified
+          status === "ACTIVE"
             ? "user_suspended_successfully"
             : "user_activated_successfully"
         ));
-        // Refresh the users list
-        const offset = (currentPage - 1) * limit;
-        const response = await fetchUsers(offset, limit);
-        setUsers(response.users);
-        setTotalCount(response.totalCount);
+        getUsers();
       } else {
         console.error("Failed to toggle verification:", result.error);
       }
@@ -136,8 +137,8 @@ const Users = () => {
   const renderRowActions = (row: SingleUser) => (
     <div className="flex gap-2">
       <Switcher
-        isChecked={row.isVerified ?? false}
-        onChange={(checked) => handleToggleVerification(row.id, checked)}
+        isChecked={(row.status === "ACTIVE")}
+        onChange={() => handleToggleVerification(row.id, row.status.toString())}
       />
       <Button
         icon={<Eye />}
@@ -286,8 +287,10 @@ const Users = () => {
                 placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: "1", label: t('user_status.active') },
-                  { value: "0", label: t('user_status.inactive') },
+                  { value: "ACTIVE", label: t("user_status.active") },
+                  { value: "INACTIVE", label: t("user_status.inactive") },
+                  { value: "PENDING", label: t("user_status.pending") },
+                  { value: "SUSPENDED", label: t("user_status.suspended") },
                 ],
               },
             ]}

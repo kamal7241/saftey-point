@@ -1,5 +1,5 @@
 "use client";
-import { deleteStaff } from "@/api/dashboardService";
+import { deleteStaff, resetStaffPassword, toggleStaffVerification } from "@/api/staffService";
 import { useRouter } from "@/i18n/routing";
 import type { SingleStaff } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
@@ -22,6 +22,7 @@ import Note from "../ui/icons/Note";
 import Teacher from "../ui/icons/Teacher";
 import NewStaffForm from "../forms/NewStaffForm";
 import SomethingWentWrong from "../ui/SomethingWentWrong";
+import ResetPasswordForm from "../forms/ResetPasswordForm";
 
 interface SingleStaffProps {
   staffData: SingleStaff;
@@ -32,13 +33,16 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
   const [userData] = useState<SingleStaff>(staffData);
   const [error, setError] = useState<string | null>(null);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [resetPasswordPopupOpen, setResetPasswordPopupOpen] = useState(false);
+  const [resetPasswordSuccess, setResetPasswordSuccess] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const router = useRouter();
 
   const handleDelete = async () => {
     const result = await deleteStaff(Number(userData?.id));
     if (result.success) {
-      router.push("/dashboard/staff-management/users");
+      router.push("/dashboard/staff-management");
     } else {
       setError(result.error || "Failed to delete staff.");
     }
@@ -48,6 +52,56 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
   };
+  const handleClose = async () => {
+    setAddPopupOpen(false);
+    window.location.reload();
+  };
+
+  const handleToggleVerification = async () => {
+    try {
+      const result = await toggleStaffVerification(
+        Number(userData?.id),
+        // userData?.status
+        (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
+      );
+      if (result.success) {
+        handleClose();
+      } else {
+        setError(result.error || "Failed to update company status");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+    setShowSuspendConfirm(false);
+  };
+
+  const handleSuspendCancel = () => {
+    setShowSuspendConfirm(false);
+  };
+  const handleResetPassword = async (newPassword: string) => {
+    try {
+      const result = await resetStaffPassword(
+        Number(userData?.id),
+        newPassword
+      );
+
+      if (result.success) {
+        setResetPasswordSuccess(true);
+        setTimeout(() => {
+          setResetPasswordPopupOpen(false);
+          setResetPasswordSuccess(false);
+        }, 2000);
+      } else {
+        setError(result.error || "Failed to reset password.");
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred."
+      );
+    }
+  };
   if (error) return <div>{error}</div>;
 
   const breadcrumbItems = [
@@ -55,22 +109,57 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
     { label: t("staff-management"), href: "/dashboard/staff-management" },
     {
       label: t("user_details"),
-      href: "/dashboard/staff-management/users",
+      href: "/dashboard/staff-management",
     },
   ];
 
   if (!userData) return <SomethingWentWrong />;
   return (
     <div className="h-full">
-      <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
+      <Popup isOpen={addPopupOpen} onClose={handleClose}>
         <NewStaffForm
           title={t("edit_staff")}
           sub_title={t("form_subtitle")}
-          onClose={() => setAddPopupOpen(false)}
+          onClose={handleClose}
           userData={userData}
         />
-        Staff FORM EDIT
       </Popup>
+      <Popup
+        isOpen={resetPasswordPopupOpen}
+        onClose={() => setResetPasswordPopupOpen(false)}
+      >
+        {resetPasswordSuccess ? (
+          <div className="p-4 text-center">
+            <p className="text-green-500 text-lg font-semibold">
+              {t("password_reset_success")}
+            </p>
+          </div>
+        ) : (
+          <ResetPasswordForm
+            onClose={() => setResetPasswordPopupOpen(false)}
+            onSubmit={handleResetPassword}
+          />
+        )}
+      </Popup>
+
+
+      {showSuspendConfirm && (
+        <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t(userData?.user.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleSuspendCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
       {showDeleteConfirm && (
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
           <div>
@@ -105,7 +194,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
             />
             <Button
               label={t("buttons.reset_password")}
-              onClick={() => setAddPopupOpen(true)}
+              onClick={() => setResetPasswordPopupOpen(true)}
               icon={
                 <span className="inline-block w-6">
                   <Lock />
@@ -114,8 +203,8 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               variant="secondary"
             />
             <Button
-              label={t("buttons.suspend")}
-              onClick={() => setAddPopupOpen(true)}
+              label={t(userData?.status ? "buttons.suspend" : "buttons.activate")}
+              onClick={() => setShowSuspendConfirm(true)}
               icon={
                 <span className="inline-block w-6">
                   <Suspend />
@@ -178,13 +267,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
             />
             <GroupInfo
               label={t("status")}
-              content={
-                userData?.status === "ACTIVE" ? (
-                  <Status status={"1"} />
-                ) : (
-                  <Status status={"0"} />
-                )
-              }
+              content={<Status status={userData?.status} />}
               icon={<StatusCheck />}
             />
             <GroupInfo

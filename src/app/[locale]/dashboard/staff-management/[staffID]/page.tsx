@@ -1,6 +1,6 @@
 export const runtime = "edge";
 import SingleStaff from "@/components/pages/SingleStaff";
-import { fetchStaffById } from "@/api/dashboardService";
+import { fetchStaffById } from "@/api/staffService";
 
 export default async function Page({
   params,

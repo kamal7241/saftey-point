@@ -66,6 +66,16 @@ export const addStaffValidationSchema = Yup.object({
   resume: Yup.mixed().required("Resume is required"),
   avatar: Yup.mixed().required("Avatar is required"),
 });
+export const editStaffValidationSchema = Yup.object({
+  firstName: Yup.string().required("First Name is required"),
+  lastName: Yup.string().required("Last Name is required"),
+  status: Yup.string().required("Status is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNumber: Yup.string().required("Phone number is required"),
+  avatar: Yup.mixed().required("Avatar is required"),
+});
 
 
 export const editUserValidationSchema = (t: (key: string) => string) => {

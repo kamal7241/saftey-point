@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from "react";
 
 // Type for a single breadcrumb item
@@ -38,6 +39,7 @@ export interface Company {
     isVerified?: boolean;
 }
 export interface SingleUser {
+    identityType: any;
     id: number;
     name: string;
     email: string;

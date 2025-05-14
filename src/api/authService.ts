@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
 // Access the API URL from the environment variable
@@ -27,14 +28,25 @@ export const login = async (email: string, password: string) => {
 };
 
 export const forget = async (email: string) => {
-  // Mock response for forget functionality
-  return {
-    user: { email },  // Mock user data
-    tokens: { access: 'mockAccessToken', refresh: 'mockRefreshToken' },  // Mock tokens
-  };
-  // ... existing code ...
+  try {
+    const response = await axios.post(
+      `${API_URL}v1/auth/forgot-password`,
+      { email },
+      {
+        headers: {
+          accept: '*/*',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error('Failed to send forgot password request.');
+  }
 };
-
 
 export const verifyOTP = async ({ otp }: { otp: string }) => {
   if (otp === "123456") {

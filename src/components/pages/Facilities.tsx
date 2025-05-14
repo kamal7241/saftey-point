@@ -63,12 +63,16 @@ const Facilities = () => {
         new Set(data.map((item: Facility) => item.createdAt))
       );
   
-      const formattedDates = uniqueDates.map((date) => {
+      const formattedDates: { value: string; label: string }[] = [];
+      const seenDates = new Set<string>();
+      uniqueDates.forEach((date) => {
         const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
-        return { value: formattedDate, label: formattedDate };
+        if (!seenDates.has(formattedDate)) {
+          formattedDates.push({ value: formattedDate, label: formattedDate });
+          seenDates.add(formattedDate);
+        }
       });
-  
-      setCreatedOptions(formattedDates as { value: string; label: string }[]);
+      setCreatedOptions(formattedDates);
     }
     setLoading(false);
   };

@@ -314,7 +314,7 @@
     "add_country": "Add Country",
     "isVerified": "Verified",
     "edit_staff": "Edit Staff",
-    "user_id":"User ID",
+    "user_id": "User ID",
     "question_type": {
       "name": "Question Type",
       "mcq": "Multiple Choice",
@@ -690,6 +690,8 @@
     "session_added_successfully": "Session added successfully",
     "error_adding_session": "Error adding session",
     "session_updated_successfully": "Session updated successfully",
-    "error_updating_session": "Error updating session"
+    "error_updating_session": "Error updating session",
+    "partner_deleted_successfully": "Partner deleted successfully",
+    "error_deleting_partner": "Error deleting partner"
   }
 }

@@ -689,6 +689,8 @@
     "session_added_successfully": "تمت إضافة الجلسة بنجاح",
     "error_adding_session": "خطأ في إضافة جلسة",
     "session_updated_successfully": "تم تحديث الجلسة بنجاح",
-    "error_updating_session": "خطأ في تحديث الجلسة"
+    "error_updating_session": "خطأ في تحديث الجلسة",
+    "partner_deleted_successfully": "تم حذف الشريك بنجاح",
+    "error_deleting_partner": "حدث خطأ أثناء حذف الشريك"
   }
 }

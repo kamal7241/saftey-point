@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "rebuild": "rm -rf node_modules && rm -rf .next && npm install && npm run build && pm2 restart safety-dashboard"
   },
   "dependencies": {
     "axios": "^1.7.9",

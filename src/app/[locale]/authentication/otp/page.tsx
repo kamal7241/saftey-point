@@ -20,11 +20,6 @@ export default function OTPPage() {
             <h2 className="text-center text-2xl font-medium leading-6 text-primary">
               Code Verification
             </h2>
-            <p className="text-center text-black-400">
-              Enter the code we sent to the email
-              <br />
-              Michxxx@gmail.com
-            </p>
             <OTPForm />
             <Link
               href="/authentication/login"

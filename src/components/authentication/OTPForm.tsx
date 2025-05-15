@@ -68,50 +68,58 @@ const OTPForm = ({ email: propEmail }: { email?: string }) => {
   };
 
   return (
-    <form onSubmit={handleOTP} className="flex flex-col gap-4 items-center w-full">
-      <OtpInput
-        value={otp}
-        onChange={setOtp}
-        numInputs={6}
-        shouldAutoFocus
-        inputStyle={{
-          width: "3rem",
-          height: "3rem",
-          margin: "0 0.25rem",
-          fontSize: "1.5rem",
-          borderRadius: "8px",
-          border: "1px solid #ccc",
-          textAlign: "center",
-        }}
-        renderSeparator={<span>-</span>}
-        renderInput={(props) => <input {...props} />}
-      />
+    <>
 
-      {errorMessage && (
-        <div className="errorMsg flex items-center text-red-500 gap-2">
-          <Error />
-          {errorMessage}
-        </div>
-      )}
+      <p className="text-center text-black-400">
+        Enter the code we sent to the email
+        <br />
+        {email}
+      </p>
+      <form onSubmit={handleOTP} className="flex flex-col gap-4 items-center w-full">
+        <OtpInput
+          value={otp}
+          onChange={setOtp}
+          numInputs={6}
+          shouldAutoFocus
+          inputStyle={{
+            width: "3rem",
+            height: "3rem",
+            margin: "0 0.25rem",
+            fontSize: "1.5rem",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            textAlign: "center",
+          }}
+          renderSeparator={<span>-</span>}
+          renderInput={(props) => <input {...props} />}
+        />
 
-      <button type="submit" className="auth-submit-btn">
-        Send Verification Code
-      </button>
+        {errorMessage && (
+          <div className="errorMsg flex items-center text-red-500 gap-2">
+            <Error />
+            {errorMessage}
+          </div>
+        )}
 
-      {canResend ? (
-        <button
-          type="button"
-          onClick={resendCode}
-          className="mt-2 text-sm text-blue-500 underline"
-        >
-          Resend Code
+        <button type="submit" className="auth-submit-btn">
+          Send Verification Code
         </button>
-      ) : (
-        <p className="mt-2 text-sm text-black-400">
-          You can resend the code within 0:{timeLeft.toString().padStart(2, "0")} seconds
-        </p>
-      )}
-    </form>
+
+        {canResend ? (
+          <button
+            type="button"
+            onClick={resendCode}
+            className="mt-2 text-sm text-blue-500 underline"
+          >
+            Resend Code
+          </button>
+        ) : (
+          <p className="mt-2 text-sm text-black-400">
+            You can resend the code within 0:{timeLeft.toString().padStart(2, "0")} seconds
+          </p>
+        )}
+      </form>
+    </>
   );
 };
 

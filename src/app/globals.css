@@ -70,7 +70,10 @@
     @apply flex items-center justify-start gap-2;
   }
   .auth-form-parent {
-    @apply h-[824px] w-1/2 px-10 pt-20;
+    @apply sm:h-[824px] sm:w-1/2 sm:px-10 sm:pt-20 p-6;
+  }
+  .auth-form-image{
+    @apply relative sm:w-1/2 overflow-hidden rounded-l-4xl sm:block hidden;
   }
   .auth-form-container {
     @apply flex flex-col items-center justify-start gap-4 h-full pb-6;

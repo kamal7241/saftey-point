@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { verifyOTP } from "@/api/authService";
 import Cookies from "js-cookie";
@@ -5,13 +6,20 @@ import { useEffect, useState } from "react";
 import OtpInput from "react-otp-input";
 import Error from "../ui/icons/Error";
 
-const OTPForm = () => {
+const OTPForm = ({ email: propEmail }: { email?: string }) => {
   const [otp, setOtp] = useState("");
   const [timeLeft, setTimeLeft] = useState(59);
   const [canResend, setCanResend] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>(propEmail || "");
 
-  // Timer logic
+  useEffect(() => {
+    if (!propEmail) {
+      const storedEmail = localStorage.getItem("forgotEmail");
+      if (storedEmail) setEmail(storedEmail);
+    }
+  }, [propEmail]);
+
   useEffect(() => {
     if (timeLeft === 0) {
       setCanResend(true);
@@ -23,22 +31,40 @@ const OTPForm = () => {
 
   const handleOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setErrorMessage(null);
     try {
-      const response = await verifyOTP({ otp });
-      const { tokens } = response;
-      Cookies.set("tokenOTP", tokens.access, { secure: true, httpOnly: false });
-      window.location.href = "/authentication/new-password";
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      setErrorMessage("Invalid OTP try 123456");
+      const response = await verifyOTP({ otp, email });
+      if (response.success) {
+        const accessToken = response.innerData?.accessToken;
+        Cookies.set("tokenOTP", accessToken, { secure: true, httpOnly: false });
+        localStorage.removeItem("forgotEmail");
+        window.location.href = "/authentication/new-password";
+      } else {
+        setErrorMessage(response.message || "Invalid OTP");
+      }
+    } catch (error: any) {
+      setErrorMessage(error.message || "Invalid OTP");
     }
   };
 
-  const resendCode = () => {
+  const resendCode = async () => {
     setCanResend(false);
     setTimeLeft(59);
-    console.log("Code resent successfully!");
+    setErrorMessage(null);
+    try {
+      if (!email) {
+        setErrorMessage("No email found to resend code.");
+        setCanResend(true);
+        return;
+      }
+      await import("@/api/authService").then(({ forget }) => forget(email));
+      // Optionally, show a success message (could use a toast or set a state)
+      // For now, just log
+      console.log("Code resent successfully!");
+    } catch (error: any) {
+      setErrorMessage(error.message || "Failed to resend code.");
+      setCanResend(true);
+    }
   };
 
   return (

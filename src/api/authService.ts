@@ -48,32 +48,55 @@ export const forget = async (email: string) => {
   }
 };
 
-export const verifyOTP = async ({ otp }: { otp: string }) => {
-  if (otp === "123456") {
-    return {
-      user: { email: "mockuser@example.com" }, // Mock user data
-      tokens: { access: "mockAccessToken", refresh: "mockRefreshToken" }, // Mock tokens
-    };
-  } else {
-    throw new Error("Invalid OTP try 123456");
+export const verifyOTP = async ({ otp, email }: { otp: string; email: string }) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}v1/auth/verify-otp`,
+      { otp, email },
+      {
+        headers: {
+          accept: '*/*',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error('OTP verification failed.');
   }
 };
 
-// Mock of the resetPassword function
-export const resetPassword = async (newPassword: string) => {
-  // Simulate an API delay (e.g., network latency)
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Mock condition: assume the password must not be "12345678" for success
-  if (newPassword === "12345678") {
-    throw new Error("Password reset failed: Weak password");
+export const resetPassword = async (newPassword: string, token: string) => {
+  if (!token) {
+    throw new Error("No OTP token found. Please request a new OTP.");
   }
-
-  // Simulate a successful response with mock tokens
-  return {
-    tokens: {
-      access: "mockAccessToken12345",
-      refresh: "mockRefreshToken67890",
-    },
-  };
+  try {
+    const response = await axios.post(
+      `${API_URL}v1/auth/reset-password`,
+      { newPassword },
+      {
+        headers: {
+          accept: '*/*',
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const data = response.data;
+    if (!data.success) {
+      throw new Error(data.message || "Failed to reset password");
+    }
+    return {
+      success: data.success,
+      message: data.innerData?.message || data.message,
+    };
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Failed to reset password");
+  }
 };

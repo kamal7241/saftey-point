@@ -1,5 +1,6 @@
 "use client";
 import { resetPassword } from "@/api/authService";
+import Cookies from "js-cookie";
 import Input from "@/components/formsUI/Input";
 import { passwordValidationSchema } from "@/utils/validation/authValidation";
 import { ErrorMessage, Form, Formik } from "formik";
@@ -13,23 +14,26 @@ export default function NewPasswordForm() {
 
   const handlePasswordReset = async (values: { password: string }) => {
     try {
-      // Call the API to reset the password
-      const response = await resetPassword(values.password);
-      //   Cookies.set("accessToken", response.tokens.access, {
-      //     secure: true,
-      //     httpOnly: false,
-      //   });
-      //   Cookies.set("refreshToken", response.tokens.refresh, {
-      //     secure: true,
-      //     httpOnly: false,
-      //   });
-      //   window.location.href = "/authentication/login";
-      if (response.tokens.access) {
-        setIsSuccess(true);
+      const token = Cookies.get("tokenOTP");
+      if (!token) {
+        setPasswordError("No OTP token found. Please request a new OTP.");
+        return;
       }
-    } catch (error) {
+      const response = await resetPassword(values.password, token);
+      if (response.success) {
+        setIsSuccess(true);
+        Cookies.remove("tokenOTP");
+        setPasswordError(null);
+        setTimeout(() => {
+          window.location.href = "/authentication/login";
+        }, 200);
+      } else {
+        setPasswordError(response.message || "Failed to reset the password. Please try again.");
+      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Password reset failed:", error);
-      setPasswordError("Failed to reset the password. Please try again.");
+      setPasswordError(error.message || "Failed to reset the password. Please try again.");
     }
   };
 
@@ -85,7 +89,7 @@ export default function NewPasswordForm() {
           {isSuccess && (
             <SuccessMessage
               title="New Password updated successfully"
-              msg="The password matches and is strong"
+              msg="Password changed successfully. You can now log in with your new password."
             />
           )}
           <button

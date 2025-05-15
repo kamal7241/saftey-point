@@ -18,6 +18,7 @@ export default function ForgetForm() {
       const response = await forget(values.email);
       if (response.success) {
         setSuccessMessage(response.innerData?.message || "OTP sent successfully.");
+        localStorage.setItem("forgotEmail", values.email);
         // Optionally, you can add a delay before redirecting
         setTimeout(() => {
           window.location.href = "/authentication/otp";

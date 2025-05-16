@@ -24,36 +24,35 @@ const StaffManagement = () => {
 
   const [staffManagement, setStaffManagement] = useState<SingleStaffUI[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
   const limit = 10;
   const getStaffManagement = async () => {
-    const response = await fetchStaffManagement();
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchStaffManagement(offset, limit);
     const data = await response;
     setStaffManagement(data.users);
     setTotalCount(response.totalCount);
   };
   useEffect(() => {
     getStaffManagement();
-  }, []);
+  }, [currentPage]);
 
   const filteredStaffManagement = staffManagement.filter((staff: SingleStaffUI) => {
-    const matchesSearch = staff.name??""
+    const matchesSearch = staff.name ?? ""
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-  
+
     const matchesFilters = Object.entries(filters).every(([key, value]) => {
       if (!value) return true;
-  
+
       const companyValue = staff[key as keyof SingleStaffUI];
       if (typeof companyValue === 'string') {
         return companyValue.toLowerCase() === value.toLowerCase();
       }
-  
+
       return companyValue?.toString().toLowerCase() === value.toLowerCase();
     });
-  
+
     return matchesSearch && matchesFilters;
   });
 

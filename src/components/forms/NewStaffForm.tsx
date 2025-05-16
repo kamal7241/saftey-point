@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import FileUploader from "../formsUI/FileUploader";
 import SelectField from "../formsUI/SelectField";
+import StaffRoleSelectField from "./StaffRoleSelectField";
 import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
@@ -25,7 +26,7 @@ interface FormValues {
   lastName: string;
   status: string;
   email: string;
-  role: string;
+  role: number | ""; // Changed to number or empty string to store role ID
   phoneNumber: string;
   password: string;
   resume: string | null;
@@ -50,7 +51,7 @@ export default function NewStaffForm({
       phoneNumber: userData.user.phone || "",
       password: "",
       resume: null,
-      role: userData.userType,
+      role: userData ? "" : "", // Initialize role ID, assuming we'll select it. Or map userData.userType to ID if possible.
       avatar: userData.user.avatar,
     }
     : {
@@ -61,7 +62,7 @@ export default function NewStaffForm({
       phoneNumber: "",
       password: "",
       resume: null,
-      role: "",
+      role: "", // Role ID will be a number or empty string
       avatar: null,
     };
 
@@ -79,7 +80,7 @@ export default function NewStaffForm({
     const mappedValues: SingleStaff = {
       resume: values.resume ?? "",
       status: values.status || "pending",
-      userType: values.role || "staff",
+      userType: "staff".toUpperCase(),
       user: {
         id: userData ? userData.user.id : 0,
         firstName: values.firstName,
@@ -89,6 +90,7 @@ export default function NewStaffForm({
         phone: values.phoneNumber,
         password: values.password,
         isVerified: false,
+        roleId: values.role? values.role.toString() : "",
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -198,18 +200,13 @@ export default function NewStaffForm({
             </div>
 
             <div className="col-span-2">
-              <SelectField
+              <StaffRoleSelectField
                 label={tTable("role")}
                 name="role"
-                value={values.role.toLowerCase()}
+                value={values.role}
                 onChange={(name, value) => setFieldValue(name, value)}
-                options={[
-                  { value: "admin", label: t("user_role.admin") },
-                  { value: "company", label: t("user_role.company") },
-                  { value: "staff", label: t("user_role.staff") },
-                  { value: "user", label: t("user_role.user") },
-                ]}
                 customDropdown
+                placeholder={t('select_role_placeholder')}
               />
               <ErrorMessage
                 name="role"

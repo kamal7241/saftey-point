@@ -58,6 +58,7 @@ export const submitStaff = async (values: SingleStaff) => {
             phone: values.user.phone,
             password: values.user.password || "",
             isVerified: values.user.isVerified || false,
+            roleId: values.user.roleId || 1,
         },
     };
 

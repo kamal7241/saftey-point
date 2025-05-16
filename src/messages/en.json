@@ -113,6 +113,8 @@
     "country_name": "Country Name",
     "phone_code": "Phone Code",
     "emoji": "Emoji",
+    "loading_roles": "Loading Roles",
+    "select_role_placeholder": "Select Role",
     "presets": "Presets",
     "currencies": "Currencies",
     "courses": "Courses",

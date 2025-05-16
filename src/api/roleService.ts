@@ -143,64 +143,6 @@ export const updateRole = async (roleId: number, roleData: Partial<RoleResponse>
   }
 };
 
-// New interfaces and function for staff roles
-export interface StaffRoleItem {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  name: string;
-  description: string;
-  permissions: string;
-  isActive: boolean;
-}
-
-export interface StaffRolesApiResponse {
-  success: boolean;
-  message: string;
-  timestamp: string;
-  innerData: {
-    items: StaffRoleItem[];
-    total: number;
-  };
-}
-
-export const fetchStaffRoles = async (): Promise<StaffRoleItem[]> => {
-  try {
-    const response = await fetch(
-      `https://api.imtyaaz.com/safety-point-academy/api/v1/staff-roles`,
-      {
-        headers: {
-          accept: '*/*',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      // Try to parse error message if available
-      let errorMessage = 'Failed to fetch staff roles';
-      try {
-        const errorResult = await response.json();
-        errorMessage = errorResult.message || errorMessage;
-      } catch (e) {
-        // Ignore if error response is not JSON
-      }
-      throw new Error(errorMessage);
-    }
-
-    const result: StaffRolesApiResponse = await response.json();
-
-    if (!result.success || !result.innerData || !result.innerData.items) {
-      throw new Error(result.message || 'Failed to process staff roles data');
-    }
-
-    return result.innerData.items;
-  } catch (error) {
-    console.error('Error fetching staff roles:', error);
-    return []; // Return empty array on error to prevent breaking UI
-  }
-};
-
 export const deleteRole = async (roleId: number) => {
   try {
     const response = await fetch(
@@ -223,64 +165,6 @@ export const deleteRole = async (roleId: number) => {
   } catch (error) {
     console.error('Error deleting role:', error);
     throw error;
-  }
-};
-
-// New interfaces and function for staff roles
-export interface StaffRoleItem {
-  id: number;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  name: string;
-  description: string;
-  permissions: string;
-  isActive: boolean;
-}
-
-export interface StaffRolesApiResponse {
-  success: boolean;
-  message: string;
-  timestamp: string;
-  innerData: {
-    items: StaffRoleItem[];
-    total: number;
-  };
-}
-
-export const fetchStaffRoles = async (): Promise<StaffRoleItem[]> => {
-  try {
-    const response = await fetch(
-      `https://api.imtyaaz.com/safety-point-academy/api/v1/staff-roles`,
-      {
-        headers: {
-          accept: '*/*',
-        },
-      }
-    );
-
-    if (!response.ok) {
-      // Try to parse error message if available
-      let errorMessage = 'Failed to fetch staff roles';
-      try {
-        const errorResult = await response.json();
-        errorMessage = errorResult.message || errorMessage;
-      } catch (e) {
-        // Ignore if error response is not JSON
-      }
-      throw new Error(errorMessage);
-    }
-
-    const result: StaffRolesApiResponse = await response.json();
-
-    if (!result.success || !result.innerData || !result.innerData.items) {
-      throw new Error(result.message || 'Failed to process staff roles data');
-    }
-
-    return result.innerData.items;
-  } catch (error) {
-    console.error('Error fetching staff roles:', error);
-    return []; // Return empty array on error to prevent breaking UI
   }
 };
 
@@ -314,6 +198,9 @@ export const fetchRoleById = async (roleId: string) => {
   }
 };
 
+
+
+
 // New interfaces and function for staff roles
 export interface StaffRoleItem {
   id: number;
@@ -339,7 +226,7 @@ export interface StaffRolesApiResponse {
 export const fetchStaffRoles = async (): Promise<StaffRoleItem[]> => {
   try {
     const response = await fetch(
-      `https://api.imtyaaz.com/safety-point-academy/api/v1/staff-roles`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/staff-roles`,
       {
         headers: {
           accept: '*/*',
@@ -353,6 +240,7 @@ export const fetchStaffRoles = async (): Promise<StaffRoleItem[]> => {
       try {
         const errorResult = await response.json();
         errorMessage = errorResult.message || errorMessage;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         // Ignore if error response is not JSON
       }
@@ -371,4 +259,3 @@ export const fetchStaffRoles = async (): Promise<StaffRoleItem[]> => {
     return []; // Return empty array on error to prevent breaking UI
   }
 };
-

@@ -171,6 +171,7 @@ export interface SingleStaff {
         phone: string;
         password?: string;
         isVerified: boolean;
+        roleId: number | string;
     };
 }
 export interface SingleStaffUI {

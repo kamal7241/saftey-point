@@ -1,8 +1,10 @@
+"use client";
 export const runtime = "edge";
 
 import Dashboard from "@/components/pages/Dashboard";
+import withAuthRole from "@/components/auth/withAuthRole";
 
-export default function Page() {
+function Page() {
   return (
     <div>
       <Dashboard />
@@ -10,3 +12,5 @@ export default function Page() {
     </div>
   );
 }
+
+export default withAuthRole(Page, ['admin']);

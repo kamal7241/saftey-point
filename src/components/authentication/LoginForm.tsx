@@ -1,44 +1,37 @@
 "use client";
-import { login } from "@/api/authService";
 import Input from "@/components/formsUI/Input";
 import { Link } from "@/i18n/routing";
 import { loginValidationSchema } from "@/utils/validation/authValidation";
 import { ErrorMessage, Form, Formik } from "formik";
-import Cookies from "js-cookie";
 import Image from "next/image";
 import { useState } from "react";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
+import { useAuth } from "@/contexts/UserProvider"; // Import useAuth
 
 export default function LoginForm() {
   const [loginError, setLoginError] = useState<string | null>(null);
+  const { login: authLogin } = useAuth(); // Use the login function from AuthContext
 
   const handleLogin = async (values: { email: string; password: string }) => {
+    setLoginError(null);
     try {
-      const response = await login(values.email, values.password);
-      console.log("response>>", response);
-      const { user, accessToken, refreshToken } = response;
-      Cookies.set("accessToken", accessToken, {
-        secure: true,
-        httpOnly: false,
-      }); // Set secure to true in production
-      Cookies.set("refreshToken", refreshToken, {
-        secure: true,
-        httpOnly: false,
-      });
-      console.log("User data:", user);
-      window.location.href = "/dashboard";
+      await authLogin(values.email, values.password);
+      // Navigation is handled within the authLogin function in UserProvider
     } catch (error) {
       console.error("Login failed:", error);
-      setLoginError("Invalid email or password.");
+      // Check if the error object has a message property
+      const errorMessage = error instanceof Error ? error.message : "Invalid email or password.";
+      setLoginError(errorMessage);
     }
   };
+
   return (
     <Formik
       initialValues={{ email: "", password: "" }}
       validationSchema={loginValidationSchema}
       onSubmit={handleLogin}
     >
-      {({ values, handleChange, isSubmitting, errors }) => (
+      {({ values, handleChange, isSubmitting, errors, dirty, isValid }) => (
         <Form className="flex w-full flex-col gap-4">
           <div>
             <Input
@@ -106,10 +99,10 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="mt-3 w-full rounded-lg bg-primary py-3 text-center text-white transition-all hover:bg-primaryLight"
+            disabled={isSubmitting || !dirty || !isValid}
+            className="mt-3 w-full rounded-lg bg-primary py-3 text-center text-white transition-all hover:bg-primaryLight disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isSubmitting ? "Signing In..." : "Sign In"}
           </button>
         </Form>
       )}

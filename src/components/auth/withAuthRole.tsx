@@ -1,0 +1,58 @@
+"use client";
+import { useAuth } from '@/contexts/UserProvider';
+import { useRouter } from '@/i18n/routing'; // Using the i18n router
+import React, { ComponentType, useEffect } from 'react';
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface WithAuthRoleProps {
+  // You can add any additional props that your wrapped component might need
+}
+
+const withAuthRole = <P extends object>(
+  WrappedComponent: ComponentType<P>,
+  allowedRoles: Array<'admin' | 'company' | 'individual'>
+) => {
+  const ComponentWithAuth = (props: P & WithAuthRoleProps) => {
+    const { user, isLoading, accessToken } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+      if (isLoading) {
+        return; // Wait for user data to load
+      }
+
+      if (!accessToken || !user) {
+        // If not authenticated, redirect to login
+        router.replace('/authentication/login');
+        return;
+      }
+
+      // Check if the user's role is allowed
+      if (!allowedRoles.includes(user.role)) {
+        // If role is not allowed, redirect to a 'not authorized' page or dashboard
+        // For now, let's redirect to the dashboard. You might want a specific unauthorized page.
+        console.warn(`User with role '${user.role}' tried to access a route restricted to roles: ${allowedRoles.join(', ')}`);
+        router.replace('/dashboard'); // Or an '/unauthorized' page
+      }
+    }, [user, isLoading, accessToken, router]);
+
+    // If loading, or if user is null (before redirect happens), or role not yet verified,
+    // you might want to show a loading spinner or null
+    if (isLoading || !user || !accessToken || (user && !allowedRoles.includes(user.role))) {
+      // Render a loading state or null while checking auth/role and redirecting
+      // This prevents a flash of the protected content
+      return null; // Or <LoadingSpinner />
+    }
+
+    // If authenticated and role is allowed, render the wrapped component
+    return <WrappedComponent {...props as P} />;
+  };
+
+  // Set a display name for easier debugging
+  const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+  ComponentWithAuth.displayName = `withAuthRole(${displayName})`;
+
+  return ComponentWithAuth;
+};
+
+export default withAuthRole;

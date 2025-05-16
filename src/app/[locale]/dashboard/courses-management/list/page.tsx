@@ -1,7 +1,9 @@
+"use client";
 export const runtime = "edge";
 import Courses from "@/components/pages/Courses";
+import withAuthRole from "@/components/auth/withAuthRole";
 
-export default function Page() {
+function Page() {
   
   return (
     <>
@@ -9,3 +11,5 @@ export default function Page() {
     </>
   );
 }
+
+export default withAuthRole(Page, ['admin']);

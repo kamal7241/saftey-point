@@ -4,6 +4,7 @@ import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "react-hot-toast";
 import { ToastContainer } from "react-toastify";
+import { UserProvider } from "@/contexts/UserProvider"; // Import UserProvider
 import "react-toastify/dist/ReactToastify.css";
 import "../globals.css";
 
@@ -46,34 +47,35 @@ export default async function LocaleLayout({
     <div
       lang={locale}
       dir={direction}
-      className={`antialiased ${
-        locale === "ar" ? fontAr.className : fontEn.className
-      }`}
+      className={`antialiased ${locale === "ar" ? fontAr.className : fontEn.className
+        }`}
     >
-      <NextIntlClientProvider messages={messages} locale={locale}>
-        {children}
-        <div suppressHydrationWarning>
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              className: "",
-              style: {
-                zIndex: 9999,
-              },
-            }}
-          />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            newestOnTop
-            closeOnClick
-            rtl={direction === "rtl"}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-        </div>
-      </NextIntlClientProvider>
+      <UserProvider> {/* Wrap with UserProvider */}
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          {children}
+          <div suppressHydrationWarning>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                className: "",
+                style: {
+                  zIndex: 9999,
+                },
+              }}
+            />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              newestOnTop
+              closeOnClick
+              rtl={direction === "rtl"}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+            />
+          </div>
+        </NextIntlClientProvider>
+      </UserProvider>
     </div>
   );
 }

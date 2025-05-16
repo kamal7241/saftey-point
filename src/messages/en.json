@@ -22,6 +22,10 @@
     "partner": "Partner",
     "currencies": "Currencies",
     "locations": "Locations",
+    "courses-enrollments": "Courses Enrollments",
+    "employee-management": "Employee Management", 
+    "branches-management": "Branches Management",
+    "account-management": "Account Management",
     "cancellations-refunds": "Cancellations and Refunds",
     "rewards": "rewards"
   },

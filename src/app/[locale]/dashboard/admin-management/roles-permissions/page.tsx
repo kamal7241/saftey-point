@@ -1,7 +1,11 @@
+"use client";
 import ManageRoles from "@/components/pages/ManageRoles";
+import withAuthRole from "@/components/auth/withAuthRole";
 
 export const runtime = "edge";
 
-export default function Page() {
+function Page() {
   return <ManageRoles />;
 }
+
+export default withAuthRole(Page, ['admin']);

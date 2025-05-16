@@ -6,6 +6,7 @@ import sidebarData from "@/sidebarData.json";
 import Image from "next/image";
 import { ArrowDown } from "./ui/icons/ArrowDown";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/contexts/UserProvider";
 
 type SidebarItem = {
   name: string;
@@ -14,6 +15,7 @@ type SidebarItem = {
   icon?: string;
   activeIcon?: string;
   comingSoon?: boolean;
+  roles?: string[]; // Add roles property
 };
 const toTranslationKey = (name: string) =>
   name
@@ -26,7 +28,21 @@ const Sidebar = () => {
   const pathname = usePathname() as string;
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
-  const translatedSidebarData = sidebarData.map((item: SidebarItem) => ({
+  const { user } = useAuth();
+  const currentUserRole = user?.role ?? "";
+
+  const filterByRole = (items: SidebarItem[], role: string): SidebarItem[] => {
+    return items
+      .filter(item => item.roles && item.roles.includes(role))
+      .map(item => ({
+        ...item,
+        children: item.children ? filterByRole(item.children, role) : undefined,
+      }));
+  };
+
+  const roleSpecificSidebarData = filterByRole(sidebarData as SidebarItem[], currentUserRole);
+
+  const translatedSidebarData = roleSpecificSidebarData.map((item: SidebarItem) => ({
     ...item,
     name: t(toTranslationKey(item.name)),
     children: item.children?.map((child) => ({
@@ -46,7 +62,7 @@ const Sidebar = () => {
     const activeItem = translatedSidebarData.find((item: SidebarItem) =>
       item.children?.some((child) => isActive(child.link))
     );
-  
+
     // Only set open item if it’s a top-level item with children
     if (activeItem && activeItem.children) {
       setOpenItem(activeItem.name); // Set open item based on active parent
@@ -54,7 +70,7 @@ const Sidebar = () => {
       setOpenItem(null); // If no active items, close everything
     }
   }, [pathname, isActive, translatedSidebarData]);
-  
+
   const toggleItem = (itemName: string) => {
     setOpenItems((prev) => ({
       ...prev,
@@ -100,15 +116,13 @@ const Sidebar = () => {
           {item.children && item.children.length > 0 ? (
             <button
               onClick={() => toggleItem(item.name)}
-              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${
-                active || isParentActive ? "text-primary" : ""
-              }`}
+              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${active || isParentActive ? "text-primary" : ""
+                }`}
             >
               {renderMenuItem(item, active, isParentActive)}
               <span
-                className={`${
-                  (openItem === item.name||isOpen) ? "rotate-180" : ""
-                } ms-auto`}
+                className={`${(openItem === item.name || isOpen) ? "rotate-180" : ""
+                  } ms-auto`}
               >
                 <ArrowDown />
               </span>
@@ -124,14 +138,13 @@ const Sidebar = () => {
           ) : (
             <Link
               href={item.link}
-              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${
-                active ? "bg-primary text-white" : "text-gray-600"
-              }`}
+              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${active ? "bg-primary text-white" : "text-gray-600"
+                }`}
             >
               {renderMenuItem(item, active, isParentActive)}
             </Link>
           )}
-          {item.children && (openItem === item.name||isOpen) && (
+          {item.children && (openItem === item.name || isOpen) && (
             <ul className="py-4 pl-6">{renderMenu(item.children)}</ul>
           )}
         </li>

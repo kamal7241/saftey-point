@@ -30,9 +30,41 @@ export default function SessionsTabContent({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (values: any) => {
+    console.log("values", values);
     try {
       setIsSubmitting(true);
-      const result = await submitSession(values, courseId.toString());
+
+      const startDateInput = values.session_date?.[0];
+      const endDateInput = values.session_date?.[1];
+      const startTimeInput = values.session_time?.from ?? null;
+      const endTimeInput = values.session_time?.to ?? null;
+
+      let finalStartDateISO, finalEndDateISO;
+
+      if (startDateInput && startTimeInput) {
+        const startDateTime = new Date(startDateInput);
+        // Ensure startTimeInput is a Date object or a string that can be parsed into a Date
+        const startTimeDate = typeof startTimeInput === 'string' ? new Date(startTimeInput) : startTimeInput;
+        const [hoursFrom, minutesFrom] = startTimeDate.toTimeString().split(':').map(Number);
+        startDateTime.setHours(hoursFrom, minutesFrom, 0, 0);
+        finalStartDateISO = startDateTime.toISOString().split('.')[0] + 'Z';
+      }
+
+      if (endDateInput && endTimeInput) {
+        const endDateTime = new Date(endDateInput);
+        // Ensure endTimeInput is a Date object or a string that can be parsed into a Date
+        const endTimeDate = typeof endTimeInput === 'string' ? new Date(endTimeInput) : endTimeInput;
+        const [hoursTo, minutesTo] = endTimeDate.toTimeString().split(':').map(Number);
+        endDateTime.setHours(hoursTo, minutesTo, 0, 0);
+        finalEndDateISO = endDateTime.toISOString().split('.')[0] + 'Z';
+      }
+      const result = await submitSession({
+        title: values.sessionName,
+        description: values.description,
+        startDate: finalStartDateISO,
+        endDate: finalEndDateISO,
+        status: "ACTIVE",
+      }, courseId.toString());
       if (result.success) {
         setShowAddPopup(false);
         showToast.success(tMsgs("session_added_successfully"));
@@ -51,13 +83,37 @@ export default function SessionsTabContent({
   const handleEditSession = async (values: any) => {
     try {
       setIsSubmitting(true);
+
+      const startDateInput = values.session_date?.[0];
+      const endDateInput = values.session_date?.[1];
+      const startTimeInput = values.session_time?.from;
+      const endTimeInput = values.session_time?.to;
+
+      let finalStartDateISO, finalEndDateISO;
+
+      if (startDateInput && startTimeInput) {
+        const startDateTime = new Date(startDateInput);
+        // Ensure startTimeInput is a Date object or a string that can be parsed into a Date
+        const startTimeDate = typeof startTimeInput === 'string' ? new Date(startTimeInput) : startTimeInput;
+        const [hoursFrom, minutesFrom] = startTimeDate.toTimeString().split(':').map(Number);
+        startDateTime.setHours(hoursFrom, minutesFrom, 0, 0);
+        finalStartDateISO = startDateTime.toISOString().split('.')[0] + 'Z';
+      }
+
+      if (endDateInput && endTimeInput) {
+        const endDateTime = new Date(endDateInput);
+        // Ensure endTimeInput is a Date object or a string that can be parsed into a Date
+        const endTimeDate = typeof endTimeInput === 'string' ? new Date(endTimeInput) : endTimeInput;
+        const [hoursTo, minutesTo] = endTimeDate.toTimeString().split(':').map(Number);
+        endDateTime.setHours(hoursTo, minutesTo, 0, 0);
+        finalEndDateISO = endDateTime.toISOString().split('.')[0] + 'Z';
+      }
+
       const result = await updateSession(currentSession?.id.toString() || "", {
         title: values.sessionName,
         description: values.description,
-        // startDate: values.startDate,
-        // endDate: values.endDate,
-        startDate: values.session_date?.[0]?.toISOString(),
-        endDate: values.session_date?.[1]?.toISOString(),
+        startDate: finalStartDateISO,
+        endDate: finalEndDateISO,
         status: values.status === "1" ? "ACTIVE" : "INACTIVE",
       });
       if (result.success) {
@@ -133,12 +189,8 @@ export default function SessionsTabContent({
             initialValues={{
               sessionName: currentSession.title,
               description: currentSession.description,
-              endDate: new Date(currentSession.endDate)
-                .toISOString()
-                .split("T")[0],
-              startDate: new Date(currentSession.startDate)
-                .toISOString()
-                .split("T")[0],
+              session_date: [new Date(currentSession.startDate), new Date(currentSession.endDate)],
+              session_time: { from: currentSession.startDate, to: currentSession.endDate }, // Assuming API returns full ISO string for dates
               status: currentSession.status === "ACTIVE" ? "1" : "0",
             }}
             onSubmit={handleEditSession}

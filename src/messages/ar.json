@@ -178,6 +178,8 @@
     "course": "دورة",
     "view_certificates": "عرض الشهادات",
     "certificate_id": "معرف الشهادة",
+    "course_id": "معرف الدورة",
+    "course_name": "اسم الدورة",
     "certificate_name": "اسم الشهادة",
     "issue_date": "تاريخ الإصدار",
     "expiry_date": "تاريخ انتهاء الصلاحية",
@@ -487,6 +489,17 @@
     }
   },
   "validation": {
+    "validFrom": {
+      "required": "تاريخ صالح من مطلوب"
+    },
+    "validTo": {
+      "required": "تاريخ صالح إلى مطلوب",
+      "after_validFrom": "يجب أن يكون تاريخ الصلاحية بعد تاريخ البدء"
+    },
+    "issueDate": {
+      "required": "تاريخ الإصدار مطلوب",
+      "before_validTo": "يجب أن يكون تاريخ الإصدار قبل تواريخ انتهاء الصلاحية"
+    },
     "discount": {
       "min": "لا يمكن أن يكون الخصم أقل من 0",
       "max": "لا يمكن أن يتجاوز الخصم 100"
@@ -714,6 +727,7 @@
     "user_deleted_successfully": "تم حذف المستخدم بنجاح",
     "error_creating_course": "خطأ في إنشاء الدورة التدريبية",
     "question_created_successfully": "تم إنشاء السؤال بنجاح",
+    "question_deleted_successfully": "تم حذف السؤال بنجاح",
     "error_creating_question": "خطأ في إنشاء سؤال",
     "question_updated_successfully": "تم تحديث السؤال بنجاح",
     "error_creating_session": "خطأ في إنشاء الجلسة",

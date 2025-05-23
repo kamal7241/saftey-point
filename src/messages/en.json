@@ -260,7 +260,7 @@
     "userBOD": "User birthday",
     "user_nationality": "User nationality",
     "exam_details": "Exam Details",
-    "are_you_sure_delete": "Are you sure delete",
+    "are_you_sure_delete": "Are You Sure You Want to Delete This Item?",
     "course_details": "Course Details",
     "validity": "Validity",
     "yes": "Yes",
@@ -479,6 +479,17 @@
     }
   },
   "validation": {
+    "validFrom": {
+      "required": "Valid from date is required"
+    },
+    "validTo": {
+      "required": "Valid to date is required",
+      "after_validFrom": "Valid to date must be after valid from date"
+    },
+    "issueDate": {
+      "required": "Issue date is required",
+      "before_validTo": "Issue date must be before expiry dates"
+    },
     "discount": {
       "min": "Discount cannot be less than 0",
       "max": "Discount cannot exceed 100"
@@ -708,6 +719,7 @@
     "question_created_successfully": "question created successfully",
     "error_creating_question": "error creating question",
     "question_updated_successfully": "Question updated successfully",
+    "question_deleted_successfully": "Question Deleted successfully",
     "error_creating_session": "Error creating session",
     "error_unexpected": "Error Unexpected",
     "facility_deleted_successfully": "Facility Deleted Successfully",

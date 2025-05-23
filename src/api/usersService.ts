@@ -63,6 +63,10 @@ export const updateIndividual = async (
     // Compare top-level fields
     if (values.identityType !== currentData.identityType)
         apiData.identityType = values.identityType.toUpperCase();
+    if (values.userType !== currentData.userType)
+        apiData.userType = values.userType.toUpperCase();
+    if (values.companyId !== currentData.companyId)
+        apiData.companyId = values.companyId;
     if (values.nationalId !== currentData.nationalId)
         apiData.nationalId = values.nationalId;
     if (values.nationalIdExpiry !== currentData.nationalIdExpiry)
@@ -254,9 +258,7 @@ export const toggleUserVerification = async (userId: number, status: string) => 
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    individual: {
-                        status: status
-                    }
+                    status: status
                 }),
             }
         );

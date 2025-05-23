@@ -6,7 +6,7 @@ import {
 } from "@/utils/validation/dashboardValidation";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react"; // Added useEffect
 import FileUploader from "../formsUI/FileUploader";
 import SelectField from "../formsUI/SelectField";
 import Button from "../ui/Button";
@@ -17,6 +17,8 @@ import { submitIndividual, updateIndividual } from "@/api/usersService";
 import { Individual, IndividualResponse } from "@/types/ui.types";
 import { generateStrongPassword } from "@/utils/passwordGenerator";
 import Calendar from "../ui/icons/Calendar";
+import { fetchCompanies } from "@/api/companiesService"; // Added import
+import { Company } from "@/types/ui.types"; // Assuming Company type exists or define it
 
 interface NewUserFormProps {
   title?: string;
@@ -41,6 +43,7 @@ interface FormValues {
   avatar: string;
   nationalIdFront: string;
   nationalIdBack: string;
+  companyId?: string;
 }
 
 export default function NewUserForm({
@@ -52,6 +55,8 @@ export default function NewUserForm({
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
   const tValidation = useTranslations("validation");
+
+  const [companyOptions, setCompanyOptions] = useState<{ value: string; label: string }[]>([]); // Added state for company options
 
   const initialValues: FormValues = userData
     ? {
@@ -71,6 +76,7 @@ export default function NewUserForm({
       birthday: userData.birthday || "",
       nationalIdFront: userData.nationalIdFront || "",
       nationalIdBack: userData.nationalIdBack || "",
+      companyId: userData.companyId || "", // Added companyId to initialValues if editing
     }
     : {
       firstName: "",
@@ -89,6 +95,7 @@ export default function NewUserForm({
       birthday: "",
       nationalIdFront: "",
       nationalIdBack: "",
+      companyId: "", // Added companyId to initialValues for new user
     };
 
   const handleGeneratePassword = (
@@ -100,6 +107,25 @@ export default function NewUserForm({
   const [apiErrors, setApiErrors] = useState<string | null>(null);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    const loadCompanies = async () => {
+        try {
+          const companyData = await fetchCompanies(0, 100);
+          if (companyData && companyData.companies) {
+            const options = companyData.companies.map((company: Company) => ({
+              value: company.id.toString(),
+              label: company.name,
+            }));
+            setCompanyOptions(options);
+          }
+        } catch (error) {
+          console.error("Failed to fetch companies:", error);
+          setCompanyOptions([]); // Set to empty array on error
+        }
+    };
+    loadCompanies();
+  }, []);
 
   const handleSubmit = async (values: FormValues) => {
     console.log("Form Submitted:", values);
@@ -118,6 +144,7 @@ export default function NewUserForm({
         : "",
       status: values.status || "pending",
       userType: values.type || "individual",
+      companyId: values.type === "company" ? Number(values.companyId) : undefined,
       user: {
         id: userData?.userId || 0,
         firstName: values.firstName,
@@ -127,6 +154,7 @@ export default function NewUserForm({
         phone: values.phoneNumber,
         password: values.password,
         isVerified: values.status === "active",
+        companyId: values.type === "company" ? Number(values.companyId) : undefined
       },
     };
 
@@ -141,6 +169,7 @@ export default function NewUserForm({
       birthday: userData?.birthday ? userData.birthday.split("T")[0] : "",
       status: userData?.status || "",
       userType: userData?.userType || "individual",
+      companyId: Number(userData?.companyId),
       user: {
         id: userData?.userId || 0,
         firstName: userData?.firstName || "",
@@ -149,6 +178,7 @@ export default function NewUserForm({
         email: userData?.email || "",
         phone: userData?.phone || "",
         isVerified: userData?.isVerified || false,
+        companyId: Number(userData?.companyId),
       },
     };
 
@@ -306,17 +336,14 @@ export default function NewUserForm({
               <div className="col-span-4">
                 <SelectField
                   label={tTable("company_name")}
-                  name="type"
-                  value={values.type}
+                  name="companyId"
+                  value={values.companyId?.toString()??""}
                   onChange={(name, value) => setFieldValue(name, value)}
-                  options={[
-                    { value: "comapny_1", label: t("user_type.comapny_1") },
-                    { value: "comapny_2", label: t("user_type.comapny_2") },
-                  ]}
+                  options={companyOptions} // Use fetched company options
                   customDropdown
                 />
                 <ErrorMessage
-                  name="type"
+                  name="companyId"
                   component="div"
                   className="text-xs text-red-500"
                 />

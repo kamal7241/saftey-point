@@ -80,9 +80,6 @@ const Users = () => {
     setFilters({});
   };
   const handleExport = () => {
-    const startIdx = (currentPage - 1) * limit;
-    const endIdx = startIdx + limit;
-    const paginatedUsers = filteredUsers.slice(startIdx, endIdx);
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
@@ -95,7 +92,7 @@ const Users = () => {
           "User Type",
           "Identity Type",
         ],
-        ...paginatedUsers.map((c) => [
+        ...filteredUsers.map((c) => [
           c.id,
           c.name,
           c.status,

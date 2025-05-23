@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { fetchCountryByCode, toggleCountryStatus } from "@/api/presetsService";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import Status from "../ui/Status";
-import Edit2 from "../ui/icons/Edit2";
 import Suspend from "../ui/icons/Suspend";
-import { toggleCountryStatus, fetchCountryByCode } from "@/api/presetsService";
+import Status from "../ui/Status";
 
 import { Country } from "@/types/ui.types";
 import ClipboardTick from "../ui/icons/ClipboardTick";
 import DocumentText from "../ui/icons/DocumentText";
 import StatusCheck from "../ui/icons/StatusCheck";
 import Popup from "../ui/Popup";
-import NewCountryForm from "../forms/NewCountryForm";
 
 interface SingleCountryProps {
   countryData: Country;
@@ -27,15 +25,15 @@ export default function SingleCountry({
   countryData,
 }: SingleCountryProps) {
   const t = useTranslations("common");
-  const [addPopupOpen, setAddPopupOpen] = useState(false);
+  // const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentCountry, setCurrentCountry] = useState<Country>(countryData);
 
-  const handleClose = () => {
-    setAddPopupOpen(false);
-    window.location.reload();
-  };
+  // const handleClose = () => {
+  //   setAddPopupOpen(false);
+  //   window.location.reload();
+  // };
 
   const handleSuspendCountry = async () => {
     setError(null);
@@ -70,14 +68,14 @@ export default function SingleCountry({
   ];
   return (
     <div className="h-full">
-      <Popup isOpen={addPopupOpen} onClose={handleClose}>
+      {/* <Popup isOpen={addPopupOpen} onClose={handleClose}>
         <NewCountryForm
           title={t("edit_country")}
           sub_title={t("form_subtitle")}
           onClose={handleClose}
           countryData={currentCountry}
         />
-      </Popup>
+      </Popup> */}
       {showSuspendConfirm && (
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
@@ -101,7 +99,7 @@ export default function SingleCountry({
         title={t("view_country")}
         actions={
           <>
-            <Button
+            {/* <Button
               label={t("buttons.edit")}
               onClick={() => setAddPopupOpen(true)}
               icon={
@@ -110,7 +108,7 @@ export default function SingleCountry({
                 </span>
               }
               variant="primary"
-            />
+            /> */}
             <Button
               label={t(currentCountry.isActive ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}

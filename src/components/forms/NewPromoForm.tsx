@@ -71,6 +71,8 @@ export default function NewPromoForm({
     const handleSubmit = async (values: FormValues) => {
         try {
             let result;
+            const formattedExpiryDate = values.expiryDate ? new Date(values.expiryDate).toISOString().split('T')[0] : "";
+
             if (promoData && promoData.code) {
                 // PATCH update
                 result = await updatePromoCode(promoData.id, {
@@ -78,7 +80,7 @@ export default function NewPromoForm({
                     description: values.description,
                     discountType: values.discountType,
                     discountAmount: Number(values.discountAmount),
-                    expiryDate: values.expiryDate,
+                    expiryDate: formattedExpiryDate,
                     isActive: values.isActive,
                     maxUsage: Number(values.maxUsage),
                     minimumOrderAmount: Number(values.minimumOrderAmount),
@@ -90,7 +92,7 @@ export default function NewPromoForm({
                     description: values.description,
                     discountType: values.discountType,
                     discountAmount: Number(values.discountAmount),
-                    expiryDate: values.expiryDate,
+                    expiryDate: formattedExpiryDate,
                     isActive: values.isActive,
                     maxUsage: Number(values.maxUsage),
                     minimumOrderAmount: Number(values.minimumOrderAmount),

@@ -251,10 +251,10 @@ export const deleteExamQuestion = async (examId: string, questionId: number) => 
 export const submitSession = async (values: FormikValues, courseId: string): Promise<SessionResponse> => {
   try {
     const sessionData: SessionDTO = {
-      title: values.sessionName,
+      title: values.title,
       description: values.description,
-      startDate: values.session_time.from,
-      endDate: values.session_time.to,
+      startDate: values.startDate,
+      endDate: values.endDate,
       status: "ACTIVE",
       courseId: parseInt(courseId)
     };

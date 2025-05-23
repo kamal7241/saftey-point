@@ -24,7 +24,7 @@ export const addUserValidationSchema = (t: (key: string) => string) => {
   return Yup.object({
     firstName: Yup.string().required(t("firstName.required")),
     lastName: Yup.string().required(t("lastName.required")),
-    type: Yup.string().required(t("type.required")),
+    type: Yup.string().required(t("userType.required")),
     status: Yup.string().required(t("status.required")),
     email: Yup.string().email(t("invalid_type")).required(t("email.required")),
     phoneNumber: Yup.string().required(t("phoneNumber.required")),
@@ -101,4 +101,15 @@ export const addBranchValidationSchema = Yup.object({
   status: Yup.string().required("Status is required"),
   address: Yup.string().required("Address is required"),
   pinLocation: Yup.mixed().required("Pin Location is required"),
+});
+
+export const certificateValidationSchemaGeneral = (t: (key: string) => string) => Yup.object({
+  courseId: Yup.string().required(t("course.required")),
+  validFrom: Yup.date().required(t("validFrom.required")),
+  validTo: Yup.date()
+    .required(t("validTo.required"))
+    .min(Yup.ref('validFrom'), t("validTo.after_validFrom")),
+  issueDate: Yup.date()
+    .required(t("issueDate.required"))
+    .max(Yup.ref('validTo'), t("issueDate.before_validTo")),
 });

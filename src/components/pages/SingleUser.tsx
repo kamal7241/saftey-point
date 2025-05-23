@@ -1,13 +1,15 @@
 "use client";
 import { deleteIndividual, fetchUserById, resetUserPassword, toggleUserStatus, toggleUserVerification } from "@/api/usersService";
+import { useRouter } from "@/i18n/routing";
 import { IndividualResponse } from "@/types/ui.types";
+import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import NewUserForm from "../forms/NewUserForm";
+import ResetPasswordForm from "../forms/ResetPasswordForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import Status from "../ui/Status";
 import AttachCircle from "../ui/icons/AttachCircle";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
@@ -18,13 +20,10 @@ import PhoneIcon from "../ui/icons/PhoneIcon";
 import StatusCheck from "../ui/icons/StatusCheck";
 import Suspend from "../ui/icons/Suspend";
 import UserSquare from "../ui/icons/UserSquare";
-import Popup from "../ui/Popup";
-import NewUserForm from "../forms/NewUserForm";
-import { useRouter } from "@/i18n/routing";
 import ImagePopup from "../ui/ImagePopup";
 import ImageWithFallback from "../ui/ImageWithFallback";
-import { showToast } from "@/utils/toast";
-import ResetPasswordForm from "../forms/ResetPasswordForm";
+import Popup from "../ui/Popup";
+import Status from "../ui/Status";
 
 interface SingleUserProps {
   userID: string;
@@ -326,18 +325,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
             {userData?.userType !== "INDIVIDUAL" && (
               <GroupInfo
                 label={t("company_name")}
-                content={
-                  <span>
-                    <Image
-                      src="/images/company-profile.png"
-                      alt="user-profile"
-                      width={24}
-                      height={24}
-                      className="me-2 inline-block rounded-full align-middle"
-                    />
-                    {userData?.userType}
-                  </span>
-                }
+                content={userData?.companyName}
                 copyIt
                 icon={<Buildings2 />}
               />

@@ -5,6 +5,12 @@ import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
 import DocumentText from "../ui/icons/DocumentText";
 import Edit2 from "../ui/icons/Edit2";
+import { useState } from "react";
+import Popup from "../ui/Popup";
+import ExamForm from "./SingleCourse/ExamForm";
+import { FormikValues } from "formik";
+import { updateExam } from "@/api/courseService";
+import { showToast } from "@/utils/toast";
 
 interface SingleExamProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,11 +20,47 @@ interface SingleExamProps {
 
 export default function SingleExam({ examID, examData }: SingleExamProps) {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // const [addPopupOpen, setAddPopupOpen] = useState(false);
 
   console.log("examID", examID);
-  // console.log("addPopupOpen", addPopupOpen);
+
+
+  const handleClose = async () => {
+    setShowEditPopup(false);
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  };
+  const handleEditExam = async (values: FormikValues) => {
+    try {
+      setIsSubmitting(true);
+      const result = await updateExam(examID.toString() || "", {
+        title: values.examName,
+        examType: values.examType,
+        instructions: values.instructions,
+        duration: Number(values.examDuration),
+        totalMarks: Number(values.totalMarks),
+        passMarks: Number(values.passMarks),
+        courseId: examData.courseId,
+      });
+      if (result.success) {
+        showToast.success(tMsgs("exam_updated_successfully"));
+        handleClose();
+      } else {
+        showToast.error(tMsgs("error_updating_exam"));
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error("Error updating exam:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -30,6 +72,24 @@ export default function SingleExam({ examID, examData }: SingleExamProps) {
   ];
   return (
     <div className="h-full">
+
+      {showEditPopup && (
+        <Popup isOpen={showEditPopup} onClose={() => handleClose()}>
+          <ExamForm
+            initialValues={{
+              examName: examData.title,
+              examType: examData.examType,
+              examDuration: examData.duration,
+              totalMarks: examData.totalMarks,
+              passMarks: examData.passMarks,
+              instructions: examData.instructions,
+            }}
+            onSubmit={handleEditExam}
+            onCancel={() => handleClose()}
+            isLoading={isSubmitting}
+          />
+        </Popup>
+      )}
       <PageHeader
         breadcrumbItems={breadcrumbItems}
         title={t("exam_details")}
@@ -43,7 +103,9 @@ export default function SingleExam({ examID, examData }: SingleExamProps) {
                 </span>
               }
               variant="primary"
-              href={`/dashboard/courses-management/list/${examData.courseId}`}
+              onClick={() => {
+                setShowEditPopup(true);
+              }}
             />
             {/* <Button
               label={t("buttons.reset_password")}

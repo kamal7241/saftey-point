@@ -708,6 +708,7 @@
     "question_created_successfully": "question created successfully",
     "error_creating_question": "error creating question",
     "question_updated_successfully": "Question updated successfully",
+    "question_deleted_successfully": "Question Deleted successfully",
     "error_creating_session": "Error creating session",
     "error_unexpected": "Error Unexpected",
     "facility_deleted_successfully": "Facility Deleted Successfully",

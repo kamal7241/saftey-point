@@ -714,6 +714,7 @@
     "user_deleted_successfully": "تم حذف المستخدم بنجاح",
     "error_creating_course": "خطأ في إنشاء الدورة التدريبية",
     "question_created_successfully": "تم إنشاء السؤال بنجاح",
+    "question_deleted_successfully": "تم حذف السؤال بنجاح",
     "error_creating_question": "خطأ في إنشاء سؤال",
     "question_updated_successfully": "تم تحديث السؤال بنجاح",
     "error_creating_session": "خطأ في إنشاء الجلسة",

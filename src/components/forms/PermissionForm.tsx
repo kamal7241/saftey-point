@@ -35,7 +35,7 @@ type PermissionFormProps = {
     description?: string;
     permissions?: string;
   };
-  onCancel: () => void;
+  onCancel?: () => void;
 };
 
 const PermissionForm: React.FC<PermissionFormProps> = ({

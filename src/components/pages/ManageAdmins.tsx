@@ -17,6 +17,7 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import { AdminStatus } from "@/enum/admin-status.enum";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
@@ -251,24 +252,24 @@ const ManageAdmins = () => {
             fields={[
               {
                 type: "text",
-                label: "Admin ID",
+                label: t("admin_id"),
                 name: "id",
-                placeholder: "Admin ID",
+                placeholder: t("admin_id"),
               },
               {
                 type: "text",
-                label: "Name",
+                label: t("name"),
                 name: "name",
-                placeholder: "Name",
+                placeholder: t("name"),
               },
               {
                 type: "select",
-                label: "Status",
-                placeholder: "Status",
+                label: t("status"),
+                placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
+                  { value: AdminStatus.ACTIVE, label: t("active") },
+                  { value: AdminStatus.INACTIVE, label: t("inactive") },
                 ],
               },
             ]}

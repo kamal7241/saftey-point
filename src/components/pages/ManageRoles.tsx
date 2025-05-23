@@ -15,6 +15,7 @@ import Eye from "../ui/icons/Eye";
 import { Export } from "../ui/icons/Export";
 import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
+import { AdminStatus } from "@/enum/admin-status.enum";
 
 interface Role {
   id: number;
@@ -279,25 +280,25 @@ const ManageRoles = () => {
             fields={[
               {
                 type: "text",
-                label: "Role",
+                label: t("role"),
                 name: "name",
-                placeholder: "Role",
+                placeholder: t("role"),
               },
               {
                 type: "select",
-                label: "Permissions",
-                placeholder: "Permissions",
+                label: t("permissions"),
+                placeholder: t("permissions"),
                 name: "permission",
                 options: permissionOptions,
               },
               {
                 type: "select",
-                label: "Status",
-                placeholder: "Status",
+                label: t("status"),
+                placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
+                  { value: AdminStatus.ACTIVE, label: t("active") },
+                  { value: AdminStatus.INACTIVE, label: t("inactive") },
                 ],
               },
             ]}

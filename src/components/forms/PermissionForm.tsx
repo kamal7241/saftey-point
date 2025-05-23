@@ -35,6 +35,7 @@ type PermissionFormProps = {
     description?: string;
     permissions?: string;
   };
+  onCancel: () => void;
 };
 
 const PermissionForm: React.FC<PermissionFormProps> = ({
@@ -49,6 +50,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
   onSectionsChange,
   errors,
   onSubmit,
+  onCancel,
 }) => {
   const t = useTranslations("common");
 
@@ -183,7 +185,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           <Button
             label={t("buttons.close")}
             // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
-            onClick={() => { /* Add cancel logic, maybe call an onCancel prop */ }}
+            onClick={() => { onCancel() }}
             variant="transparent"
             padding="py-3 px-4"
           />

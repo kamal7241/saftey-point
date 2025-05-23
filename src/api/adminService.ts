@@ -1,3 +1,4 @@
+import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
 import { AdminData } from "@/types/forms.types";
 import { AdminResponse } from "@/types/ui.types";
 
@@ -127,7 +128,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === "ACTIVE" ? "1" : "0",
+                status: admin.status === AdminStatus.ACTIVE? AdminVmStatus.ACTIVE : AdminVmStatus.INACTIVE,
                 type: admin.userType,
                 phone: admin.user.phone,
                 image: admin.user.avatar.startsWith('http') 
@@ -170,7 +171,7 @@ export const fetchAdminById = async (adminId: string) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === "ACTIVE" ? "1" : "0",
+                status: admin.status === AdminStatus.ACTIVE ? AdminVmStatus.ACTIVE : AdminVmStatus.INACTIVE,
                 userType: admin.userType,
                 type: admin.userType,
                 phone: admin.user.phone,

@@ -175,7 +175,7 @@ const ManageRoles = () => {
   );
 
   const handleEdit = (id: number) => {
-    router.push(`/dashboard/admin-management/roles-permissions/${id}`);
+    router.push(`/dashboard/admin-management/roles-permissions/${id}/edit`);
   };
 
   const handleDelete = async (id: number) => {

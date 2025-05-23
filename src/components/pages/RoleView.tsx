@@ -33,6 +33,7 @@ type PermissionSection = {
 };
 interface SingleRoleProps {
   roleId: string;
+  isEditing?: boolean;
 }
 
 const transformFeaturesToSections = (
@@ -71,11 +72,14 @@ const transformSectionsToFeatures = (
   });
 };
 
-export default function RoleView({ roleId }: SingleRoleProps) {
+export default function RoleView({
+  roleId,
+  isEditing: isInEditModel = false,
+}: SingleRoleProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isInEditModel);
   const [roleData, setRoleData] = useState<RoleResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -380,21 +384,8 @@ export default function RoleView({ roleId }: SingleRoleProps) {
           onSectionsChange={handleSectionsChange}
           onSubmit={handleSubmit}
           errors={formErrors}
+          onCancel={handleCancelEdit}
         />
-        {/* Add Cancel button when editing */}
-        {isEditing && (
-          <div className="flex justify-end gap-4 mt-[-60px] mr-4">
-            {" "}
-            {/* Adjust margin as needed */}
-            <Button
-              label={t("buttons.cancel")}
-              onClick={handleCancelEdit}
-              variant="transparent"
-              padding="py-3 px-4"
-            />
-            {/* Submit button is inside PermissionForm now */}
-          </div>
-        )}
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import NewAdminForm from "../forms/NewAdminForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
 import { showToast } from "@/utils/toast";
 import UserSquare from "../ui/icons/UserSquare";
+import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
 
 interface SingleAdminProps {
   adminData: Admin;
@@ -162,7 +163,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           onClose={handleCloseEditPopup}
           adminData={adminData ? {
             id: adminData.id,
-            status: adminData.status === "1" ? "ACTIVE" : "INACTIVE", // Map status back if needed
+            status: adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.ACTIVE : AdminStatus.INACTIVE, // Map status back if needed
             userType: adminData.userType,
             user: {
               firstName: adminData.user.firstName,
@@ -299,9 +300,11 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             copyIt
             icon={<UserSquare />} // Changed icon
           />
+          {adminData?.status}
           <GroupInfo
             label={t("status")}
-            content={<Status status={adminData?.status === "ACTIVE" ? "1" : "0"} />} // Use admin status
+            key={adminData?.status} // This will force Status to re-mount on status change
+            content={<Status status={adminData?.status} />} // Use admin status
             icon={<StatusCheck />}
           />
            {/* Add other relevant admin info here using GroupInfo */}

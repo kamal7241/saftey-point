@@ -26,6 +26,37 @@ const Partners = () => {
     const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
 
     const limit = 10;
+
+    const handleExport = () => {
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [
+                [
+                    "ID",
+                    "Name",
+                    "Website",
+                    "Status",
+                    "Created At",
+                ],
+                ...filteredPartners.map((p: any) => [
+                    p.id,
+                    p.name,
+                    p.website,
+                    p.status === "1" ? "Active" : "Inactive",
+                    p.createdAt,
+                ]),
+            ]
+                .map((row) => row.join(","))
+                .join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "partners.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const getPartners = async () => {
         setLoading(true);
         const offset = (currentPage - 1) * limit;
@@ -119,7 +150,7 @@ const Partners = () => {
                         />
                         <Button
                             label={t("buttons.export")}
-                            onClick={() => { }}
+                            onClick={handleExport}
                             variant="dark"
                             icon={
                                 <span className="w-6 inline-block">

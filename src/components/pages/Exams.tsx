@@ -82,19 +82,22 @@ const Exams = () => {
         [
           "ID",
           "Name",
+          "Exam Type",
+          "Created At",
+          "Total Marks",
+          "Pass Marks",
+          "Duration",
           "Status",
-          "assigned_to",
-          "expiry_date",
-          "exam_date",
-          "score",
         ],
-        ...filteredExams.map((c) => [
-          c.id,
-          c.title,
-          c.status,
-          c.assigned_to,
-          c.exam_date,
-          c.score,
+        ...filteredExams.map((exam) => [
+          exam.id,
+          exam.title,
+          exam.examType,
+          exam.createdAt,
+          exam.totalMarks,
+          exam.passMarks,
+          exam.duration,
+          exam.status === "1" ? t("active") : t("inactive") 
         ]),
       ]
         .map((row) => row.join(","))

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Country } from "@/types/ui.types";
 
 export const fetchCountries = async (offset: number = 0, limit: number = 10) => {
     try {
@@ -11,12 +10,10 @@ export const fetchCountries = async (offset: number = 0, limit: number = 10) => 
         }
 
         return {
-            countries: result.innerData.map((country: Country) => ({
-                code: country.code,
-                name: country.name,
-                phoneCode: country.phoneCode,
-                emoji: country.emoji,
-            })),
+            success: true,
+            countries: result.innerData.countries,
+            total: result.innerData.count,
+            message: result.message,
         };
     } catch (error) {
         console.error("Error fetching countries:", error);

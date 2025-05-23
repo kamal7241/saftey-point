@@ -4,6 +4,7 @@ import Table from "@/components/ui/Table";
 import { Country } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import NewCountryForm from "../forms/NewCountryForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -11,8 +12,6 @@ import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-import { Add } from "../ui/icons/Add";
-import NewCountryForm from "../forms/NewCountryForm";
 
 
 const Countries = () => {
@@ -21,23 +20,26 @@ const Countries = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 10;
   const [countries, setCountries] = useState<Country[]>([]);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
 
   const getCountries = async () => {
-    const response = await fetchCountries();
-    const data = await response.countries;
-    setCountries(data);
+    const offset = (currentPage - 1) * limit;
+    const apiResponse = await fetchCountries(offset, limit);
+    const countryData = Array.isArray(apiResponse.countries) ? apiResponse.countries : [];
+    setCountries(countryData);
+    setTotalCount(apiResponse.total);
   };
+
   useEffect(() => {
-
     getCountries();
-  }, []);
+  }, [currentPage]);
 
-  const filteredCountries = countries.filter((certificate) => {
+  const filteredCountries = countries?.filter((certificate) => {
     const matchesSearch = certificate.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -57,8 +59,6 @@ const Countries = () => {
     { header: "phone_code", accessor: "phoneCode" },
     { header: "emoji", accessor: "emoji" },
   ];
-
-  const totalPages = Math.ceil(filteredCountries.length / 10);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -85,8 +85,6 @@ const Countries = () => {
           c.name,
           c.phoneCode,
           c.emoji,
-          // c.employees,
-          // c.created,
         ]),
       ]
         .map((row) => row.join(","))
@@ -133,7 +131,7 @@ const Countries = () => {
           {/* Search */}
           <SearchForm onSearch={setSearchTerm} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
-            <Button
+            {/* <Button
               label={t("buttons.add_country")}
               onClick={() => setAddPopupOpen(true)}
               icon={
@@ -142,7 +140,7 @@ const Countries = () => {
                 </span>
               }
               variant="primary"
-            />
+            /> */}
 
             {/* Filters Button */}
             <Button
@@ -202,7 +200,7 @@ const Countries = () => {
           columns={columns}
           pagination={{
             currentPage,
-            totalPages,
+            totalPages: Math.ceil(totalCount / limit),
             onPageChange: handlePageChange,
           }}
           rowsPerPage={10}

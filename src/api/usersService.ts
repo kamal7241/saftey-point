@@ -258,9 +258,7 @@ export const toggleUserVerification = async (userId: number, status: string) => 
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    individual: {
-                        status: status
-                    }
+                    status: status
                 }),
             }
         );

@@ -1,7 +1,6 @@
 "use client";
 import { fetchCourses } from "@/api/courseService";
 import Table from "@/components/ui/Table";
-import { useRouter } from "@/i18n/routing";
 import { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -16,11 +15,9 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-// import Switcher from "../ui/SmallSwitcher";
 
 const Courses = () => {
   const t = useTranslations("common");
-  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -75,8 +72,8 @@ const Courses = () => {
     setFilters(appliedFilters);
   const handleResetFilters = () => setFilters({});
 
-  const handleView = (id: number) => router.push(`/dashboard/courses-management/list/${id}`);
-  const handleEdit = (id: number) => console.log("Editing course with ID:", id);
+  // const handleView = (id: number) => router.push(`/dashboard/courses-management/list/${id}`);
+  // const handleEdit = (id: number) => console.log("Editing course with ID:", id);
   const handleDelete = (id: number) =>
     console.log("Deleting course with ID:", id);
 
@@ -154,14 +151,14 @@ const Courses = () => {
                 noBackground
                 textColor="blue-400"
                 noLabel
-                onClick={() => handleView(row.id)}
+                href={`/dashboard/courses-management/list/${row.id}`}
               />
               <Button
                 icon={<Edit />}
                 noBackground
                 textColor="gray-900"
                 noLabel
-                onClick={() => handleEdit(row.id)}
+                href={`/dashboard/courses-management/list/${row.id}`}
               />
               <Button
                 icon={<Delete />}

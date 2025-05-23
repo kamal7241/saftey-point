@@ -158,6 +158,7 @@ export default function AddRole() {
         <div>
           <PermissionForm
             title={t("add_role")}
+            isEditable={true}
             title2={t("permissions")}
             sub_title={t("form_subtitle")}
             sections={sections}

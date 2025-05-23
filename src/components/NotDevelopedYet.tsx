@@ -1,7 +1,9 @@
 import Image from "next/image";
 import Button from "./ui/Button";
+import { useTranslations } from "next-intl";
 
 export default function NotDevelopedYet() {
+  const t = useTranslations("ui");
   return (
     <div className="flex flex-col items-center justify-center text-center p-6 gap-6">
       <div className=" w-full">
@@ -15,12 +17,12 @@ export default function NotDevelopedYet() {
         </div>
       </div>
       <h1 className="text-2xl font-semibold text-gray-800">
-        Feature Not Developed Yet
+        {t("feature_not_developed")}
       </h1>
       <p className="text-gray-600 mt-2">
-        This feature is under construction. Stay tuned for updates!
+        {t("feature_under_construction")}
       </p>
-      <Button label="Go to Dashboard" href="/dashboard" />
+      <Button label={t("go_to_dashboard")} href="/dashboard" />
     </div>
   );
 }

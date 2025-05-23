@@ -31,7 +31,7 @@ const Dropdown: FC<DropdownProps> = ({
       </button>
       {isOpen && (
         <div
-          className={`absolute right-0 mt-2 ${width} bg-white border shadow-md rounded-md z-10`}
+          className={`absolute lrt:right-0 rtl:left-0 mt-2 ${width} bg-white border shadow-md rounded-md z-10`}
         >
           <ul>{menuItems}</ul>
         </div>

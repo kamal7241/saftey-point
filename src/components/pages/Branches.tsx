@@ -246,20 +246,20 @@ const Branches = () => {
             fields={[
               {
                 type: "text",
-                label: "Name",
+                label: t("branch_name"),
                 name: "name",
-                placeholder: "Branch Name",
+                placeholder: t("branch_name"),
               },
               {
                 type: "text",
-                label: "location",
+                label: t("address"),
                 name: "location_name",
-                placeholder: "Location",
+                placeholder: t("address"),
               },
               {
                 type: "select",
-                label: "Status",
-                placeholder: "Status",
+                label: t("status"),
+                placeholder: t("status"),
                 name: "status",
                 options: [
                   { value: "1", label: "Active" },
@@ -268,8 +268,8 @@ const Branches = () => {
               },
               {
                 type: "select",
-                label: "Created",
-                placeholder: "Created",
+                label: t("created_at"),
+                placeholder: t("created_at"),
                 name: "created",
                 options: createdOptions,
               },

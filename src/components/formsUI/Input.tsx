@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import VisibilityOff from "@/components/ui/icons/VisibilityOff";
 import Visibility from "@/components/ui/icons/Visibility";
+import { useTranslations } from "next-intl";
 
 type DateRange = [Date | null, Date | null];
 type TimeRange = { from: Date | null; to: Date | null };
@@ -39,6 +40,7 @@ const Input: React.FC<CustomInputProps> = ({
   timeRange,
   min,
 }) => {
+  const t = useTranslations("ui");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange>([null, null]);
   const [timeFrom, setTimeFrom] = useState<Date | null>(null);
@@ -97,7 +99,7 @@ const Input: React.FC<CustomInputProps> = ({
             startDate={dateRange[0]}
             endDate={dateRange[1]}
             selectsRange
-            placeholderText={placeholder || "Select date range"}
+            placeholderText={placeholder || t("select_date_range")}
             className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
             calendarClassName="w-full"
           />
@@ -105,7 +107,7 @@ const Input: React.FC<CustomInputProps> = ({
           <DatePicker
             selected={value ? new Date(value as string) : null}
             onChange={(date) => onChange?.(date?.toISOString() || '')}
-            placeholderText={placeholder || "Select date"}
+            placeholderText={placeholder || t("select_date")}
             className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
             dateFormat="yyyy-MM-dd"
           />
@@ -118,9 +120,9 @@ const Input: React.FC<CustomInputProps> = ({
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={30}
-              timeCaption="From"
+              timeCaption={t("from")}
               dateFormat="HH:mm"
-              placeholderText="From"
+              placeholderText={t("from")}
               className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
             />
 
@@ -131,9 +133,9 @@ const Input: React.FC<CustomInputProps> = ({
               showTimeSelect
               showTimeSelectOnly
               timeIntervals={30}
-              timeCaption="To"
+              timeCaption={t("to")}
               dateFormat="HH:mm"
-              placeholderText="To"
+              placeholderText={t("to")}
               className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px]"
             />
           </div>

@@ -133,7 +133,7 @@ const Sidebar = () => {
               title="Coming Soon"
             >
               {renderMenuItem(item, false, false)}
-              <span className="ms-2 text-[10px] bg-gray-200 rounded px-2 py-0.5 whitespace-nowrap">Coming Soon</span>
+              <span className="ms-2 text-[10px] bg-gray-200 rounded px-2 py-0.5 whitespace-nowrap">{t("coming_soon")}</span>
             </div>
           ) : (
             <Link

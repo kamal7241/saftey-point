@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import Dropdown from "../ui/Dropdown";
 import Cookies from "js-cookie";
+import { useTranslations } from "next-intl";
 
 type UserMenuProps = {
   isOpen: boolean;
@@ -8,6 +9,7 @@ type UserMenuProps = {
 };
 
 const UserMenu: FC<UserMenuProps> = ({ isOpen, onToggle }) => {
+  const t = useTranslations("ui");
     const handleLogout = () => {
       // Clear authentication tokens
       Cookies.remove("accessToken");
@@ -18,9 +20,9 @@ const UserMenu: FC<UserMenuProps> = ({ isOpen, onToggle }) => {
     };
   const menuItems = (
     <>
-      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</li>
-      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>Logout</li>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">{t("profile")}</li>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">{t("settings")}</li>
+      <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleLogout}>{t("logout")}</li>
     </>
   );
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { ChevronDown } from "../ui/icons/ChevronDown";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 interface Option {
@@ -30,6 +31,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   extraClass = "px-3 py-0 leading-[50px]",
   customDropdown = false,
 }) => {
+  const t = useTranslations("ui");
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
@@ -96,7 +98,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search..."
+                  placeholder={t("search_placeholder")}
                   className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-primary placeholder:text-black-100"
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -104,7 +106,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
             )}
             <ul className="py-2 overflow-y-auto max-h-[180px]">
               {filteredOptions.length === 0 ? (
-                <li className="px-3 py-2 text-gray-500 text-center">No results found</li>
+                <li className="px-3 py-2 text-gray-500 text-center">{t("no_results_found")}</li>
               ) : (
                 filteredOptions.map((option) => (
                   <li

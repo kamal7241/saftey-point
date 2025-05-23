@@ -346,7 +346,7 @@
     "admin_details": "Admin Details",
     "edit_admin": "Edit Admin",
     "no_certificate_found": "no certificate found",
-    "validFrom": "Valid From",
+    "Valid From": "Valid From",
     "validTo": "Valid To",
     "currency_details": "Currency Details",
     "exchange_rate": "Exchange Rate",
@@ -479,6 +479,17 @@
     }
   },
   "validation": {
+    "validFrom": {
+      "required": "Valid from date is required"
+    },
+    "validTo": {
+      "required": "Valid to date is required",
+      "after_validFrom": "Valid to date must be after valid from date"
+    },
+    "issueDate": {
+      "required": "Issue date is required",
+      "before_validTo": "Issue date must be before expiry dates"
+    },
     "discount": {
       "min": "Discount cannot be less than 0",
       "max": "Discount cannot exceed 100"

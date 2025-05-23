@@ -100,6 +100,7 @@ export interface Individual {
     birthday: string;
     status: string;
     userType: string;
+    companyId?: string | number;
     user: {
         id?: number;
         firstName: string;
@@ -110,6 +111,7 @@ export interface Individual {
         password?: string;
         isVerified: boolean;
         jobTitle?: string;
+        companyId?: string | number;
     };
 }
 
@@ -131,6 +133,8 @@ export interface IndividualResponse {
     email: string;
     phone: string;
     isVerified: boolean;
+    companyId?: string;
+    companyName?: string;
 }
 export interface Country {
     isActive: boolean;

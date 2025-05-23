@@ -14,6 +14,7 @@ import SelectField from "../formsUI/SelectField";
 import { fetchCourses } from "@/api/courseService";
 import Spinner from "../ui/icons/Spinner";
 import RadioField from "../formsUI/RadioField";
+import { certificateValidationSchemaGeneral } from "@/utils/validation/dashboardValidation";
 
 interface NewCertificateFormProps {
   title?: string;
@@ -40,6 +41,7 @@ export default function NewCertificateForm({
   certificateData,
 }: NewCertificateFormProps) {
   const t = useTranslations("common");
+  const tValidation = useTranslations("validation");
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +132,7 @@ export default function NewCertificateForm({
       {title && <h3 className="heading3">{title}</h3>}
       {sub_title && <p className="textRegular mt-1.5">{sub_title}</p>}
       {loading ? <Spinner /> : null}
-      <Formik<FormValues> initialValues={initialValues} onSubmit={handleSubmit}>
+      <Formik<FormValues> initialValues={initialValues} onSubmit={handleSubmit} validationSchema={certificateValidationSchemaGeneral(tValidation)}>
         {({ values, handleChange, setFieldValue }) => (
           <Form className="mt-4 grid w-full grid-cols-4 gap-4">
             {apiErrors && (
@@ -164,9 +166,9 @@ export default function NewCertificateForm({
             </div>
             <div className="col-span-4">
               <Input
-                label="Title"
+                label={t('title')}
                 type="text"
-                placeholder="Certificate Title"
+                placeholder={t('title')}
                 value={values.title}
                 onChange={handleChange}
                 name="title"
@@ -180,7 +182,7 @@ export default function NewCertificateForm({
 
             <div className="col-span-2">
               <Input
-                label="Valid From"
+                label={t("validFrom")}
                 type="date"
                 value={values.validFrom}
                 onChange={(value) => {
@@ -201,7 +203,7 @@ export default function NewCertificateForm({
 
             <div className="col-span-2">
               <Input
-                label="Valid To"
+                label={t("validTo")}
                 type="date"
                 value={values.validTo}
                 onChange={(value) => {
@@ -222,7 +224,7 @@ export default function NewCertificateForm({
 
             <div className="col-span-4">
               <Input
-                label="Issue Date"
+                label={t("issueDate")}
                 type="date"
                 value={values.issueDate}
                 onChange={(value) => {

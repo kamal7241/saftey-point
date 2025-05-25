@@ -33,7 +33,7 @@ const Status = ({ status }: StatusProps) => {
         inactive: "inactive",
         INACTIVE: "inactive",
         false: "inactive",
-        [AdminVmStatus.INACTIVE]: "inactive",
+        [AdminVmStatus.SUSPENDED]: "inactive",
         pending: "pending",
         PENDING: "pending",
         suspended: "suspended",

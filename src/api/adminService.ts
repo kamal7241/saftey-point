@@ -128,7 +128,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === AdminStatus.ACTIVE? AdminVmStatus.ACTIVE : AdminVmStatus.INACTIVE,
+                status: admin.status === AdminStatus.ACTIVE? AdminVmStatus.ACTIVE : AdminVmStatus.SUSPENDED,
                 type: admin.userType,
                 phone: admin.user.phone,
                 image: admin.user.avatar.startsWith('http') 
@@ -171,7 +171,7 @@ export const fetchAdminById = async (adminId: string) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === AdminStatus.ACTIVE ? AdminVmStatus.ACTIVE : AdminVmStatus.INACTIVE,
+                status: admin.status === AdminStatus.ACTIVE ? AdminVmStatus.ACTIVE : AdminVmStatus.SUSPENDED,
                 userType: admin.userType,
                 type: admin.userType,
                 phone: admin.user.phone,
@@ -273,6 +273,40 @@ export const toggleAdminVerification = async (adminId: number, isVerified: boole
                     user: {
                         isVerified: isVerified
                     }
+                }),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update admin verification status");
+        }
+
+        return { success: true, data: result };
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error("Error updating admin verification:", error);
+            return { success: false, error: error.message };
+        } else {
+            console.error("Unexpected error:", error);
+            return { success: false, error: "An unexpected error occurred" };
+        }
+    }
+};
+
+export const updateAdminStatus = async (adminId: number, status: AdminStatus) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`, // Adjusted endpoint
+            {
+                method: "PATCH",
+                headers: {
+                    "accept": "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    status: status
                 }),
             }
         );

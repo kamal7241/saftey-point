@@ -1,9 +1,9 @@
 export enum AdminStatus {
   ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
+  SUSPENDED = "SUSPENDED",
 }
 
 export enum AdminVmStatus {
   ACTIVE = "1",
-  INACTIVE = "0",
+  SUSPENDED = "0",
 }

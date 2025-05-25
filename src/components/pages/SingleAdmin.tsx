@@ -14,7 +14,7 @@ import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
 import { useRouter } from "@/i18n/routing";
-import { deleteAdmin, fetchAdminById, resetAdminPassword, toggleAdminVerification } from "@/api/adminService";
+import { deleteAdmin, fetchAdminById, resetAdminPassword, updateAdminStatus } from "@/api/adminService";
 import Popup from "../ui/Popup";
 import NewAdminForm from "../forms/NewAdminForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
@@ -119,11 +119,11 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
      if (!adminData?.id) return;
     try {
       // Assuming toggleAdminVerification exists and works similarly
-      const result = await toggleAdminVerification(Number(adminData.id), !adminData.isVerified);
+      const result = await updateAdminStatus(Number(adminData.id), adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.SUSPENDED : AdminStatus.ACTIVE);
       if (result.success) {
         await getAdminData(); // Refetch data
         showToast.success(tMsgs(
-          adminData.isVerified ? "admin_suspended_successfully" : "admin_activated_successfully"
+          adminData.status === AdminVmStatus.ACTIVE ? "admin_suspended_successfully" : "admin_activated_successfully"
         ));
       } else {
         setError(result.error || tMsgs("error_updating_status"));
@@ -163,7 +163,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           onClose={handleCloseEditPopup}
           adminData={adminData ? {
             id: adminData.id,
-            status: adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.ACTIVE : AdminStatus.INACTIVE, // Map status back if needed
+            status: adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.ACTIVE : AdminStatus.SUSPENDED, // Map status back if needed
             userType: adminData.userType,
             user: {
               firstName: adminData.user.firstName,
@@ -257,7 +257,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             />
             {/* Conditionally render Suspend/Activate button if applicable */}
             <Button
-              label={t(adminData?.isVerified ? "buttons.suspend" : "buttons.activate")}
+              label={t(adminData?.status === AdminVmStatus.ACTIVE ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
@@ -300,7 +300,6 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             copyIt
             icon={<UserSquare />} // Changed icon
           />
-          {adminData?.status}
           <GroupInfo
             label={t("status")}
             key={adminData?.status} // This will force Status to re-mount on status change

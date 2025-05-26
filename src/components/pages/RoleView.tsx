@@ -21,6 +21,9 @@ import {
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
+import SuccessMessage from "../ui/SuccessMessage";
+import { AdminVmStatus } from "@/enum/admin-status.enum";
+import Suspend from "../ui/icons/Suspend";
 
 type Permission = {
   name: string;
@@ -31,9 +34,14 @@ type PermissionSection = {
   title: string;
   permissions: Permission[];
 };
+
 interface SingleRoleProps {
   roleId: string;
   isEditing?: boolean;
+}
+
+interface RoleResponseWithStatus extends RoleResponse {
+  status?: string;
 }
 
 const transformFeaturesToSections = (
@@ -80,10 +88,11 @@ export default function RoleView({
   const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(isInEditModel);
-  const [roleData, setRoleData] = useState<RoleResponse | null>(null);
+  const [roleData, setRoleData] = useState<RoleResponseWithStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
@@ -180,12 +189,10 @@ export default function RoleView({
       const response = await updateRole(Number(roleId), payload);
 
       if (response && response.success !== false) {
-        // Check if response indicates success
-        showToast.success("Role updated successfully!");
+        setShowSuccess(true);
         setIsEditing(false);
         await fetchData();
       } else {
-        // Handle API error response
         const errorMessage = response?.message || "Failed to update role.";
         showToast.error(errorMessage);
         setError(errorMessage);
@@ -249,6 +256,24 @@ export default function RoleView({
   // Handler for canceling deletion
   const handleDeleteCancel = () => {
     setShowDeleteConfirm(false);
+  };
+
+  const handleToggleStatus = async () => {
+    if (!roleData) return;
+    const newStatus = roleData.status === AdminVmStatus.ACTIVE ? AdminVmStatus.INACTIVE : AdminVmStatus.ACTIVE;
+    setRoleData({ ...roleData, status: newStatus }); // Optimistic update
+    const result = await updateRole(Number(roleId), {
+      name: roleData.name,
+      description: roleData.description,
+      features: roleData.features,
+      status: newStatus,
+    } as Partial<RoleResponseWithStatus>);
+    if (!result.success) {
+      setRoleData({ ...roleData, status: roleData.status }); // Revert if failed
+      showToast.error(result.message || "Failed to update status");
+    } else {
+      // await fetchData();
+    }
   };
 
   if (loading && !roleData) {
@@ -318,29 +343,19 @@ export default function RoleView({
                 variant="primary"
               />
             )}
-            {/* Keep Suspend/Delete buttons - Add their logic later */}
-            {/* <Button
-              label={t("buttons.suspend")}
-              onClick={() => {
-              }}
-              icon={
-                <span className="inline-block w-6">
-                  <Suspend />
-                </span>
-              }
+            <Button
+              label={roleData?.status === AdminVmStatus.ACTIVE ? t("buttons.suspend") : t("buttons.activate")}
+              onClick={handleToggleStatus}
+              icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
-              disabled={isEditing}
-            /> */}
+              // disabled={isEditing}
+            />
             <Button
               label={t("buttons.delete")}
-              onClick={handleDeleteClick} // Updated onClick handler
-              icon={
-                <span className="inline-block w-6">
-                  <Delete />
-                </span>
-              }
+              onClick={handleDeleteClick}
+              icon={<span className="inline-block w-6"><Delete /></span>}
               variant="danger"
-              disabled={isEditing} // Disable while editing
+              disabled={isEditing}
             />
           </>
         }
@@ -365,7 +380,7 @@ export default function RoleView({
               />
               <GroupInfo
                 label={t("status")}
-                content={<Status status={"1"} />}
+                content={<Status status={roleData.status || "0"} />}
                 icon={<StatusCheck />}
               />
               {/* <GroupInfo label={t("role")} content={roleData.key} icon={<Task />} /> */}
@@ -386,6 +401,14 @@ export default function RoleView({
           errors={formErrors}
           onCancel={handleCancelEdit}
         />
+
+        {showSuccess && (
+          <SuccessMessage
+            title="Successfully Updated"
+            msg="Role has been successfully updated"
+            bigger
+          />
+        )}
       </div>
     </div>
   );

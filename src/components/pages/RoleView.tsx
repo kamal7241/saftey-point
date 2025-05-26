@@ -21,10 +21,6 @@ import {
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
-<<<<<<< HEAD
-import SuccessMessage from "../ui/SuccessMessage";
-=======
->>>>>>> parent of 5512609 (feat:edit role status)
 
 type Permission = {
   name: string;

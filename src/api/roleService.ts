@@ -18,7 +18,7 @@ export interface RoleResponse {
   name: string;
   description: string;
   features: RoleFeature[];
-  status?: RoleStatus;
+  status: RoleStatus;
 }
 
 export const fetchRoles = async (): Promise<RoleResponse[]> => {

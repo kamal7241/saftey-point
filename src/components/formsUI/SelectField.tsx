@@ -19,6 +19,7 @@ interface SelectFieldProps {
   onChange: (name: string, value: string) => void;
   extraClass?: string;
   customDropdown?: boolean;
+  error?: string;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -30,6 +31,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
   placeholder = label,
   extraClass = "px-3 py-0 leading-[50px]",
   customDropdown = false,
+  error
 }) => {
   const t = useTranslations("ui");
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +61,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       <div className="relative">
         {customDropdown ? (
           <div
-            className={`border rounded-lg w-full ${extraClass} cursor-pointer`}
+            className={`border rounded-lg w-full ${extraClass} cursor-pointer ${error ? "!border-red-400" : ""}`}
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <div className="flex justify-between items-center">

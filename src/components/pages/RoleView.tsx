@@ -93,12 +93,13 @@ export default function RoleView({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const [formData, setFormData] = useState({ name: "", description: "" });
+  const [formData, setFormData] = useState({ name: "", description: "", status: RoleStatus.DEACTIVATED });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
   const [formErrors, setFormErrors] = useState({
     name: "",
     description: "",
     permissions: "",
+    status: "",
   });
 
   const fetchData = useCallback(async () => {
@@ -109,7 +110,7 @@ export default function RoleView({
       if (data) {
         setRoleData(data);
 
-        setFormData({ name: data.name, description: data.description });
+        setFormData({ name: data.name, description: data.description, status: data.status });
         setSectionsData(transformFeaturesToSections(data.features));
       } else {
         setError("Role not found");
@@ -128,12 +129,14 @@ export default function RoleView({
     }
   }, [roleId]);
 
-  const handleFormChange = (data: { name: string; description: string }) => {
+  const handleFormChange = (data: { name: string; description: string; status: RoleStatus }) => {
     setFormData(data);
     if (formErrors.name && data.name)
       setFormErrors((prev) => ({ ...prev, name: "" }));
     if (formErrors.description && data.description)
       setFormErrors((prev) => ({ ...prev, description: "" }));
+    if (formErrors.status && data.status)
+      setFormErrors((prev) => ({ ...prev, status: "" }));
   };
 
   const handleSectionsChange = (updatedSections: PermissionSection[]) => {
@@ -147,7 +150,7 @@ export default function RoleView({
   };
 
   const handleSubmit = async () => {
-    const currentErrors = { name: "", description: "", permissions: "" };
+    const currentErrors = { name: "", description: "", permissions: "", status: "" };
     let hasError = false;
     if (!formData.name.trim()) {
       currentErrors.name = "Role name is required";
@@ -164,7 +167,10 @@ export default function RoleView({
       currentErrors.permissions = "Please select at least one permission";
       hasError = true;
     }
-
+    if (!formData.status) {
+      currentErrors.status = "Please select a status";
+      hasError = true;
+    }
     setFormErrors(currentErrors);
     if (hasError) {
       showToast.error("Please fix the errors in the form.");
@@ -183,6 +189,7 @@ export default function RoleView({
         name: formData.name,
         description: formData.description,
         features: featuresToUpdate,
+        status: formData.status,
       };
 
       const response = await updateRole(Number(roleId), payload);
@@ -190,7 +197,6 @@ export default function RoleView({
       if (response && response.success !== false) {
         setShowSuccess(true);
         setIsEditing(false);
-        await fetchData();
       } else {
         const errorMessage = response?.message || "Failed to update role.";
         showToast.error(errorMessage);
@@ -212,9 +218,9 @@ export default function RoleView({
   const handleCancelEdit = () => {
     setIsEditing(false);
     if (roleData) {
-      setFormData({ name: roleData.name, description: roleData.description });
+      setFormData({ name: roleData.name, description: roleData.description, status: roleData.status });
       setSectionsData(transformFeaturesToSections(roleData.features));
-      setFormErrors({ name: "", description: "", permissions: "" });
+      setFormErrors({ name: "", description: "", permissions: "", status: "" });
     }
   };
   const closeAndNavigateToList = () => {

@@ -30,13 +30,18 @@ type PermissionFormProps = {
     description: string;
     status: RoleStatus;
   };
-  onFormChange: (data: { name: string; description: string }) => void;
+  onFormChange: (data: {
+    name: string;
+    description: string;
+    status: RoleStatus;
+  }) => void;
   onSectionsChange: (sections: Section[]) => void;
   onSubmit: () => void;
   errors?: {
     name?: string;
     description?: string;
     permissions?: string;
+    status?: string;
   };
   onCancel?: () => void;
 };
@@ -115,23 +120,24 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             extraClass="w-full px-4 py-3 h-[48px]"
             error={errors?.description}
           />
-          <SelectField
-            label={t("status")}
-            name="status"
-            extraClass="px-3 py-0 leading-[46px]"
-            value={formData.status}
-            onChange={(name, value) => {
-              handleChange(name, value);
-            }}
-            options={[
-              { value: RoleStatus.ACTIVATED, label: t("user_status.active") },
-              {
-                value: RoleStatus.DEACTIVATED,
-                label: t("user_status.inactive"),
-              },
-            ]}
-            customDropdown
-          />
+            <SelectField
+              label={t("status")}
+              name="status"
+              extraClass="px-3 py-0 leading-[46px]"
+              value={formData.status}
+              onChange={(name, value) => {
+                handleChange(name, value);
+              }}
+              options={[
+                { value: RoleStatus.ACTIVATED, label: t("user_status.active") },
+                {
+                  value: RoleStatus.DEACTIVATED,
+                  label: t("user_status.inactive"),
+                },
+              ]}
+              error={errors?.status}
+              customDropdown
+            />
         </div>
       )}
       {errors?.permissions && (
@@ -207,7 +213,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             label={t("buttons.close")}
             // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
             onClick={() => {
-              onCancel();
+              onCancel?.();
             }}
             variant="transparent"
             padding="py-3 px-4"

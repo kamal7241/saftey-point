@@ -269,7 +269,7 @@ const ManageAdmins = () => {
                 name: "status",
                 options: [
                   { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.INACTIVE, label: t("inactive") },
+                  { value: AdminStatus.SUSPENDED, label: t("suspended") },
                 ],
               },
             ]}

@@ -17,6 +17,7 @@ import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
 import { AdminStatus } from "@/enum/admin-status.enum";
 import { RoleStatus } from "@/enum/role-status.enum";
+import { TableStatus } from "@/enum/table-status.enum";
 
 
 interface Role {
@@ -38,11 +39,15 @@ interface Role {
   permissionsCount?: string;
 }
 
+export interface RoleVm extends Omit<Role, "status"> {
+  status: TableStatus;
+}
+
 const ManageRoles = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<RoleVm[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -60,7 +65,7 @@ const ManageRoles = () => {
       setRoles(
         data.map((role) => ({
           ...role,
-          status: role.status || RoleStatus.DEACTIVATED,
+          status: role.status === RoleStatus.ACTIVATED ? TableStatus.ACTIVE : TableStatus.INACTIVE,
           permissionsCount: `${role.features.reduce(
             (count, feature) =>
               count +

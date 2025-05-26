@@ -4,6 +4,8 @@ import Input from "../formsUI/Input";
 
 import Button from "../ui/Button";
 import { useTranslations } from "next-intl";
+import SelectField from "../formsUI/SelectField";
+import { RoleStatus } from "@/enum/role-status.enum";
 
 type Permission = {
   name: string;
@@ -26,6 +28,7 @@ type PermissionFormProps = {
     // key: string; // Key might not be needed directly in the form if managed by parent
     name: string;
     description: string;
+    status: RoleStatus;
   };
   onFormChange: (data: { name: string; description: string }) => void;
   onSectionsChange: (sections: Section[]) => void;
@@ -112,12 +115,30 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             extraClass="w-full px-4 py-3 h-[48px]"
             error={errors?.description}
           />
+          <SelectField
+            label={t("status")}
+            name="status"
+            extraClass="px-3 py-0 leading-[46px]"
+            value={formData.status}
+            onChange={(name, value) => {
+              handleChange(name, value);
+            }}
+            options={[
+              { value: RoleStatus.ACTIVATED, label: t("user_status.active") },
+              {
+                value: RoleStatus.DEACTIVATED,
+                label: t("user_status.inactive"),
+              },
+            ]}
+            customDropdown
+          />
         </div>
       )}
       {errors?.permissions && (
         <p className="text-red-500 text-sm mt-2">{errors.permissions}</p>
       )}
-      {title2 && <h3 className="heading3">{title2}</h3>} {/* Changed from title to title2 */}
+      {title2 && <h3 className="heading3">{title2}</h3>}{" "}
+      {/* Changed from title to title2 */}
       <div className="flex-col justify-start items-start gap-6 inline-flex">
         {sections.map((section, sectionIndex) => (
           <div
@@ -185,7 +206,9 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           <Button
             label={t("buttons.close")}
             // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
-            onClick={() => { onCancel() }}
+            onClick={() => {
+              onCancel();
+            }}
             variant="transparent"
             padding="py-3 px-4"
           />

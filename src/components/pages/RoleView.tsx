@@ -18,12 +18,13 @@ import {
   RoleResponse,
   updateRole,
   deleteRole,
+  setRoleStatus,
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
 import SuccessMessage from "../ui/SuccessMessage";
-import { AdminVmStatus } from "@/enum/admin-status.enum";
 import Suspend from "../ui/icons/Suspend";
+import { RoleStatus } from "@/enum/role-status.enum";
 
 type Permission = {
   name: string;
@@ -40,9 +41,7 @@ interface SingleRoleProps {
   isEditing?: boolean;
 }
 
-interface RoleResponseWithStatus extends RoleResponse {
-  status?: string;
-}
+
 
 const transformFeaturesToSections = (
   features: RoleFeature[]
@@ -88,7 +87,7 @@ export default function RoleView({
   const tMsgs = useTranslations("messages");
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(isInEditModel);
-  const [roleData, setRoleData] = useState<RoleResponseWithStatus | null>(null);
+  const [roleData, setRoleData] = useState<RoleResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -261,16 +260,11 @@ export default function RoleView({
     setShowDeleteConfirm(false);
   };
 
-  const handleToggleStatus = async () => {
+  const toggleRolesStatus = async () => {
     if (!roleData) return;
-    const newStatus = roleData.status === AdminVmStatus.ACTIVE ? AdminVmStatus.SUSPENDED : AdminVmStatus.ACTIVE;
+    const newStatus = roleData.status === RoleStatus.ACTIVATED ? RoleStatus.DEACTIVATED : RoleStatus.ACTIVATED;
     setRoleData({ ...roleData, status: newStatus }); // Optimistic update
-    const result = await updateRole(Number(roleId), {
-      name: roleData.name,
-      description: roleData.description,
-      features: roleData.features,
-      status: newStatus,
-    } as Partial<RoleResponseWithStatus>);
+    const result = await setRoleStatus(Number(roleId), newStatus);
     if (!result.success) {
       setRoleData({ ...roleData, status: roleData.status }); // Revert if failed
       showToast.error(result.message || "Failed to update status");
@@ -348,8 +342,8 @@ export default function RoleView({
               />
             )}
             <Button
-              label={roleData?.status === AdminVmStatus.ACTIVE ? t("buttons.suspend") : t("buttons.activate")}
-              onClick={handleToggleStatus}
+              label={roleData?.status === RoleStatus.ACTIVATED ? t("buttons.deactivate") : t("buttons.activate")}
+              onClick={toggleRolesStatus}
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
               // disabled={isEditing}

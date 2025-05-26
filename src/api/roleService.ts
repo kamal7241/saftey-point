@@ -1,5 +1,7 @@
 // import { Role } from "@/types/ui.types";
 
+import { RoleStatus } from "@/enum/role-status.enum";
+
 export interface RoleFeature {
   key: string;
   name: string;
@@ -16,6 +18,7 @@ export interface RoleResponse {
   name: string;
   description: string;
   features: RoleFeature[];
+  status?: RoleStatus;
 }
 
 export const fetchRoles = async (): Promise<RoleResponse[]> => {
@@ -141,6 +144,10 @@ export const updateRole = async (roleId: number, roleData: Partial<RoleResponse>
     // Or rethrow if the calling function expects to catch it:
     // throw error;
   }
+};
+
+export const setRoleStatus = async (roleId: number, roleStatus: RoleStatus) => {
+    return updateRole(roleId, { status: roleStatus });
 };
 
 export const deleteRole = async (roleId: number) => {

@@ -275,6 +275,7 @@ export default function RoleView({
       setRoleData({ ...roleData, status: roleData.status }); // Revert if failed
       showToast.error(result.message || "Failed to update status");
     } else {
+      showToast.success("Status updated successfully");
       // await fetchData();
     }
   };

@@ -1,5 +1,5 @@
 "use client";
-import { deleteRole, fetchRoles } from "@/api/roleService";
+import { deleteRole, fetchRoles, updateRole, RoleResponse } from "@/api/roleService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { showToast } from "@/utils/toast";
@@ -15,7 +15,11 @@ import Eye from "../ui/icons/Eye";
 import { Export } from "../ui/icons/Export";
 import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
-import { AdminStatus } from "@/enum/admin-status.enum";
+import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
+
+interface RoleResponseWithStatus extends RoleResponse {
+  status?: string;
+}
 
 interface Role {
   id: number;
@@ -136,20 +140,42 @@ const ManageRoles = () => {
   const handleView = (id: number) => {
     router.push(`/dashboard/admin-management/roles-permissions/${id}`);
   };
-
   const handleToggleStatus = (role: Role) => {
     setRoles((prev) =>
       prev.map((r) =>
         r.id === role.id ? { ...r, status: r.status === "1" ? "0" : "1" } : r
       )
     );
+  }
+
+  const handleToggleRoleStatus = async (role: Role) => {
+    const newStatus = role.status === AdminVmStatus.ACTIVE ? AdminVmStatus.SUSPENDED : AdminVmStatus.ACTIVE;
+    setRoles((prev) =>
+      prev.map((r) => (r.id === role.id ? { ...r, status: newStatus } : r))
+    );
+
+    const result = await updateRole(Number(role.id), {
+      name: role.name,
+      description: role.description,
+      features: role.features,
+      status: newStatus,
+    } as Partial<RoleResponseWithStatus>);
+    if (!result.success) {
+      setRoles((prev) =>
+        prev.map((r) => (r.id === role.id ? { ...r, status: role.status } : r))
+      );
+      showToast.error(result.message || "Failed to update status");
+    } else {
+      showToast.success("Status updated successfully");
+      // await getRoles(); 
+    }
   };
 
   const renderRowActions = (row: Role) => (
     <div className="flex gap-2 items-center">
       <Toggler
-        checked={row.status === "1"}
-        onChange={() => handleToggleStatus(row)}
+        checked={row.status === AdminVmStatus.ACTIVE}
+        onChange={() => handleToggleRoleStatus(row)}
       />
       <Button
         icon={<Eye />}
@@ -298,7 +324,7 @@ const ManageRoles = () => {
                 name: "status",
                 options: [
                   { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.INACTIVE, label: t("inactive") },
+                  { value: AdminStatus.SUSPENDED, label: t("inactive") },
                 ],
               },
             ]}

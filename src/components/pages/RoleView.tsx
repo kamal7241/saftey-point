@@ -21,7 +21,10 @@ import {
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
+<<<<<<< HEAD
 import SuccessMessage from "../ui/SuccessMessage";
+=======
+>>>>>>> parent of 5512609 (feat:edit role status)
 
 type Permission = {
   name: string;
@@ -85,7 +88,6 @@ export default function RoleView({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
 
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
@@ -182,10 +184,12 @@ export default function RoleView({
       const response = await updateRole(Number(roleId), payload);
 
       if (response && response.success !== false) {
-        setShowSuccess(true);
+        // Check if response indicates success
+        showToast.success("Role updated successfully!");
         setIsEditing(false);
         await fetchData();
       } else {
+        // Handle API error response
         const errorMessage = response?.message || "Failed to update role.";
         showToast.error(errorMessage);
         setError(errorMessage);
@@ -386,14 +390,6 @@ export default function RoleView({
           errors={formErrors}
           onCancel={handleCancelEdit}
         />
-
-        {showSuccess && (
-          <SuccessMessage
-            title="Successfully Updated"
-            msg="Role has been successfully updated"
-            bigger
-          />
-        )}
       </div>
     </div>
   );

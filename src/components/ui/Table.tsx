@@ -17,6 +17,7 @@ interface TableProps<T extends { image?: string }> {
   data: T[];
   columns: { header: string; accessor: keyof T }[];
   renderRowActions?: (row: T) => React.ReactNode;
+  renderCell?: (row: T, column: keyof T) => React.ReactNode;
   pagination?: {
     currentPage: number;
     totalPages: number;
@@ -31,6 +32,7 @@ const Table = <T extends { image?: string }>({
   data,
   columns,
   renderRowActions,
+  renderCell,
   pagination = {
     currentPage: 1,
     totalPages: 1,
@@ -186,7 +188,9 @@ const Table = <T extends { image?: string }>({
                         className="px-4 py-2 text-start border-b border-light-100 capitalize"
                         data-column={column.accessor}
                       >
-                        {column.accessor === "status" ||
+                        {renderCell ? (
+                          renderCell(row, column.accessor)
+                        ) : column.accessor === "status" ||
                         column.accessor === "isActive" ? (
                           <Status
                             status={String(row[column.accessor]).toString()}
@@ -200,7 +204,7 @@ const Table = <T extends { image?: string }>({
                               ? "Invalid Date"
                               : formatDate(String(row[column.accessor]))}
                           </span>
-                        ) : column.accessor === "name" ? (
+                        ) : column.accessor === "image" ? (
                           <div className="flex items-center gap-2 min-w-[200px]">
                             {row.image && (
                               <ImageWithFallback

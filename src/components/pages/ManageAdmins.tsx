@@ -18,6 +18,7 @@ import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 import { AdminStatus } from "@/enum/admin-status.enum";
+import Status from "@/components/ui/Status";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
@@ -44,6 +45,7 @@ const ManageAdmins = () => {
     if ("admins" in response) {
       setAdmins(response.admins);
       setTotalCount(response.totalCount);
+      console.log('ADMINS:', response.admins);
     } else {
       showToast.error(tMsgs("error_fetching_admins"));
     }
@@ -74,9 +76,26 @@ const ManageAdmins = () => {
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
-
+    { header: "permissions", accessor: "rolePermissions" },
     { header: "status", accessor: "status" },
   ];
+
+  const formatPermissions = (permissions: Admin['rolePermissions']) => {
+    if (!permissions || permissions.length === 0) return '-';
+    const uniqueNames = Array.from(new Set(permissions.map(p => p.name)));
+    return uniqueNames.join(' . ');
+  };
+
+  const renderCell = (row: Admin, column: keyof Admin): React.ReactNode => {
+    if (column === 'rolePermissions') {
+      return formatPermissions(row.rolePermissions);
+    }
+    if (column === 'status') {
+      return <Status status={String(row[column])} />;
+    }
+    return String(row[column] ?? '-');
+  };
+
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
   };
@@ -285,10 +304,10 @@ const ManageAdmins = () => {
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: setCurrentPage,
           }}
-          
           rowsPerPage={limit}
           renderRowActions={renderRowActions}
           isLoading={loading}
+          renderCell={renderCell}
         />
       </div>
 

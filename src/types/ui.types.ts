@@ -264,8 +264,6 @@ export interface AdminResponse {
 //     isVerified: boolean;
 // }
 export interface Admin {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any  
-    user: any;
     id: number;
     name: string;
     email: string;
@@ -275,6 +273,19 @@ export interface Admin {
     avatar: string;
     isVerified: boolean;
     image?: string;
+    roles?: {
+        id: number;
+        key: string;
+        name: string;
+        description: string;
+    }[];
+    rolePermissions?: {
+        id: number;
+        key: string;
+        name: string;
+        action: string;
+        isAllowed: boolean;
+    }[];
 }
 export interface  Role {
     id: number;

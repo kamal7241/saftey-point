@@ -1,5 +1,5 @@
 "use client";
-import { deleteRole, fetchRoles } from "@/api/roleService";
+import { deleteRole, fetchRoles, setRoleStatus } from "@/api/roleService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { showToast } from "@/utils/toast";
@@ -16,13 +16,16 @@ import { Export } from "../ui/icons/Export";
 import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
 import { AdminStatus } from "@/enum/admin-status.enum";
+import { RoleStatus } from "@/enum/role-status.enum";
+import { TableStatus } from "@/enum/table-status.enum";
+
 
 interface Role {
   id: number;
   key: string;
   name: string;
   description: string;
-  status: string;
+  status: RoleStatus;
   image?: string;
   features: {
     key: string;
@@ -36,11 +39,15 @@ interface Role {
   permissionsCount?: string;
 }
 
+export interface RoleVm extends Omit<Role, "status"> {
+  status: TableStatus;
+}
+
 const ManageRoles = () => {
   const t = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [roles, setRoles] = useState<Role[]>([]);
+  const [roles, setRoles] = useState<RoleVm[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -58,7 +65,7 @@ const ManageRoles = () => {
       setRoles(
         data.map((role) => ({
           ...role,
-          status: "1",
+          status: role.status === RoleStatus.ACTIVATED ? TableStatus.ACTIVE : TableStatus.INACTIVE,
           permissionsCount: `${role.features.reduce(
             (count, feature) =>
               count +
@@ -137,19 +144,29 @@ const ManageRoles = () => {
     router.push(`/dashboard/admin-management/roles-permissions/${id}`);
   };
 
-  const handleToggleStatus = (role: Role) => {
+  const toggleRoleStatus = async (role: Role) => {
+    const newStatus = role.status === RoleStatus.ACTIVATED ? RoleStatus.DEACTIVATED : RoleStatus.ACTIVATED;
     setRoles((prev) =>
-      prev.map((r) =>
-        r.id === role.id ? { ...r, status: r.status === "1" ? "0" : "1" } : r
-      )
+      prev.map((r) => (r.id === role.id ? { ...r, status: newStatus } : r))
     );
+
+    const result = await setRoleStatus(Number(role.id), newStatus);
+    if (!result.success) {
+      setRoles((prev) =>
+        prev.map((r) => (r.id === role.id ? { ...r, status: role.status } : r))
+      );
+      showToast.error(result.message || "Failed to update status");
+    } else {
+      showToast.success("Status updated successfully");
+      // await getRoles(); 
+    }
   };
 
   const renderRowActions = (row: Role) => (
     <div className="flex gap-2 items-center">
       <Toggler
-        checked={row.status === "1"}
-        onChange={() => handleToggleStatus(row)}
+        checked={row.status === RoleStatus.ACTIVATED}
+        onChange={() => toggleRoleStatus(row)}
       />
       <Button
         icon={<Eye />}
@@ -298,7 +315,7 @@ const ManageRoles = () => {
                 name: "status",
                 options: [
                   { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.INACTIVE, label: t("inactive") },
+                  { value: AdminStatus.SUSPENDED, label: t("inactive") },
                 ],
               },
             ]}

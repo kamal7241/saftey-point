@@ -8,6 +8,7 @@ import { showToast } from "@/utils/toast";
 import SuccessMessage from "../ui/SuccessMessage";
 import Popup from "../ui/Popup";
 import { useRouter } from "@/i18n/routing";
+import { RoleStatus } from "@/enum/role-status.enum";
 
 export default function AddRole() {
   const t = useTranslations("common");
@@ -86,6 +87,7 @@ export default function AddRole() {
     name: "",
     description: "",
     features: [],
+    status: RoleStatus.DEACTIVATED,
   });
 
   const [showSuccess, setShowSuccess] = useState(false);

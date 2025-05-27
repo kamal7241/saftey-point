@@ -18,12 +18,13 @@ import {
   RoleResponse,
   updateRole,
   deleteRole,
+  setRoleStatus,
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
 import SuccessMessage from "../ui/SuccessMessage";
-import { AdminVmStatus } from "@/enum/admin-status.enum";
 import Suspend from "../ui/icons/Suspend";
+import { RoleStatus } from "@/enum/role-status.enum";
 
 type Permission = {
   name: string;
@@ -40,9 +41,6 @@ interface SingleRoleProps {
   isEditing?: boolean;
 }
 
-interface RoleResponseWithStatus extends RoleResponse {
-  status?: string;
-}
 
 const transformFeaturesToSections = (
   features: RoleFeature[]
@@ -94,12 +92,13 @@ export default function RoleView({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const [formData, setFormData] = useState({ name: "", description: "" });
+  const [formData, setFormData] = useState({ name: "", description: "", status: RoleStatus.DEACTIVATED });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
   const [formErrors, setFormErrors] = useState({
     name: "",
     description: "",
     permissions: "",
+    status: "",
   });
 
   const fetchData = useCallback(async () => {
@@ -110,7 +109,7 @@ export default function RoleView({
       if (data) {
         setRoleData(data);
 
-        setFormData({ name: data.name, description: data.description });
+        setFormData({ name: data.name, description: data.description, status: data.status });
         setSectionsData(transformFeaturesToSections(data.features));
       } else {
         setError("Role not found");
@@ -129,12 +128,14 @@ export default function RoleView({
     }
   }, [roleId]);
 
-  const handleFormChange = (data: { name: string; description: string }) => {
+  const handleFormChange = (data: { name: string; description: string; status: RoleStatus }) => {
     setFormData(data);
     if (formErrors.name && data.name)
       setFormErrors((prev) => ({ ...prev, name: "" }));
     if (formErrors.description && data.description)
       setFormErrors((prev) => ({ ...prev, description: "" }));
+    if (formErrors.status && data.status)
+      setFormErrors((prev) => ({ ...prev, status: "" }));
   };
 
   const handleSectionsChange = (updatedSections: PermissionSection[]) => {
@@ -148,7 +149,7 @@ export default function RoleView({
   };
 
   const handleSubmit = async () => {
-    const currentErrors = { name: "", description: "", permissions: "" };
+    const currentErrors = { name: "", description: "", permissions: "", status: "" };
     let hasError = false;
     if (!formData.name.trim()) {
       currentErrors.name = "Role name is required";
@@ -165,7 +166,10 @@ export default function RoleView({
       currentErrors.permissions = "Please select at least one permission";
       hasError = true;
     }
-
+    if (!formData.status) {
+      currentErrors.status = "Please select a status";
+      hasError = true;
+    }
     setFormErrors(currentErrors);
     if (hasError) {
       showToast.error("Please fix the errors in the form.");
@@ -184,6 +188,7 @@ export default function RoleView({
         name: formData.name,
         description: formData.description,
         features: featuresToUpdate,
+        status: formData.status,
       };
 
       const response = await updateRole(Number(roleId), payload);
@@ -191,7 +196,6 @@ export default function RoleView({
       if (response && response.success !== false) {
         setShowSuccess(true);
         setIsEditing(false);
-        await fetchData();
       } else {
         const errorMessage = response?.message || "Failed to update role.";
         showToast.error(errorMessage);
@@ -213,12 +217,15 @@ export default function RoleView({
   const handleCancelEdit = () => {
     setIsEditing(false);
     if (roleData) {
-      setFormData({ name: roleData.name, description: roleData.description });
+      setFormData({ name: roleData.name, description: roleData.description, status: roleData.status });
       setSectionsData(transformFeaturesToSections(roleData.features));
-      setFormErrors({ name: "", description: "", permissions: "" });
+      setFormErrors({ name: "", description: "", permissions: "", status: "" });
     }
   };
-
+  const closeAndNavigateToList = () => {
+    setShowSuccess(false);
+    router.push("/dashboard/admin-management/roles-permissions");
+  };
   // Handler for initiating delete confirmation
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -258,21 +265,17 @@ export default function RoleView({
     setShowDeleteConfirm(false);
   };
 
-  const handleToggleStatus = async () => {
+  const toggleRolesStatus = async () => {
     if (!roleData) return;
-    const newStatus = roleData.status === AdminVmStatus.ACTIVE ? AdminVmStatus.SUSPENDED : AdminVmStatus.ACTIVE;
+    const newStatus = roleData.status === RoleStatus.ACTIVATED ? RoleStatus.DEACTIVATED : RoleStatus.ACTIVATED;
     setRoleData({ ...roleData, status: newStatus }); // Optimistic update
-    const result = await updateRole(Number(roleId), {
-      name: roleData.name,
-      description: roleData.description,
-      features: roleData.features,
-      status: newStatus,
-    } as Partial<RoleResponseWithStatus>);
+    const result = await setRoleStatus(Number(roleId), newStatus);
     if (!result.success) {
       setRoleData({ ...roleData, status: roleData.status }); // Revert if failed
       showToast.error(result.message || "Failed to update status");
     } else {
-      await fetchData(); 
+      showToast.success("Status updated successfully");
+      // await fetchData();
     }
   };
 
@@ -344,11 +347,11 @@ export default function RoleView({
               />
             )}
             <Button
-              label={roleData?.status === AdminVmStatus.ACTIVE ? t("buttons.suspend") : t("buttons.activate")}
-              onClick={handleToggleStatus}
+              label={roleData?.status === RoleStatus.ACTIVATED ? t("buttons.deactivate") : t("buttons.activate")}
+              onClick={toggleRolesStatus}
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
-              disabled={isEditing}
+              // disabled={isEditing}
             />
             <Button
               label={t("buttons.delete")}
@@ -403,11 +406,13 @@ export default function RoleView({
         />
 
         {showSuccess && (
-          <SuccessMessage
-            title="Successfully Updated"
-            msg="Role has been successfully updated"
-            bigger
-          />
+          <Popup isOpen={showSuccess} onClose={closeAndNavigateToList}>
+            <SuccessMessage
+              title="Successfully Updated"
+              msg="Role has been successfully updated"
+              bigger
+            />
+          </Popup>
         )}
       </div>
     </div>

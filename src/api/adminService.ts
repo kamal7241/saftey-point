@@ -64,6 +64,8 @@ export const updateAdmin = async (
         userUpdates.phone = values.user.phone;
     if (values.user.isVerified !== currentData.user.isVerified)
         userUpdates.isVerified = values.user.isVerified;
+    if (values.user.roleId && values.user.roleId !== currentData.user.roleId)
+        userUpdates.roleId = values.user.roleId;
 
     if (Object.keys(userUpdates).length > 0) {
         apiData.user = userUpdates as AdminData["user"];
@@ -134,7 +136,10 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
                 image: admin.user.avatar.startsWith('http') 
                     ? admin.user.avatar 
                     : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
-                isVerified: admin.user.isVerified
+                isVerified: admin.user.isVerified,
+                permissions: admin.rolePermissions
+                  ? admin.rolePermissions.map((p) => p.name)
+                  : admin.permissions || [],
             })),
             totalCount: result.innerData.count
         };

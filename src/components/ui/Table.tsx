@@ -5,6 +5,7 @@ import { KeyboardArrowLeft } from "./icons/KeyboardArrowLeft";
 import ImageWithFallback from "./ImageWithFallback";
 import Status from "./Status";
 import Loader from "./Loader";
+import { Tooltip } from "react-tooltip";
 
 const formatDate = (date: string): string => {
   const parsedDate = new Date(date);
@@ -17,7 +18,6 @@ interface TableProps<T extends { image?: string }> {
   data: T[];
   columns: { header: string; accessor: keyof T }[];
   renderRowActions?: (row: T) => React.ReactNode;
-  renderCell?: (row: T, column: keyof T) => React.ReactNode;
   pagination?: {
     currentPage: number;
     totalPages: number;
@@ -32,7 +32,6 @@ const Table = <T extends { image?: string }>({
   data,
   columns,
   renderRowActions,
-  renderCell,
   pagination = {
     currentPage: 1,
     totalPages: 1,
@@ -182,68 +181,86 @@ const Table = <T extends { image?: string }>({
               ) : (
                 paginatedData.map((row, rowIndex) => (
                   <tr key={rowIndex} className="border-b">
-                    {columns.map((column) => (
-                      <td
-                        key={column.header}
-                        className="px-4 py-2 text-start border-b border-light-100 capitalize"
-                        data-column={column.accessor}
-                      >
-                        {renderCell ? (
-                          renderCell(row, column.accessor)
-                        ) : column.accessor === "status" ||
-                        column.accessor === "isActive" ? (
-                          <Status
-                            status={String(row[column.accessor]).toString()}
-                          />
-                        ) : column.accessor === "created" ||
-                          column.accessor === "createdAt" ? (
-                          <span className="whitespace-nowrap">
-                            {isNaN(
-                              new Date(String(row[column.accessor])).getTime()
-                            )
-                              ? "Invalid Date"
-                              : formatDate(String(row[column.accessor]))}
-                          </span>
-                        ) : column.accessor === "image" ? (
-                          <div className="flex items-center gap-2 min-w-[200px]">
-                            {row.image && (
-                              <ImageWithFallback
-                                src={row.image}
-                                alt="Company Logo"
-                              />
-                            )}
-                            <span>{String(row[column.accessor])}</span>
-                          </div>
-                        ) : column.accessor === "website" ? (
-                          <div>
-                            <a
-                              href={String(row[column.accessor])}
-                              target="_blank"
-                              className="lowercase underline"
-                            >
-                              {String(row[column.accessor])}
-                            </a>
-                          </div>
-                        ) : column.header === "user_type" ? (
-                          <div>
-                            <span>
-                              {tCommon(
-                                `user_type.${String(
-                                  row[column.accessor]
-                                ).toLowerCase()}`
-                              )}
+                    {columns.map((column) => {
+                      const isTruncated = [
+                        "name",
+                        "email",
+                        "phone",
+                        "permissions",
+                        "user_id"
+                      ].includes(String(column.accessor)); 
+
+                      const cellValue = Array.isArray(row[column.accessor])
+                        ? (row[column.accessor] as string[]).join(", ")
+                        : String(row[column.accessor] ?? "");
+
+                      return (
+                        <td
+                          key={column.header}
+                          className="px-4 py-2 text-start border-b border-light-100 capitalize max-w-[200px] truncate whitespace-nowrap"
+                          data-column={column.accessor}
+                          {...(isTruncated && cellValue
+                            ? {
+                                "data-tooltip-id": "main-tooltip",
+                                "data-tooltip-content": cellValue,
+                              }
+                            : {})}
+                        >
+                          {column.accessor === "status" ||
+                            column.accessor === "isActive" ? (
+                            <Status
+                              status={String(row[column.accessor]).toString()}
+                            />
+                          ) : column.accessor === "created" ||
+                            column.accessor === "createdAt" ? (
+                            <span className="whitespace-nowrap">
+                              {isNaN(
+                                new Date(String(row[column.accessor])).getTime()
+                              )
+                                ? "Invalid Date"
+                                : formatDate(String(row[column.accessor]))}
                             </span>
-                          </div>
-                        ) : Array.isArray(row[column.accessor]) ? (
-                          (row[column.accessor] as string[]).join(", ")
-                        ) : column.accessor &&
-                          row[column.accessor] !== undefined ? (
-                          (row[column.accessor] as React.ReactNode)
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                    ))}
+                          ) : column.accessor === "name" ? (
+                            <div className="flex items-center gap-2 min-w-[200px]">
+                              {row.image && (
+                                <ImageWithFallback
+                                  src={row.image}
+                                  alt="Company Logo"
+                                />
+                              )}
+                              <span>{String(row[column.accessor])}</span>
+                            </div>
+                          ) : column.accessor === "website" ? (
+                            <div>
+                              <a
+                                href={String(row[column.accessor])}
+                                target="_blank"
+                                className="lowercase underline"
+                              >
+                                {String(row[column.accessor])}
+                              </a>
+                            </div>
+                          ) : column.header === "user_type" ? (
+                            <div>
+                              <span>
+                                {tCommon(
+                                  `user_type.${String(
+                                    row[column.accessor]
+                                  ).toLowerCase()}`
+                                )}
+                              </span>
+                            </div>
+                          ) : Array.isArray(row[column.accessor]) ? (
+                            (row[column.accessor] as string[]).join(", ")
+                          ) : column.accessor &&
+                            row[column.accessor] !== undefined ? (
+                            (row[column.accessor] as React.ReactNode)
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+                      );
+                    })}
 
                     {renderRowActions && (
                       <td className="px-4 py-2 text-start border-b border-light-100 whitespace-nowrap">
@@ -264,9 +281,8 @@ const Table = <T extends { image?: string }>({
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className={`p-2 text-gray-300 hover:opacity-100 ${
-                currentPage <= 1 ? "opacity-30 pointer-events-none" : ""
-              } cursor-pointer`}
+              className={`p-2 text-gray-300 hover:opacity-100 ${currentPage <= 1 ? "opacity-30 pointer-events-none" : ""
+                } cursor-pointer`}
             >
               <KeyboardArrowLeft />
             </button>
@@ -281,9 +297,8 @@ const Table = <T extends { image?: string }>({
               ) : (
                 <button
                   onClick={() => handlePageChange(Number(page))}
-                  className={`px-4 py-2 rounded ${
-                    page === currentPage ? "!text-black-400" : ""
-                  }`}
+                  className={`px-4 py-2 rounded ${page === currentPage ? "!text-black-400" : ""
+                    }`}
                 >
                   {page}
                 </button>
@@ -302,6 +317,7 @@ const Table = <T extends { image?: string }>({
           </li>
         </ul>
       )}
+      <Tooltip id="main-tooltip" place="top" />
     </>
   );
 };

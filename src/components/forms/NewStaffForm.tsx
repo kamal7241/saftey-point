@@ -90,7 +90,7 @@ export default function NewStaffForm({
         email: values.email,
         phone: values.phoneNumber,
         password: values.password,
-        isVerified: false,
+        isVerified: true,
         roleId: values.role? values.role.toString() : "",
       },
     };

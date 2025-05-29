@@ -15,10 +15,10 @@ import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 import { Edit } from "../ui/icons/Edit";
 import { Delete } from "../ui/icons/Delete";
-import { AdminStatus } from "@/enum/admin-status.enum";
 import Toggler from "../formsUI/Toggler";
 import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
+import { UserStatus } from "@/enum/user-status.enum";
 
 
 const StaffManagement = () => {
@@ -118,7 +118,7 @@ const StaffManagement = () => {
   };
 
   const handleToggleStatus = async (staff: SingleStaffUI, isActive: boolean) => {
-    const newStatus = isActive ? AdminStatus.ACTIVE : AdminStatus.SUSPENDED;
+    const newStatus = isActive ? UserStatus.ACTIVE : UserStatus.INACTIVE;
     try {
       const result = await updateStaffStatus(staff.id, newStatus);
       if (result.success) {

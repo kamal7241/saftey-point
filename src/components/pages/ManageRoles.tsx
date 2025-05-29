@@ -15,9 +15,9 @@ import Eye from "../ui/icons/Eye";
 import { Export } from "../ui/icons/Export";
 import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
-import { AdminStatus } from "@/enum/admin-status.enum";
 import { RoleStatus } from "@/enum/role-status.enum";
 import { TableStatus } from "@/enum/table-status.enum";
+import { UserStatus } from "@/enum/user-status.enum";
 
 
 interface Role {
@@ -25,7 +25,8 @@ interface Role {
   key: string;
   name: string;
   description: string;
-  status: RoleStatus;
+  status: TableStatus;
+  isActive: boolean;
   image?: string;
   features: {
     key: string;
@@ -65,7 +66,7 @@ const ManageRoles = () => {
       setRoles(
         data.map((role) => ({
           ...role,
-          status: role.status === RoleStatus.ACTIVATED ? TableStatus.ACTIVE : TableStatus.INACTIVE,
+          status: role.isActive ? TableStatus.ACTIVE : TableStatus.INACTIVE,
           permissionsCount: `${role.features.reduce(
             (count, feature) =>
               count +
@@ -145,12 +146,12 @@ const ManageRoles = () => {
   };
 
   const toggleRoleStatus = async (role: Role) => {
-    const newStatus = role.status === RoleStatus.ACTIVATED ? RoleStatus.DEACTIVATED : RoleStatus.ACTIVATED;
+    const newStatus = role.status === TableStatus.ACTIVE ? TableStatus.INACTIVE : TableStatus.ACTIVE;
     setRoles((prev) =>
-      prev.map((r) => (r.id === role.id ? { ...r, status: newStatus } : r))
+      prev.map((r) => (r.id === role.id ? { ...r, status: newStatus , isActive: !role.isActive } : r))
     );
 
-    const result = await setRoleStatus(Number(role.id), newStatus);
+    const result = await setRoleStatus(Number(role.id), !role.isActive);
     if (!result.success) {
       setRoles((prev) =>
         prev.map((r) => (r.id === role.id ? { ...r, status: role.status } : r))
@@ -314,8 +315,8 @@ const ManageRoles = () => {
                 placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.SUSPENDED, label: t("inactive") },
+                  { value: UserStatus.ACTIVE, label: t("active") },
+                  { value: UserStatus.INACTIVE, label: t("inactive") },
                 ],
               },
             ]}

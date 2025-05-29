@@ -24,6 +24,7 @@ import ClipboardClose from "../ui/icons/ClipboardClose";
 import ClipboardTick from "../ui/icons/ClipboardTick";
 import CourtHouse from "../ui/icons/CourtHouse";
 import TimerEmpty from "../ui/icons/TimerEmpty";
+import { UserStatus } from "@/enum/user-status.enum";
 
 
 const Companies = () => {
@@ -329,10 +330,10 @@ const Companies = () => {
                 placeholder: "Status",
                 name: "status",
                 options: [
-                  { value: "ACTIVE", label: t("user_status.active") },
-                  { value: "INACTIVE", label: t("user_status.inactive") },
-                  { value: "PENDING", label: t("user_status.pending") },
-                  { value: "SUSPENDED", label: t("user_status.suspended") },
+                  { value: UserStatus.ACTIVE, label: t("user_status.active") },
+                  { value: UserStatus.INACTIVE, label: t("user_status.inactive") },
+                  { value: UserStatus.PENDING, label: t("user_status.pending") },
+                  { value: UserStatus.EXPIRED, label: t("user_status.expired") },
                 ],
               },
               {

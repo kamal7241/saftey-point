@@ -18,7 +18,7 @@ export interface RoleResponse {
   name: string;
   description: string;
   features: RoleFeature[];
-  status: RoleStatus;
+  isActive: boolean;
 }
 
 export const fetchRoles = async (): Promise<RoleResponse[]> => {
@@ -146,8 +146,8 @@ export const updateRole = async (roleId: number, roleData: Partial<RoleResponse>
   }
 };
 
-export const setRoleStatus = async (roleId: number, roleStatus: RoleStatus) => {
-    return updateRole(roleId, { status: roleStatus });
+export const setRoleStatus = async (roleId: number, roleStatus: boolean) => {
+    return updateRole(roleId, { isActive: roleStatus });
 };
 
 export const deleteRole = async (roleId: number) => {

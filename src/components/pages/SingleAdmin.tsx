@@ -20,7 +20,9 @@ import NewAdminForm from "../forms/NewAdminForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
 import { showToast } from "@/utils/toast";
 import UserSquare from "../ui/icons/UserSquare";
-import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
+import { AdminVmStatus } from "@/enum/admin-status.enum";
+import { UserStatus } from "@/enum/user-status.enum";
+import { TableStatus } from "@/enum/table-status.enum";
 
 interface SingleAdminProps {
   adminData: Admin;
@@ -119,7 +121,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
      if (!adminData?.id) return;
     try {
       // Assuming toggleAdminVerification exists and works similarly
-      const result = await updateAdminStatus(Number(adminData.id), adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.SUSPENDED : AdminStatus.ACTIVE);
+      const result = await updateAdminStatus(Number(adminData.id), adminData.status === AdminVmStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE);
       if (result.success) {
         await getAdminData(); // Refetch data
         showToast.success(tMsgs(
@@ -163,7 +165,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           onClose={handleCloseEditPopup}
           adminData={adminData ? {
             id: adminData.id,
-            status: adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.ACTIVE : AdminStatus.SUSPENDED, // Map status back if needed
+            status: adminData.status === TableStatus.ACTIVE ? UserStatus.ACTIVE : UserStatus.INACTIVE, // Map status back if needed
             userType: adminData.userType,
             user: {
               firstName: adminData.user.firstName,

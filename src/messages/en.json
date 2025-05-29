@@ -141,6 +141,7 @@
     "to": "To"
   },
   "common": {
+    "admin_id": "Admin ID",
     "home": "Home",
     "name": "name",
     "about": "About",

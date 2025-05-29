@@ -2,7 +2,7 @@
 import { fetchAdmins, deleteAdmin, updateAdminStatus } from "@/api/adminService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
-import { Admin } from "@/types/ui.types";
+import { Admin, AdminResponse } from "@/types/ui.types";
 import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -42,9 +42,10 @@ const ManageAdmins = () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchAdmins(offset, limit);
+    
     if ("admins" in response) {
       setAdmins(
-        response.admins.map((admin: any) => ({
+        response.admins.map((admin: AdminResponse) => ({
           ...admin,
           permissions: admin.permissions || [],
         }))
@@ -115,7 +116,6 @@ const ManageAdmins = () => {
   };
 
   const handleToggleStatus = async (admin: Admin) => {
-    console.log("Toggle status for admin:", admin);
     const newStatus = admin.status === UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE;
     try {
       const result = await updateAdminStatus(admin.id, newStatus);

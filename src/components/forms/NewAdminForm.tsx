@@ -13,6 +13,7 @@ import { AdminData } from "@/types/forms.types";
 import * as Yup from "yup";
 import { generateStrongPassword } from "@/utils/passwordGenerator";
 import { fetchRoles, RoleResponse } from "@/api/roleService";
+import { UserStatus } from "@/enum/user-status.enum";
 
 interface NewAdminFormProps {
   title?: string;
@@ -110,7 +111,7 @@ export default function NewAdminForm({
     : {
         firstName: "",
         lastName: "",
-        status: "",
+        status: UserStatus.ACTIVE.toLowerCase(),
         email: "",
         phoneNumber: "",
         password: "",
@@ -139,7 +140,7 @@ export default function NewAdminForm({
         email: values.email,
         phone: values.phoneNumber,
         password: values.password,
-        isVerified: false,
+        isVerified: true,
         roleId: values.roleId,
       },
     };

@@ -13,6 +13,7 @@ import Button from "../ui/Button";
 import ErrorMessageWrappers from "../ui/ErrorMessageWrappers";
 import SuccessMessage from "../ui/SuccessMessage";
 import { generateStrongPassword } from "@/utils/passwordGenerator";
+import { UserStatus } from "@/enum/user-status.enum";
 
 interface NewStaffFormProps {
   title?: string;
@@ -51,18 +52,18 @@ export default function NewStaffForm({
       phoneNumber: userData.user.phone || "",
       password: "",
       resume: null,
-      role: userData ? "" : "", // Initialize role ID, assuming we'll select it. Or map userData.userType to ID if possible.
+      role: userData ? "" : "",
       avatar: userData.user.avatar,
     }
     : {
       firstName: "",
       lastName: "",
-      status: "",
+      status: UserStatus.ACTIVE.toLowerCase(),
       email: "",
       phoneNumber: "",
       password: "",
       resume: null,
-      role: "", // Role ID will be a number or empty string
+      role: "", 
       avatar: null,
     };
 

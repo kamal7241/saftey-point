@@ -67,7 +67,8 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
 
   const handleCloseEditPopup = async () => {
     setEditPopupOpen(false);
-    await getAdminData(); // Refetch data when edit popup closes
+    // await getAdminData(); // Refetch data when edit popup closes
+    window.location.reload();
   };
 
   const handleDelete = async () => {

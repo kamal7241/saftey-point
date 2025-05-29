@@ -242,22 +242,21 @@ export interface RolePermission {
 }
 
 export interface AdminResponse {
-  permissions?: string[];
-  role?: string;
   id: number;
-  status: string;
-  image?: string;
-  userType: string;
   user: {
-    id: number;
     firstName: string;
     lastName: string;
-    avatar: string;
     email: string;
     phone: string;
+    avatar: string;
     isVerified: boolean;
+    roleId: string;
   };
-  rolePermissions?: RolePermission[];
+  status: string;
+  userType: string;
+  rolePermissions?: { name: string }[];
+  permissions?: string[];
+  roles?: { id: number; key: string; name: string; description: string }[];
 }
 // export interface AdminResponse {
 //     id: number;
@@ -283,6 +282,7 @@ export interface Admin {
   isVerified: boolean;
   image?: string;
   permissions?: string[];
+  role?: string;
 }
 export interface Role {
   id: number;

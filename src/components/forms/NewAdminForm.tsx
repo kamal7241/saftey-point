@@ -251,8 +251,8 @@ export default function NewAdminForm({
                   { value: "active", label: t("user_status.active") },
                   { value: "inactive", label: t("user_status.inactive") },
                   { value: "pending", label: t("user_status.pending") },
-                  { value: "suspended", label: t("user_status.suspended") },
                   { value: "expired", label: t("user_status.expired") },
+                  // { value: "suspended", label: t("user_status.suspended") },
                 ]}
                 customDropdown
               />

@@ -130,7 +130,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === AdminStatus.ACTIVE? AdminVmStatus.ACTIVE : AdminVmStatus.SUSPENDED,
+                status: admin.status,
                 type: admin.userType,
                 phone: admin.user.phone,
                 image: admin.user.avatar.startsWith('http') 
@@ -140,6 +140,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
                 permissions: admin.rolePermissions
                   ? admin.rolePermissions.map((p) => p.name)
                   : admin.permissions || [],
+                role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : '',
             })),
             totalCount: result.innerData.count
         };
@@ -176,7 +177,7 @@ export const fetchAdminById = async (adminId: string) => {
                 id: admin.id,
                 name: `${admin.user.firstName} ${admin.user.lastName}`,
                 email: admin.user.email,
-                status: admin.status === AdminStatus.ACTIVE ? AdminVmStatus.ACTIVE : AdminVmStatus.SUSPENDED,
+                status: admin.status,
                 userType: admin.userType,
                 type: admin.userType,
                 phone: admin.user.phone,

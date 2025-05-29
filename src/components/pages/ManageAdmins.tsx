@@ -1,5 +1,5 @@
 "use client";
-import { fetchAdmins, deleteAdmin } from "@/api/adminService";
+import { fetchAdmins, deleteAdmin, updateAdminStatus } from "@/api/adminService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { Admin } from "@/types/ui.types";
@@ -18,6 +18,7 @@ import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 import { AdminStatus } from "@/enum/admin-status.enum";
+import Toggler from "../formsUI/Toggler";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
@@ -79,6 +80,7 @@ const ManageAdmins = () => {
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
+    { header: "role", accessor: "role" },
     { header: "permissions", accessor: "permissions" },
     { header: "status", accessor: "status" },
   ];
@@ -112,9 +114,33 @@ const ManageAdmins = () => {
     window.location.reload();
   };
 
+  const handleToggleStatus = async (admin: Admin) => {
+    console.log("Toggle status for admin:", admin);
+    const newStatus = admin.status === AdminStatus.ACTIVE ? AdminStatus.SUSPENDED : AdminStatus.ACTIVE;
+    try {
+      const result = await updateAdminStatus(admin.id, newStatus);
+      if (result.success) {
+        showToast.success(
+          newStatus === AdminStatus.ACTIVE
+            ? tMsgs("admin_activated_successfully")
+            : tMsgs("admin_suspended_successfully")
+        );
+        await getAdmins();
+      } else {
+        showToast.error(result.error || tMsgs("error_updating_admin_status"));
+      }
+    } catch (error) {
+      showToast.error(tMsgs("error_updating_admin_status"));
+      console.error("Error updating admin status:", error);
+    }
+  };
+
   const renderRowActions = (row: Admin) => (
-    <div className="flex gap-2">
-      {/* <Switcher /> */}
+    <div className="flex gap-2 items-center">
+      <Toggler
+        checked={row.status === AdminStatus.ACTIVE}
+        onChange={() => handleToggleStatus(row)}
+      />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -273,8 +299,10 @@ const ManageAdmins = () => {
                 placeholder: t("status"),
                 name: "status",
                 options: [
-                  { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.SUSPENDED, label: t("suspended") },
+                  { value: "ACTIVE", label: t("user_status.active") },
+                  { value: "INACTIVE", label: t("user_status.inactive") },
+                  { value: "PENDING", label: t("user_status.pending") },
+                  { value: "EXPIRED", label: t("user_status.expired") },
                 ],
               },
             ]}

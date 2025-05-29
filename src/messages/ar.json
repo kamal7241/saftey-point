@@ -414,8 +414,8 @@
       "expired": "منتهي الصلاحية"
     },
     "user_status": {
-      "active": "نشيط",
-      "inactive": "غير نشط",
+      "active": "مفعل",
+      "inactive": "غير مفعل",
       "pending": "قيد الانتظار",
       "suspended": "معلق",
       "expired": "منتهي الصلاحية",

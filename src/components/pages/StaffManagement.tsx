@@ -1,5 +1,5 @@
 "use client";
-import { fetchStaffManagement } from "@/api/staffService";
+import { fetchStaffManagement, updateStaffStatus, deleteStaff } from "@/api/staffService";
 import Table from "@/components/ui/Table";
 import { SingleStaffUI } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
@@ -13,6 +13,12 @@ import { Add } from "../ui/icons/Add";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import { Edit } from "../ui/icons/Edit";
+import { Delete } from "../ui/icons/Delete";
+import { AdminStatus } from "@/enum/admin-status.enum";
+import Toggler from "../formsUI/Toggler";
+import { showToast } from "@/utils/toast";
+import { useRouter } from "next/navigation";
 
 
 const StaffManagement = () => {
@@ -26,6 +32,8 @@ const StaffManagement = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
   const limit = 10;
+  const router = useRouter();
+
   const getStaffManagement = async () => {
     const offset = (currentPage - 1) * limit;
     const response = await fetchStaffManagement(offset, limit);
@@ -109,14 +117,66 @@ const StaffManagement = () => {
     document.body.removeChild(link);
   };
 
+  const handleToggleStatus = async (staff: SingleStaffUI, isActive: boolean) => {
+    const newStatus = isActive ? AdminStatus.ACTIVE : AdminStatus.SUSPENDED;
+    try {
+      const result = await updateStaffStatus(staff.id, newStatus);
+      if (result.success) {
+        await getStaffManagement();
+      } else {
+        // يمكنك إضافة showToast للخطأ هنا
+      }
+    } catch (error) {
+      console.error("Error updating staff status:", error);
+    }
+  };
+  const handleEdit = (id: number) => {
+    // انتقل لصفحة التعديل أو افتح popup التعديل
+    // مثال:
+    router.push(`/dashboard/staff-management/${id}`);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await deleteStaff(id);
+      if (result.success) {
+        showToast.success("Staff deleted successfully");
+        await getStaffManagement();
+      } else {
+        showToast.error(result.error || "Failed to delete staff");
+      }
+    } catch (error) {
+      showToast.error("An unexpected error occurred");
+      console.error("Error deleting staff:", error);
+    }
+  };
+
   const renderRowActions = (row: SingleStaffUI) => (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
+      <Toggler
+        checked={row.status === "ACTIVE"}
+        onChange={() => handleToggleStatus(row, row.status !== "ACTIVE")}
+      />
       <Button
         icon={<Eye />}
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
         href={`/dashboard/staff-management/${row.id}`}
+      />
+      <Button
+        icon={<Edit />}
+        noBackground={true}
+        textColor="gray-900"
+        noLabel={true}
+        onClick={() => handleEdit(row.id)}
+      />
+      <Button
+        icon={<Delete />}
+        noBackground={true}
+        textColor="red-500"
+        noLabel={true}
+        onClick={() => handleDelete(row.id)}
       />
     </div>
   );
@@ -198,7 +258,7 @@ const StaffManagement = () => {
                   { value: "ACTIVE", label: t("user_status.active") },
                   { value: "INACTIVE", label: t("user_status.inactive") },
                   { value: "PENDING", label: t("user_status.pending") },
-                  { value: "SUSPENDED", label: t("user_status.suspended") },
+                  { value: "EXPIRED", label: t("user_status.expired") },
                 ],
               },
               {

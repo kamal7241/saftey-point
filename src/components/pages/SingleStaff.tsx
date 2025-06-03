@@ -23,6 +23,8 @@ import Teacher from "../ui/icons/Teacher";
 import NewStaffForm from "../forms/NewStaffForm";
 import SomethingWentWrong from "../ui/SomethingWentWrong";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
+import { showToast } from "@/utils/toast";
+import { StaffStatus } from "@/enum/staff-status.enum";
 
 interface SingleStaffProps {
   staffData: SingleStaff;
@@ -30,6 +32,7 @@ interface SingleStaffProps {
 
 export default function SingleStaff({ staffData }: SingleStaffProps) {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
   const [userData] = useState<SingleStaff>(staffData);
   const [error, setError] = useState<string | null>(null);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
@@ -61,18 +64,23 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
     try {
       const result = await toggleStaffVerification(
         Number(userData?.id),
-        // userData?.status
-        (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
+        userData?.status === StaffStatus.ACTIVE ? StaffStatus.INACTIVE : StaffStatus.ACTIVE
       );
       if (result.success) {
+        showToast.success(
+          userData?.status === StaffStatus.ACTIVE
+            ? tMsgs("staff_suspended_successfully")
+            : tMsgs("staff_activated_successfully")
+        );
         handleClose();
       } else {
-        setError(result.error || "Failed to update company status");
+        setError(result.error || "Failed to update staff status");
+        showToast.error(result.error || tMsgs("error_updating_staff_status"));
       }
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred."
-      );
+      const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred.";
+      setError(errorMsg);
+      showToast.error(errorMsg);
     }
     setShowSuspendConfirm(false);
   };
@@ -147,7 +155,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t(userData?.user.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")}
+              {t(userData?.status === StaffStatus.ACTIVE ? "are_you_sure_suspend" : "are_you_sure_activate")}
             </p>
             <div className="flex items-center justify-center gap-4">
               <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
@@ -203,7 +211,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               variant="secondary"
             />
             <Button
-              label={t(userData?.status ? "buttons.suspend" : "buttons.activate")}
+              label={t(userData?.status === StaffStatus.ACTIVE ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={
                 <span className="inline-block w-6">

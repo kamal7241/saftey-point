@@ -5,74 +5,78 @@ import { useTranslations } from "next-intl";
 import PageHeader from "../global/PageHeader";
 import { createRole } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
+import SuccessMessage from "../ui/SuccessMessage";
+import Popup from "../ui/Popup";
+import { useRouter } from "@/i18n/routing";
 
 export default function AddRole() {
   const t = useTranslations("common");
+  const router = useRouter();
   const [errors, setErrors] = useState({
     name: "",
     description: "",
-    permissions: ""
+    permissions: "",
   });
 
   const [sections, setSections] = useState([
     {
-      title: "Admin Management",
+      title: t("admin_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
     {
-      title: "Role Management",
+      title: t("role_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
     {
-      title: "Staff Management",
+      title: t("staff_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
     {
-      title: "Company Management",
+      title: t("company_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
     {
-      title: "Individual Management",
+      title: t("individual_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
     {
-      title: "Courses Management",
+      title: t("courses_management"),
       permissions: [
-        { name: "Create", isActive: false },
-        { name: "Delete", isActive: false },
-        { name: "Update", isActive: false },
-        { name: "List", isActive: false },
-        { name: "Find", isActive: false },
+        { name: t("create"), isActive: false },
+        { name: t("delete"), isActive: false },
+        { name: t("update"), isActive: false },
+        { name: t("list"), isActive: false },
+        { name: t("find"), isActive: false },
       ],
     },
   ]);
@@ -84,6 +88,8 @@ export default function AddRole() {
     features: [],
   });
 
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const handleSubmit = async () => {
     // Validate form data
     if (!formData.name.trim()) {
@@ -94,18 +100,21 @@ export default function AddRole() {
 
     if (!formData.description.trim()) {
       showToast.error("Role description is required");
-      setErrors({...errors, description: "Role description is required" });
+      setErrors({ ...errors, description: "Role description is required" });
       return;
     }
 
     // Validate at least one permission is selected
-    const hasPermissions = sections.some(section => 
-      section.permissions.some(p => p.isActive)
+    const hasPermissions = sections.some((section) =>
+      section.permissions.some((p) => p.isActive)
     );
-    
+
     if (!hasPermissions) {
       showToast.error("Please select at least one permission");
-      setErrors({...errors, permissions: "Please select at least one permission" });
+      setErrors({
+        ...errors,
+        permissions: "Please select at least one permission",
+      });
       return;
     }
 
@@ -113,11 +122,17 @@ export default function AddRole() {
       const features = sections.map((section) => ({
         key: section.title.toUpperCase().replace(/\s+/g, "_"),
         name: section.title,
-        create: section.permissions.some(p => p.name === "Create" && p.isActive),
-        delete: section.permissions.some(p => p.name === "Delete" && p.isActive),
-        update: section.permissions.some(p => p.name === "Update" && p.isActive),
-        list: section.permissions.some(p => p.name === "List" && p.isActive),
-        find: section.permissions.some(p => p.name === "Find" && p.isActive),
+        create: section.permissions.some(
+          (p) => p.name === "Create" && p.isActive
+        ),
+        delete: section.permissions.some(
+          (p) => p.name === "Delete" && p.isActive
+        ),
+        update: section.permissions.some(
+          (p) => p.name === "Update" && p.isActive
+        ),
+        list: section.permissions.some((p) => p.name === "List" && p.isActive),
+        find: section.permissions.some((p) => p.name === "Find" && p.isActive),
       }));
 
       const response = await createRole({
@@ -126,10 +141,7 @@ export default function AddRole() {
       });
 
       if (response.success) {
-        showToast.success(response.message);
-        setTimeout(() => {
-          window.location.href = "/dashboard/admin-management/roles-permissions";
-        }, 2000);
+        setShowSuccess(true);
       } else {
         showToast.error(response.message);
       }
@@ -141,6 +153,11 @@ export default function AddRole() {
 
   const handleSectionsChange = (updatedSections: typeof sections) => {
     setSections(updatedSections);
+  };
+
+  const closeAndNavigateToList = () => {
+    setShowSuccess(false);
+    router.push("/dashboard/admin-management/roles-permissions");
   };
 
   const breadcrumbItems = [
@@ -158,6 +175,7 @@ export default function AddRole() {
         <div>
           <PermissionForm
             title={t("add_role")}
+            isEditable={true}
             title2={t("permissions")}
             sub_title={t("form_subtitle")}
             sections={sections}
@@ -170,6 +188,13 @@ export default function AddRole() {
             onSubmit={handleSubmit}
           />
         </div>
+        <Popup isOpen={showSuccess} onClose={closeAndNavigateToList}>
+          <SuccessMessage
+            title="Successfully Added"
+            msg="Role has been successfully created"
+            bigger
+          />
+        </Popup>
       </div>
     </div>
   );

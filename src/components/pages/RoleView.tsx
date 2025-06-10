@@ -21,6 +21,7 @@ import {
 } from "@/api/roleService";
 import { showToast } from "@/utils/toast";
 import PermissionForm from "../forms/PermissionForm";
+import SuccessMessage from "../ui/SuccessMessage";
 
 type Permission = {
   name: string;
@@ -33,6 +34,7 @@ type PermissionSection = {
 };
 interface SingleRoleProps {
   roleId: string;
+  isEditing?: boolean;
 }
 
 const transformFeaturesToSections = (
@@ -71,15 +73,19 @@ const transformSectionsToFeatures = (
   });
 };
 
-export default function RoleView({ roleId }: SingleRoleProps) {
+export default function RoleView({
+  roleId,
+  isEditing: isInEditModel = false,
+}: SingleRoleProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
   const router = useRouter();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isInEditModel);
   const [roleData, setRoleData] = useState<RoleResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [formData, setFormData] = useState({ name: "", description: "" });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
@@ -176,12 +182,10 @@ export default function RoleView({ roleId }: SingleRoleProps) {
       const response = await updateRole(Number(roleId), payload);
 
       if (response && response.success !== false) {
-        // Check if response indicates success
-        showToast.success("Role updated successfully!");
+        setShowSuccess(true);
         setIsEditing(false);
         await fetchData();
       } else {
-        // Handle API error response
         const errorMessage = response?.message || "Failed to update role.";
         showToast.error(errorMessage);
         setError(errorMessage);
@@ -380,20 +384,15 @@ export default function RoleView({ roleId }: SingleRoleProps) {
           onSectionsChange={handleSectionsChange}
           onSubmit={handleSubmit}
           errors={formErrors}
+          onCancel={handleCancelEdit}
         />
-        {/* Add Cancel button when editing */}
-        {isEditing && (
-          <div className="flex justify-end gap-4 mt-[-60px] mr-4">
-            {" "}
-            {/* Adjust margin as needed */}
-            <Button
-              label={t("buttons.cancel")}
-              onClick={handleCancelEdit}
-              variant="transparent"
-              padding="py-3 px-4"
-            />
-            {/* Submit button is inside PermissionForm now */}
-          </div>
+
+        {showSuccess && (
+          <SuccessMessage
+            title="Successfully Updated"
+            msg="Role has been successfully updated"
+            bigger
+          />
         )}
       </div>
     </div>

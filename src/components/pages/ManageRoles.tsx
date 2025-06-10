@@ -12,12 +12,17 @@ import { Add } from "../ui/icons/Add";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
 import Eye from "../ui/icons/Eye";
+import { Export } from "../ui/icons/Export";
+import FilterForm from "../ui/FilterForm";
+import Toggler from "../formsUI/Toggler";
+import { AdminStatus } from "@/enum/admin-status.enum";
 
 interface Role {
   id: number;
   key: string;
   name: string;
   description: string;
+  status: string;
   image?: string;
   features: {
     key: string;
@@ -41,6 +46,10 @@ const ManageRoles = () => {
     currentPage: 1,
     rowsPerPage: 10,
   });
+  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
+    {}
+  );
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const getRoles = async () => {
     setLoading(true);
@@ -49,6 +58,7 @@ const ManageRoles = () => {
       setRoles(
         data.map((role) => ({
           ...role,
+          status: "1",
           permissionsCount: `${role.features.reduce(
             (count, feature) =>
               count +
@@ -72,11 +82,46 @@ const ManageRoles = () => {
     getRoles();
   }, []);
 
-  const filteredRoles = roles.filter(
-    (role) =>
+  // Build unique permissions list from features
+  const permissionOptions = useMemo(() => {
+    const keys = new Set<string>();
+    const options: { value: string; label: string }[] = [];
+    roles.forEach((role) => {
+      role.features.forEach((feature) => {
+        if (!keys.has(feature.key)) {
+          keys.add(feature.key);
+          options.push({ value: feature.key, label: feature.name });
+        }
+      });
+    });
+    return options;
+  }, [roles]);
+
+  const filteredRoles = roles.filter((role) => {
+    const matchesSearch =
       role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      role.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilters = Object.entries(filters).every(([key, value]) => {
+      if (!value) return true;
+      if (key === "permission") {
+        // Check if any feature key matches the selected permission AND has at least one CRUD method true
+        return role.features.some(
+          (feature) =>
+            feature.key === value &&
+            (feature.create ||
+              feature.update ||
+              feature.delete ||
+              feature.list ||
+              feature.find)
+        );
+      }
+      return role[key as keyof Role]
+        ?.toString()
+        .toLowerCase()
+        .includes(value.toLowerCase());
+    });
+    return matchesSearch && matchesFilters;
+  });
 
   const columns: {
     header: string;
@@ -85,14 +130,27 @@ const ManageRoles = () => {
     { header: "num", accessor: "id" },
     { header: "roles", accessor: "name" },
     { header: "permissions", accessor: "permissionsCount" },
+    { header: "status", accessor: "status" },
   ];
 
   const handleView = (id: number) => {
     router.push(`/dashboard/admin-management/roles-permissions/${id}`);
   };
 
+  const handleToggleStatus = (role: Role) => {
+    setRoles((prev) =>
+      prev.map((r) =>
+        r.id === role.id ? { ...r, status: r.status === "1" ? "0" : "1" } : r
+      )
+    );
+  };
+
   const renderRowActions = (row: Role) => (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
+      <Toggler
+        checked={row.status === "1"}
+        onChange={() => handleToggleStatus(row)}
+      />
       <Button
         icon={<Eye />}
         noBackground={true}
@@ -118,7 +176,7 @@ const ManageRoles = () => {
   );
 
   const handleEdit = (id: number) => {
-    router.push(`/dashboard/admin-management/roles-permissions/${id}`);
+    router.push(`/dashboard/admin-management/roles-permissions/${id}/edit`);
   };
 
   const handleDelete = async (id: number) => {
@@ -150,10 +208,33 @@ const ManageRoles = () => {
   const totalPages = Math.ceil(filteredRoles.length / pagination.rowsPerPage);
 
   const handlePageChange = (page: number) => {
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       currentPage: page,
     }));
+  };
+
+  const handleExport = () => {
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [
+        ["ID", "Name", "Status", "Permissions"],
+        ...filteredRoles.map((r) => [
+          r.id,
+          r.name,
+          r.status,
+          r.permissionsCount,
+        ]),
+      ]
+        .map((row) => row.join(","))
+        .join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "roles.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -164,20 +245,67 @@ const ManageRoles = () => {
       />
 
       <div className="mt-6 bg-white rounded-2xl">
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           <SearchForm onSearch={setSearchTerm} />
-          <Button
-            label={t("buttons.add_role")}
-            href="/dashboard/admin-management/add-role"
-            icon={
-              <span className="w-6 inline-block">
-                <Add />
-              </span>
-            }
-            variant="primary"
-          />
+          <div className="flex gap-3 justify-between items-stretch flex-wrap">
+            <Button
+              label={t("buttons.add_role")}
+              href="/dashboard/admin-management/add-role"
+              icon={
+                <span className="w-6 inline-block">
+                  <Add />
+                </span>
+              }
+              variant="primary"
+            />
+            <Button
+              label={t("buttons.filters")}
+              onClick={() => setFiltersOpen((prev) => !prev)}
+              variant={!filtersOpen ? "transparent" : "selected"}
+            />
+            <Button
+              label={t("buttons.export")}
+              onClick={handleExport}
+              variant="dark"
+              icon={
+                <span className="w-6 inline-block">
+                  <Export />
+                </span>
+              }
+            />
+          </div>
         </div>
-
+        {filtersOpen && (
+          <FilterForm
+            fields={[
+              {
+                type: "text",
+                label: t("role"),
+                name: "name",
+                placeholder: t("role"),
+              },
+              {
+                type: "select",
+                label: t("permissions"),
+                placeholder: t("permissions"),
+                name: "permission",
+                options: permissionOptions,
+              },
+              {
+                type: "select",
+                label: t("status"),
+                placeholder: t("status"),
+                name: "status",
+                options: [
+                  { value: AdminStatus.ACTIVE, label: t("active") },
+                  { value: AdminStatus.INACTIVE, label: t("inactive") },
+                ],
+              },
+            ]}
+            onApply={setFilters}
+            onReset={() => setFilters({})}
+          />
+        )}
         <Table
           data={paginatedRoles}
           columns={columns}

@@ -202,6 +202,7 @@ export interface SingleExam {
 
 export interface SingleCourse {
     id: number;
+    name: string;
     title: string;
     language: string;
     prerequisites?: string;
@@ -214,7 +215,7 @@ export interface SingleCourse {
     level: number;
     status: string;
     image?: string;
-    cover?: string;
+    cover: string;
 }
 
 

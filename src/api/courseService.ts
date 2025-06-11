@@ -328,7 +328,13 @@ export const fetchCourses = async (offset: number = 0, limit: number = 10) => {
         enrollments: course.maxAttendees,
         sessions: course.sessions,
         level: course.level,
-        status: course.status === "ACTIVE" ? "1" : "0",
+        status: course.status,
+        prerequisites: course.prerequisites,
+        validity: course.validity,
+        description: course.description,
+        cover: course.cover,
+        medicalTest: course.requiresMedicalTest ? "yes" : "no",
+        maxAttendees: course.maxAttendees,
       })),
       totalCount: result.innerData.count
     };

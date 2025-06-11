@@ -33,12 +33,7 @@ export default function CourseInfoDisplay({ courseData }: CourseInfoDisplayProps
         <GroupInfo
           label={t("status")}
           content={
-            courseData?.status === "ACTIVE" ||
-            courseData?.status === "PUBLISHED" ? (
-              <Status status={"1"} />
-            ) : (
-              <Status status={"0"} />
-            )
+            <Status status={courseData?.status} />
           }
           icon={<StatusCheck />}
         />

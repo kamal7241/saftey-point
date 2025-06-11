@@ -210,6 +210,20 @@ const Table = <T extends { image?: string }>({
                             )}
                             <span>{String(row[column.accessor])}</span>
                           </div>
+                        ) : column.accessor === "image" ? (
+                          <div className="w-12 h-12">
+                            {row.image ? (
+                              <ImageWithFallback
+                                src={row.image}
+                                alt="Course Cover"
+                                className="w-full h-full object-cover rounded"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
+                                <span className="text-gray-400">No image</span>
+                              </div>
+                            )}
+                          </div>
                         ) : column.accessor === "website" ? (
                           <div>
                             <a

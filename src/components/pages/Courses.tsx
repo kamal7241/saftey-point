@@ -35,7 +35,12 @@ const Courses = () => {
       setLoading(true);
       const offset = (currentPage - 1) * limit;
       const response = await fetchCourses(offset, limit);
-      setCourses(response.courses);
+      setCourses(response.courses.map((course: SingleCourse) => ({
+        ...course,
+        image: course.cover ? `${process.env.NEXT_PUBLIC_URL}${course.cover}` : ''
+      })));
+      console.log(response.courses);
+      
       setTotalCount(response.totalCount);
       setLoading(false);
     };
@@ -58,6 +63,7 @@ const Courses = () => {
 
   const columns: { header: string; accessor: keyof SingleCourse }[] = [
     { header: "course_id", accessor: "id" },
+    { header: "image", accessor: "image" },
     { header: "name", accessor: "title" },
     { header: "language", accessor: "language" },
     { header: "enrollments", accessor: "enrollments" },

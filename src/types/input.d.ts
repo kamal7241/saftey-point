@@ -1,10 +1,9 @@
-
 export interface InputProps {
   label?: string;
   type: string;
   placeholder?: string;
-  value: string | number;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  value: string | number | [Date | null, Date | null];
+  onChange: (e: React.ChangeEvent<HTMLInputElement> | [Date | null, Date | null]) => void;
   name: string;
   icon?: string;
   required?: boolean;
@@ -14,9 +13,10 @@ export interface InputProps {
   extraClass?: string;
   border?: boolean;
   iconEnd?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void; // Add this line
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   togglePasswordVisibility?: () => void;
 }
+
 export interface TextareaProps {
   label?: string;
   placeholder?: string;
@@ -30,6 +30,6 @@ export interface TextareaProps {
   iconSVG?: React.ReactNode;
   extraClass?: string;
   border?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void; // Add this line
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   togglePasswordVisibility?: () => void;
 }

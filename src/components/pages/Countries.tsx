@@ -1,5 +1,5 @@
 "use client";
-import { fetchCountries } from "@/api/presetsService";
+import { fetchCountries } from "@/api/countryService";
 import Table from "@/components/ui/Table";
 import { Country } from "@/types/ui.types";
 import { useTranslations } from "next-intl";

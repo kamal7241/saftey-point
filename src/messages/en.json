@@ -491,7 +491,8 @@
       "exam": "Exam",
       "certificate": "Certificate",
       "sessions": "Sessions"
-    }
+    },
+    "confirm_delete": "Confirm Delete"
   },
   "validation": {
     "validFrom": {
@@ -716,7 +717,10 @@
       "name": "Job Title",
       "required": "Job Title is required",
       "placeholder": "Enter job title"
-    }
+    },
+    "title_too_long": "Title must be shorter than or equal to 255 characters",
+    "invalid_date_format": "Invalid date format",
+    "start_date_after_end_date": "Start date must be before end date"
   },
   "messages": {
     "missing_examId": "Missing Exam ID",

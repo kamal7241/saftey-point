@@ -19,56 +19,66 @@ interface CourseInfoDisplayProps {
   courseData: SingleCourse;
 }
 
-export default function CourseInfoDisplay({ courseData }: CourseInfoDisplayProps) {
+export default function CourseInfoDisplay({
+  courseData,
+}: CourseInfoDisplayProps) {
   const t = useTranslations("common");
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Not set";
+    return new Date(dateString).toLocaleDateString();
+  };
 
   return (
     <>
       <div className="grid grid-cols-3 gap-6">
         <GroupInfo
           label={t("courseTitle")}
-          content={courseData.title ?? "missing from API"}
+          content={courseData.title || "Not set"}
           icon={<CourseTitle />}
         />
         <GroupInfo
           label={t("status")}
-          content={
-            <Status status={courseData?.status} />
-          }
+          content={<Status status={courseData.status} />}
           icon={<StatusCheck />}
         />
         <GroupInfo
           label={t("prerequisites.name")}
-          content={courseData.prerequisites ?? "missing from API"}
+          content={courseData.prerequisites?.name || "Not set"}
           icon={<Prerequisites />}
         />
         <GroupInfo
           label={t("validity")}
-          content={
-            courseData.validity
-              ? new Date(courseData.validity).toLocaleDateString()
-              : "missing from API"
-          }
+          content={formatDate(courseData.validity)}
           icon={<Validity />}
         />
         <GroupInfo
           label={t("level.name")}
-          content={courseData.level ?? "missing from API"}
+          content={courseData.level?.name || "Not set"}
           icon={<Level />}
         />
+
+        <GroupInfo
+          label={t("facility")}
+          content={courseData.facility?.title || "Not set"}
+          icon={<Level />}
+        />
+
         <GroupInfo
           label={t("courseCover")}
           content={<ImagePopup imagePath={courseData?.cover} />}
           icon={<Attach />}
         />
+
         <GroupInfo
           label={t("language.name")}
-          content={courseData.language ?? "missing from API"}
+          content={courseData.language?.name || "Not set"}
           icon={<LanguageSquare />}
         />
+
         <GroupInfo
           label={t("maxAttendees")}
-          content={courseData.maxAttendees ?? "missing from API"}
+          content={courseData.maxAttendees?.toString() || "Not set"}
           icon={<MaxAttendees />}
         />
         <GroupInfo
@@ -80,7 +90,7 @@ export default function CourseInfoDisplay({ courseData }: CourseInfoDisplayProps
       <div className="mt-6">
         <GroupInfo
           label={t("description")}
-          content={courseData.description ?? "missing from API"}
+          content={courseData.description || "Not set"}
           icon={<Note />}
         />
       </div>

@@ -1,12 +1,12 @@
-import { fetchCountries } from "@/api/dashboardService";
+import { fetchAllCountries } from "@/api/countryService";
 import Input from "@/components/formsUI/Input";
 import RadioField from "@/components/formsUI/RadioField";
 import SelectField from "@/components/formsUI/SelectField";
 import Button from "@/components/ui/Button";
-import CorporatePricingTable from "@/components/ui/CorporatePricingTable";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { Country } from "@/types/ui.types";
 
 interface PricingProps {
   values: FormikValues;
@@ -25,11 +25,10 @@ export default function Pricing({
   handleChange,
   errors,
   setFieldValue,
-  courseId,
 }: PricingProps) {
   const t = useTranslations("common");
 
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [pricingSets, setPricingSets] = useState([
     { country: "", price: "", discount: "" },
   ]);
@@ -50,13 +49,14 @@ export default function Pricing({
   };
   useEffect(() => {
     const getCountries = async () => {
-      const response = await fetchCountries();
+      const response = await fetchAllCountries();
       if (response.success) {
         setCountries(response.countries);
       }
     };
     getCountries();
   }, []);
+
   return (
     <div>
       <div className="grid w-full grid-cols-4 gap-4">
@@ -73,8 +73,8 @@ export default function Pricing({
                   value={values[`country_${index}`] || ""}
                   onChange={(name, value) => setFieldValue(name, value)}
                   options={countries.map((country) => ({
-                    value: (country as { id: string }).id,
-                    label: (country as { name: string }).name,
+                    value: country.id.toString(),
+                    label: country.name,
                   }))}
                   customDropdown
                 />
@@ -192,11 +192,11 @@ export default function Pricing({
           )}
         </div>
       </div>
-
+{/* 
       {(values.companyPremises === true ||
         values.companyPremises === "yes") && courseId && (
         <CorporatePricingTable courseId={courseId} />
-      )}
+      )} */}
     </div>
   );
 }

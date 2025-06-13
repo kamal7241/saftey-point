@@ -68,18 +68,18 @@ export interface CorporatePricingDTO {
   fees: number;
   currency: string;
 }
-
 export interface CreateCourseDTO {
   title: string;
   status: string;
-  prerequisites: string;
   description: string;
   validity: string;
   cover: string;
   requiresMedicalTest: boolean;
   maxAttendees: number;
-  language: string;
-  level: string;
+  languageId: number;
+  levelId: number;
+  prerequisiteId: number;
+  facilityId: number;
 }
 
 export interface CourseResponse {

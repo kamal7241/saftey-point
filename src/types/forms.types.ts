@@ -1,16 +1,17 @@
+import { Country } from "./ui.types";
+
 export interface CourseFormValues {
     courseTitle: string;
     description: string;
     status: string;
-    price: string;
-    certificate: string;
-    prerequisites: string;
     validity: string;
     courseCover: string;
     medicalTest: string;
     maxAttendees: string;
-    language: string;
-    level: string;
+    prerequisiteId: string;
+    languageId: string;
+    levelId: string;
+    facilityId: string;
 }
 
 
@@ -56,6 +57,7 @@ export interface PricingFormValues {
     type: "THEORY" | "PRACTICAL" | "BOTH";
     isCompanyTraining: boolean;
     countryId: number;
+    country: Country;
 }
 
 export interface CertificateFormValues {

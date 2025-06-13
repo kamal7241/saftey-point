@@ -4,13 +4,14 @@ export const getCourseInfoValidationSchema = (t: (key: string) => string) => {
   return Yup.object({
     courseTitle: Yup.string().required(t("courseTitle.required")),
     status: Yup.string().required(t("status.required")),
-    prerequisites: Yup.string().required(t("prerequisites.required")),
+    prerequisiteId: Yup.string().required(t("prerequisites.required")),
     validity: Yup.date()
       .required(t("validity.required"))
       .min(new Date(), t("validity.futureDate")),
     courseCover: Yup.string().required(t("courseCover.required")),
-    level: Yup.string().required(t("level.required")),
-    language: Yup.string().required(t("language.required")),
+    levelId: Yup.string().required(t("level.required")),
+    languageId: Yup.string().required(t("language.required")),
+    facilityId: Yup.string().required(t("facility.required")),
     maxAttendees: Yup.number()
       .required(t("maxAttendees.required"))
       .positive(t("maxAttendees.positive"))

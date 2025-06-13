@@ -36,35 +36,3 @@ export const fetchAdmins = async () => {
 
     return data;
 };
-
-
-export const fetchCountries = async () => {
-    try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v2/countries`,
-            {
-                headers: {
-                    accept: "*/*",
-                },
-            }
-        );
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error("Failed to fetch countries");
-        }
-
-        return {
-            success: true,
-            countries: result.innerData,
-            message: result.message,
-        };
-    } catch (error) {
-        console.error("Error fetching countries:", error);
-        return {
-            success: false,
-            countries: [],
-            message: error instanceof Error ? error.message : "Failed to fetch countries",
-        };
-    }
-};

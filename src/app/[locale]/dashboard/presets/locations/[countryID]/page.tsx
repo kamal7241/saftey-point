@@ -1,5 +1,5 @@
 export const runtime = "edge";
-import { fetchCountryByCode } from "@/api/presetsService";
+import { fetchCountryByCode } from "@/api/countryService";
 import SingleCountry from "@/components/pages/SingleCountry";
 
 export default async function Page({
@@ -9,5 +9,10 @@ export default async function Page({
 }) {
   const countryID = (await params).countryID;
   const response = await fetchCountryByCode(countryID);
-  return <SingleCountry countryID={countryID} countryData={response.data} />;
+  
+  if (!response.success || !response.data) {
+    throw new Error("Country not found");
+  }
+
+  return <SingleCountry countryData={response.data} countryID={countryID} />;
 }

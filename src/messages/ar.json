@@ -502,7 +502,8 @@
       "exam": "امتحان",
       "certificate": "شهادة",
       "sessions": "جلسات"
-    }
+    },
+    "confirm_delete": "تأكيد الحذف"
   },
   "validation": {
     "validFrom": {
@@ -727,7 +728,10 @@
       "name": "الوظيفة",
       "required": "الوظيفة مطلوبة",
       "placeholder": "أدخل الوظيفة"
-    }
+    },
+    "title_too_long": "يجب أن يكون العنوان أقصر من أو يساوي 255 حرفًا",
+    "invalid_date_format": "تنسيق التاريخ غير صالح",
+    "start_date_after_end_date": "يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء"
   },
   "messages": {
     "missing_examId": "معرف الامتحان المفقود",

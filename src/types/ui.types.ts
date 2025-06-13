@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from "react";
+import { Facility, Language, Level } from "./lookup.types";
 
 // Type for a single breadcrumb item
 export interface BreadcrumbItem {
@@ -202,20 +203,26 @@ export interface SingleExam {
 
 export interface SingleCourse {
     id: number;
-    name: string;
     title: string;
-    language: string;
-    prerequisites?: string;
-    validity?: string;
-    description?: string;
-    enrollments?: number;
-    maxAttendees?: number;
-    requiresMedicalTest?: boolean;
-    sessions: number;
-    level: number;
-    status: string;
-    image?: string;
+    language: Language | null;
+    languageId: number | null;
+    level: Level | null;
+    levelId: number | null;
+    facility: Facility | null;
+    facilityId: number | null;
+    prerequisites: Level | null;
+    validity: string;
+    description: string;
     cover: string;
+    maxAttendees: number;
+    requiresMedicalTest: boolean;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    image?: string;
+    enrollments?: string;
+    sessions?: string;
 }
 
 
@@ -292,3 +299,17 @@ export interface  Role {
       find: boolean;
     }[];
   }
+
+export interface CourseFormValues {
+  courseTitle: string;
+  status: string;
+  prerequisites: string;
+  description: string;
+  validity: string;
+  courseCover: string;
+  medicalTest: string;
+  maxAttendees: number;
+  language: string;
+  level: string;
+  facility: string;
+}

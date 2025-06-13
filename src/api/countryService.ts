@@ -23,13 +23,33 @@ interface SingleCountryResponse {
   data: Country | null;
 }
 
+interface CountryQueryParams {
+  offset?: number;
+  limit?: number;
+  countryId?: string;
+  name?: string;
+  phoneCode?: string;
+}
+
 /**
- * Fetch all countries with pagination
+ * Fetch all countries with pagination and filters
  */
-export const fetchCountries = async (offset: number = 0, limit: number = 10): Promise<PaginatedResponse> => {
+export const fetchCountries = async (
+  offset: number = 0,
+  limit: number = 10,
+  filters?: CountryQueryParams
+): Promise<PaginatedResponse> => {
   try {
+    const queryParams = new URLSearchParams({
+      offset: offset.toString(),
+      limit: limit.toString(),
+      ...(filters?.countryId && { countryId: filters.countryId }),
+      ...(filters?.name && { name: filters.name }),
+      ...(filters?.phoneCode && { phoneCode: filters.phoneCode }),
+    });
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_URL}/api/v2/countries?offset=${offset}&limit=${limit}`,
+      `${process.env.NEXT_PUBLIC_URL}/api/v2/countries?${queryParams.toString()}`,
       {
         headers: {
           accept: "*/*",

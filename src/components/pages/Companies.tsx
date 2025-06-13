@@ -18,7 +18,6 @@ import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/
 import { Company } from "@/types/ui.types";
 import { showToast } from "@/utils/toast";
 import NewCompanyForm from "../forms/NewCompanyForm";
-import PageHeader from "../global/PageHeader";
 import StatsCard from "../ui/StatsCard";
 import ClipboardClose from "../ui/icons/ClipboardClose";
 import ClipboardTick from "../ui/icons/ClipboardTick";
@@ -212,19 +211,8 @@ const Companies = () => {
     setCompanyToDelete(null);
   };
 
-  const breadcrumbItems = [
-    { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management" },
-    { label: t("manage-companies"), href: "/dashboard/company-management/companies" },
-  ];
-
   return (
     <div>
-      <PageHeader
-        breadcrumbItems={breadcrumbItems}
-        title={t("manage-companies")}
-      />
-
       {showDeleteConfirm && (
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
           <div>
@@ -260,7 +248,7 @@ const Companies = () => {
         <StatsCard
           icon={<TimerEmpty />}
           color="warning"
-          number={companies.filter(c => c.status==="SUSPENDED").length}
+          number={companies.filter(c => c.status==="INACTIVE").length}
           name={t("suspended_companies")}
         />
         <StatsCard
@@ -316,12 +304,6 @@ const Companies = () => {
                 label: "Company ID",
                 name: "id",
                 placeholder: "Company ID",
-              },
-              {
-                type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
               },
               {
                 type: "select",

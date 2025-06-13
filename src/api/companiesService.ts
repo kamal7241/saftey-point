@@ -14,7 +14,15 @@ export const submitCompany = async (values: CompanyData) => {
 
         const result = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
+            // Handle specific error case for duplicate phone/email
+            if (result.message?.includes("Phone Number or Email already exists")) {
+                return { 
+                    success: false, 
+                    error: "A company with this phone number or email already exists",
+                    isDuplicate: true 
+                };
+            }
             throw new Error(result.message || "Failed to submit company");
         }
 

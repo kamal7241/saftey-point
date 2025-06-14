@@ -38,9 +38,16 @@ export const submitCompany = async (values: CompanyData) => {
     }
 };
 
-export const fetchCompanies = async (offset: number = 0, limit: number = 10) => {
+export const fetchCompanies = async (offset: number = 0, limit: number = 10, name?: string) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company?offset=${offset}&limit=${limit}`);
+        const queryParams = new URLSearchParams();
+        queryParams.append("offset", offset.toString());
+        queryParams.append("limit", limit.toString());
+        if (name) {
+            queryParams.append("name", name);
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/v1/company?${queryParams.toString()}`);
         const result = await response.json();
 
         if (!result.success) {
@@ -63,7 +70,7 @@ export const fetchCompanies = async (offset: number = 0, limit: number = 10) => 
         };
     } catch (error) {
         console.error("Error fetching users:", error);
-        return { users: [], totalCount: 0 };
+        return { companies: [], totalCount: 0 };
     }
 };
 

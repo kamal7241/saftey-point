@@ -106,10 +106,19 @@ export const updateAdmin = async (
     }
 };
 
-export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
+export const fetchAdmins = async (offset: number = 0, limit: number = 10, name?: string) => {
     try {
+        const params = new URLSearchParams({
+            offset: offset.toString(),
+            limit: limit.toString()
+        });
+        
+        if (name) {
+            params.append('name', name);
+        }
+
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin?offset=${offset}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin?${params.toString()}`,
             {
                 headers: {
                     accept: "*/*",

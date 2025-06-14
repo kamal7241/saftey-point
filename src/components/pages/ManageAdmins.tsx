@@ -10,14 +10,12 @@ import NewAdminForm from "../forms/NewAdminForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
-import FilterForm from "../ui/FilterForm";
 import { Add } from "../ui/icons/Add";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-import { AdminStatus } from "@/enum/admin-status.enum";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
@@ -25,14 +23,10 @@ const ManageAdmins = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [adminToDelete, setAdminToDelete] = useState<number | null>(null);
 
@@ -40,7 +34,7 @@ const ManageAdmins = () => {
   const getAdmins = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
-    const response = await fetchAdmins(offset, limit);
+    const response = await fetchAdmins(offset, limit, searchTerm);
     if ("admins" in response) {
       setAdmins(response.admins);
       setTotalCount(response.totalCount);
@@ -53,50 +47,29 @@ const ManageAdmins = () => {
   useEffect(() => {
     getAdmins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
-
-  const filteredAdmins = admins.filter((admin) => {
-    const matchesSearch = admin.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return admin[key as keyof Admin]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
-    });
-    return matchesSearch && matchesFilters;
-  });
+  }, [currentPage, searchTerm]);
 
   const columns: { header: string; accessor: keyof Admin }[] = [
     { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
-
     { header: "status", accessor: "status" },
   ];
-  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-    setFilters(appliedFilters);
-  };
 
-  const handleResetFilters = () => {
-    setFilters({});
-  };
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
         ["ID", "Name", "Status"],
-        ...filteredAdmins.map((c) => [c.id, c.name, c.status]),
+        ...admins.map((c) => [c.id, c.name, c.status]),
       ]
         .map((row) => row.join(","))
         .join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "companies.csv");
+    link.setAttribute("download", "admins.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -226,13 +199,6 @@ const ManageAdmins = () => {
               variant="primary"
             />
 
-            {/* Filters Button */}
-            <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            />
-
             {/* Export Button */}
             <Button
               label={t("buttons.export")}
@@ -247,48 +213,16 @@ const ManageAdmins = () => {
           </div>
         </div>
 
-        {filtersOpen && (
-          <FilterForm
-            fields={[
-              {
-                type: "text",
-                label: t("admin_id"),
-                name: "id",
-                placeholder: t("admin_id"),
-              },
-              {
-                type: "text",
-                label: t("name"),
-                name: "name",
-                placeholder: t("name"),
-              },
-              {
-                type: "select",
-                label: t("status"),
-                placeholder: t("status"),
-                name: "status",
-                options: [
-                  { value: AdminStatus.ACTIVE, label: t("active") },
-                  { value: AdminStatus.INACTIVE, label: t("inactive") },
-                ],
-              },
-            ]}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
-        )}
         <Table
-          data={filteredAdmins}
+          data={admins}
           columns={columns}
           pagination={{
             currentPage,
             totalPages: Math.ceil(totalCount / limit),
             onPageChange: setCurrentPage,
           }}
-          
-          rowsPerPage={limit}
-          renderRowActions={renderRowActions}
           isLoading={loading}
+          renderRowActions={renderRowActions}
         />
       </div>
 

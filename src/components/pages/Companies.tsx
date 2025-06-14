@@ -44,7 +44,7 @@ const Companies = () => {
   const getUsers = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
-    const response = await fetchCompanies(offset, limit);
+    const response = await fetchCompanies(offset, limit, searchTerm);
     const data = await response.companies;
     setCompanies(response.companies);
     setTotalCount(response.totalCount);
@@ -63,7 +63,7 @@ const Companies = () => {
   };
   useEffect(() => {
     getUsers();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
   const filteredCompanies = companies.filter((company) => {
     const matchesSearch = company.name
@@ -88,7 +88,6 @@ const Companies = () => {
   const columns: { header: string; accessor: keyof Company }[] = [
     { header: "company_id", accessor: "id" },
     { header: "name", accessor: "name" },
-    { header: "branches", accessor: "branches" },
     { header: "status", accessor: "status" },
     { header: "employees", accessor: "employees" },
     { header: "created", accessor: "created" },
@@ -276,11 +275,11 @@ const Companies = () => {
             />
 
             {/* Filters Button */}
-            <Button
+            {/* <Button
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}
               variant={!filtersOpen ? "transparent" : "selected"}
-            />
+            /> */}
 
             {/* Export Button */}
             <Button

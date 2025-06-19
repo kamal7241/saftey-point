@@ -184,8 +184,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
         <div className="flex justify-end gap-4 col-span-4">
           <Button
             label={t("buttons.close")}
-            // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
-            onClick={() => { onCancel() }}
+            onClick={() => onCancel?.()}
             variant="transparent"
             padding="py-3 px-4"
           />

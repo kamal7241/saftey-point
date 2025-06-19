@@ -30,7 +30,7 @@ const Companies = () => {
   const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -88,9 +88,9 @@ const Companies = () => {
   const columns: { header: string; accessor: keyof Company }[] = [
     { header: "company_id", accessor: "id" },
     { header: "name", accessor: "name" },
-    { header: "status", accessor: "status" },
     { header: "employees", accessor: "employees" },
     { header: "created", accessor: "created" },
+    { header: "status", accessor: "status" },
   ];
 
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -273,13 +273,6 @@ const Companies = () => {
               }
               variant="primary"
             />
-
-            {/* Filters Button */}
-            {/* <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            /> */}
 
             {/* Export Button */}
             <Button

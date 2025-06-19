@@ -20,9 +20,26 @@ export const login = async (email: string, password: string) => {
         },
       }
     );
-    return response.data.innerData;  // Return the response data (user and tokens)
-  } catch (error) {
+    
+    console.log('Login API Response:', response.data);
+    
+    // Check if the response indicates success
+    if (response.data.success === false) {
+      throw new Error(response.data.message || 'Login failed');
+    }
+    
+    console.log('Login successful, returning data:', response.data.innerData);
+    return {
+      success: true,
+      data: response.data.innerData
+    };
+  } catch (error: any) {
     console.error('Login failed:', error);
+    // Check if the error has a response with data
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+    // Fallback to generic error message
     throw new Error('Login failed. Please check your credentials.');
   }
 };
@@ -39,6 +56,12 @@ export const forget = async (email: string) => {
         },
       }
     );
+    
+    // Check if the response indicates success
+    if (response.data.success === false) {
+      throw new Error(response.data.message || 'Failed to send forgot password request');
+    }
+    
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.message) {
@@ -60,6 +83,12 @@ export const verifyOTP = async ({ otp, email }: { otp: string; email: string }) 
         },
       }
     );
+    
+    // Check if the response indicates success
+    if (response.data.success === false) {
+      throw new Error(response.data.message || 'OTP verification failed');
+    }
+    
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.message) {

@@ -11,7 +11,7 @@ const Toggler: React.FC<TogglerProps> = ({ checked, onChange, disabled }) => (
     type="button"
     onClick={onChange}
     disabled={disabled}
-    className={`w-[20px] h-[12px]  rounded-full flex items-center justify-center transition-colors
+    className={`w-[30px] h-[22px]  rounded-full flex items-center justify-center transition-colors
       ${checked ? "bg-primary" : "bg-gray-600"}
       ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
     `}

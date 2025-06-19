@@ -159,8 +159,8 @@
     "country_name": "Country Name",
     "phone_code": "Phone Code",
     "emoji": "Emoji",
-    "loading_roles": "Loading Roles",
-    "select_role_placeholder": "Select Role",
+    "loading_roles": "Loading roles...",
+    "select_role_placeholder": "Select a role",
     "presets": "Presets",
     "currencies": "Currencies",
     "courses": "Courses",
@@ -233,7 +233,7 @@
     "logo_company": "Logo Company",
     "add_company_subtitle": "Welcome back, fields marked with (*) are mandatory",
     "add_branch_subtitle": "Welcome back, fields marked with (*) are mandatory",
-    "form_subtitle": "Welcome back, fields marked with (*) are mandatory",
+    "form_subtitle": "Please fill in the form below to add a new role",
     "fileuploader_note": "Click on the image to change it Note: Choose only JPG, PNG images and no more than 5MB in size",
     "user_photo": "User Photo",
     "edit_facility": "Edit Facility",
@@ -493,7 +493,9 @@
       "certificate": "Certificate",
       "sessions": "Sessions"
     },
-    "confirm_delete": "Confirm Delete"
+    "confirm_delete": "Confirm Delete",
+    "role_name": "Role Name",
+    "role_description": "Role Description"
   },
   "validation": {
     "validFrom": {
@@ -775,6 +777,12 @@
     "session_updated_successfully": "Session updated successfully",
     "error_updating_session": "Error updating session",
     "partner_deleted_successfully": "Partner deleted successfully",
-    "error_deleting_partner": "Error deleting partner"
+    "error_deleting_partner": "Error deleting partner",
+    "invalid_credentials": "Invalid credentials. Please check your email and password.",
+    "login_failed": "Login failed. Please try again.",
+    "authentication_error": "Authentication error occurred. Please try again.",
+    "signing_in": "Signing you in...",
+    "redirecting_to_dashboard": "Please wait while we redirect you to the dashboard",
+    "sign_in": "Sign In"
   }
 }

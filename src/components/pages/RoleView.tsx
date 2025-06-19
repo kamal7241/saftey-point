@@ -5,11 +5,9 @@ import { useRouter } from "@/i18n/routing";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
-import StatusCheck from "../ui/icons/StatusCheck";
 import Task from "../ui/icons/Task";
 import Popup from "../ui/Popup";
 import {
@@ -47,7 +45,6 @@ const transformFeaturesToSections = (
       { name: "Delete", isActive: feature.delete },
       { name: "Update", isActive: feature.update },
       { name: "List", isActive: feature.list },
-      { name: "Find", isActive: feature.find },
     ],
   }));
 };
@@ -68,7 +65,6 @@ const transformSectionsToFeatures = (
       delete: permissionsMap["delete"] ?? false,
       update: permissionsMap["update"] ?? false,
       list: permissionsMap["list"] ?? false,
-      find: permissionsMap["find"] ?? false,
     };
   });
 };
@@ -210,6 +206,7 @@ export default function RoleView({
       setSectionsData(transformFeaturesToSections(roleData.features));
       setFormErrors({ name: "", description: "", permissions: "" });
     }
+    router.back();
   };
 
   // Handler for initiating delete confirmation
@@ -351,7 +348,7 @@ export default function RoleView({
         {!isEditing && ( // Show role details only when not editing
           <>
             <h1 className="heading3">{t("role_details")}</h1>
-            <div className="flex items-center justify-between gap-8 flex-wrap mb-6">
+            <div className="flex items-start gap-8 flex-wrap mb-6">
               <GroupInfo
                 label={t("name")}
                 content={roleData.name}
@@ -363,12 +360,6 @@ export default function RoleView({
                 content={roleData.description}
                 icon={<Task />}
               />
-              <GroupInfo
-                label={t("status")}
-                content={<Status status={"1"} />}
-                icon={<StatusCheck />}
-              />
-              {/* <GroupInfo label={t("role")} content={roleData.key} icon={<Task />} /> */}
             </div>
           </>
         )}
@@ -384,7 +375,7 @@ export default function RoleView({
           onSectionsChange={handleSectionsChange}
           onSubmit={handleSubmit}
           errors={formErrors}
-          onCancel={handleCancelEdit}
+          onCancel={isEditing ? handleCancelEdit : undefined}
         />
 
         {showSuccess && (

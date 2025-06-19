@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode } from "react";
 import { Facility, Language, Level } from "./lookup.types";
+import { AdminVmStatus } from "@/enum/admin-status.enum";
 
 // Type for a single breadcrumb item
 export interface BreadcrumbItem {
@@ -244,12 +245,10 @@ export interface SingleCompany {
     };
 }
 export interface AdminResponse {
-    permissions?: string[];
-    role?: string;
     id: number;
     status: string;
-    image?: string;
     userType: string;
+    image?: string;
     user: {
         id: number;
         firstName: string;
@@ -258,7 +257,24 @@ export interface AdminResponse {
         email: string;
         phone: string;
         isVerified: boolean;
+        individual: any;
+        staff: any;
+        company: any;
+        admin: any;
     };
+    roles: {
+        id: number;
+        key: string;
+        name: string;
+        description: string;
+    }[];
+    rolePermissions: {
+        id: number;
+        key: string;
+        name: string;
+        action: string;
+        isAllowed: boolean;
+    }[];
 }
 // export interface AdminResponse {
 //     id: number;
@@ -272,17 +288,33 @@ export interface AdminResponse {
 //     isVerified: boolean;
 // }
 export interface Admin {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any  
-    user: any;
     id: number;
     name: string;
     email: string;
-    status: string;
+    status: AdminVmStatus;
     userType: string;
+    type: string;
     phone: string;
-    avatar: string;
+    image: string;
     isVerified: boolean;
-    image?: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        avatar: string;
+        email: string;
+        phone: string;
+        address?: string;
+        password?: string;
+        isVerified: boolean;
+        roleId?: string;
+    };
+    role?: string;
+    roles?: {
+        id: number;
+        key: string;
+        name: string;
+        description: string;
+    }[];
 }
 export interface  Role {
     id: number;

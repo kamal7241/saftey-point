@@ -7,7 +7,6 @@ export interface RoleFeature {
   delete: boolean;
   update: boolean;
   list: boolean;
-  find: boolean;
 }
 
 export interface RoleResponse {

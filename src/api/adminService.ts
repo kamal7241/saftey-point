@@ -64,6 +64,8 @@ export const updateAdmin = async (
         userUpdates.phone = values.user.phone;
     if (values.user.isVerified !== currentData.user.isVerified)
         userUpdates.isVerified = values.user.isVerified;
+    if (values.user.roleId && values.user.roleId !== currentData.user.roleId)
+        userUpdates.roleId = values.user.roleId;
 
     if (Object.keys(userUpdates).length > 0) {
         apiData.user = userUpdates as AdminData["user"];
@@ -90,19 +92,16 @@ export const updateAdmin = async (
 
         const result = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
             throw new Error(result.message || "Failed to update admin");
         }
 
         return { success: true, data: result };
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.error("Error updating admin:", error);
             return { success: false, error: error.message };
-        } else {
-            console.error("Unexpected error:", error);
-            return { success: false, error: "An unexpected error occurred" };
         }
+        return { success: false, error: "An unexpected error occurred" };
     }
 };
 
@@ -143,7 +142,8 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10, name?:
                 image: admin.user.avatar.startsWith('http') 
                     ? admin.user.avatar 
                     : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
-                isVerified: admin.user.isVerified
+                isVerified: admin.user.isVerified,
+                role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : 'N/A'
             })),
             totalCount: result.innerData.count
         };
@@ -188,7 +188,12 @@ export const fetchAdminById = async (adminId: string) => {
                     ? admin.user.avatar
                     : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
                 isVerified: admin.user.isVerified,
-                user: admin.user
+                user: {
+                    ...admin.user,
+                    roleId: admin.roles && admin.roles.length > 0 ? admin.roles[0].id.toString() : ''
+                },
+                role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : 'N/A',
+                roles: admin.roles || []
             }
         };
 

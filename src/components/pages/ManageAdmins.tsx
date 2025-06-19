@@ -52,6 +52,7 @@ const ManageAdmins = () => {
   const columns: { header: string; accessor: keyof Admin }[] = [
     { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
+    { header: "role", accessor: "role" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
     { header: "status", accessor: "status" },

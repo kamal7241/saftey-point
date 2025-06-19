@@ -105,7 +105,7 @@ export default function NewAdminForm({
         phoneNumber: adminData.user.phone,
         password: "",
         file: adminData.user.avatar || null,
-        roleId: String(adminData.user.roleId || ""),
+        roleId: adminData.user.roleId || "",
       }
     : {
         firstName: "",

@@ -14,12 +14,18 @@ import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
 import { useRouter } from "@/i18n/routing";
-import { deleteAdmin, fetchAdminById, resetAdminPassword, updateAdminStatus } from "@/api/adminService";
+import {
+  deleteAdmin,
+  fetchAdminById,
+  resetAdminPassword,
+  updateAdminStatus,
+} from "@/api/adminService";
 import Popup from "../ui/Popup";
 import NewAdminForm from "../forms/NewAdminForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
 import { showToast } from "@/utils/toast";
 import UserSquare from "../ui/icons/UserSquare";
+import Mail from "../ui/icons/Mail";
 import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
 
 interface SingleAdminProps {
@@ -27,7 +33,10 @@ interface SingleAdminProps {
   adminID: string;
 }
 
-export default function SingleAdmin({ adminData: initialAdminData, adminID }: SingleAdminProps) {
+export default function SingleAdmin({
+  adminData: initialAdminData,
+  adminID,
+}: SingleAdminProps) {
   const t = useTranslations("common");
   const tMsgs = useTranslations("messages");
   const [adminData, setAdminData] = useState<Admin>(initialAdminData);
@@ -42,15 +51,15 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
   const getAdminData = useCallback(async () => {
     try {
       const response = await fetchAdminById(adminID);
-       if (response && response.admin) {
-         setAdminData({
-           ...response.admin,
-           userType: response.admin.type,
-           avatar: response.admin.image
-         });
-       } else {
-         throw new Error("Admin data not found in response");
-       }
+      if (response && response.admin) {
+        setAdminData({
+          ...response.admin,
+          userType: response.admin.type,
+          avatar: response.admin.image,
+        });
+      } else {
+        throw new Error("Admin data not found in response");
+      }
     } catch (error) {
       console.error("Error refetching admin data:", error);
       setError(tMsgs("error_fetching_data"));
@@ -80,18 +89,22 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
         showToast.error(result.error || tMsgs("error_deleting_admin"));
       }
     } catch (err) {
-       const errorMsg = err instanceof Error ? err.message : tMsgs("error_unexpected");
-       setError(errorMsg);
-       showToast.error(errorMsg);
+      const errorMsg =
+        err instanceof Error ? err.message : tMsgs("error_unexpected");
+      setError(errorMsg);
+      showToast.error(errorMsg);
     } finally {
-       setShowDeleteConfirm(false);
+      setShowDeleteConfirm(false);
     }
   };
 
   const handleResetPassword = async (newPassword: string) => {
-     if (!adminData?.id) return;
+    if (!adminData?.id) return;
     try {
-      const result = await resetAdminPassword(Number(adminData.id), newPassword);
+      const result = await resetAdminPassword(
+        Number(adminData.id),
+        newPassword
+      );
       if (result.success) {
         setResetPasswordSuccess(true);
         showToast.success(tMsgs("password_reset_success"));
@@ -104,9 +117,10 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
         showToast.error(result.error || tMsgs("error_resetting_password"));
       }
     } catch (err) {
-       const errorMsg = err instanceof Error ? err.message : tMsgs("error_unexpected");
-       setError(errorMsg);
-       showToast.error(errorMsg);
+      const errorMsg =
+        err instanceof Error ? err.message : tMsgs("error_unexpected");
+      setError(errorMsg);
+      showToast.error(errorMsg);
     }
   };
 
@@ -116,25 +130,35 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
 
   // Adjust verification logic if needed for Admins
   const handleToggleVerification = async () => {
-     if (!adminData?.id) return;
+    if (!adminData?.id) return;
     try {
       // Assuming toggleAdminVerification exists and works similarly
-      const result = await updateAdminStatus(Number(adminData.id), adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.SUSPENDED : AdminStatus.ACTIVE);
+      const result = await updateAdminStatus(
+        Number(adminData.id),
+        adminData.status === AdminVmStatus.ACTIVE
+          ? AdminStatus.SUSPENDED
+          : AdminStatus.ACTIVE
+      );
       if (result.success) {
         await getAdminData(); // Refetch data
-        showToast.success(tMsgs(
-          adminData.status === AdminVmStatus.ACTIVE ? "admin_suspended_successfully" : "admin_activated_successfully"
-        ));
+        showToast.success(
+          tMsgs(
+            adminData.status === AdminVmStatus.ACTIVE
+              ? "admin_suspended_successfully"
+              : "admin_activated_successfully"
+          )
+        );
       } else {
         setError(result.error || tMsgs("error_updating_status"));
         showToast.error(result.error || tMsgs("error_updating_status"));
       }
     } catch (err) {
-       const errorMsg = err instanceof Error ? err.message : tMsgs("error_unexpected");
-       setError(errorMsg);
-       showToast.error(errorMsg);
+      const errorMsg =
+        err instanceof Error ? err.message : tMsgs("error_unexpected");
+      setError(errorMsg);
+      showToast.error(errorMsg);
     } finally {
-       setShowSuspendConfirm(false);
+      setShowSuspendConfirm(false);
     }
   };
 
@@ -146,8 +170,14 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("admin-management"), href: "/dashboard/admin-management" },
-    { label: t("manage-admins"), href: "/dashboard/admin-management/manage-admins" },
-    { label: adminData?.name || t("admin_details"), href: `/dashboard/admin-management/manage-admins/${adminID}` }, // Dynamic label
+    {
+      label: t("manage-admins"),
+      href: "/dashboard/admin-management/manage-admins",
+    },
+    {
+      label: adminData?.name || t("admin_details"),
+      href: `/dashboard/admin-management/manage-admins/${adminID}`,
+    }, // Dynamic label
   ];
 
   if (!adminData) return <div>{t("loading")}...</div>; // Or a loading spinner
@@ -161,22 +191,29 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           title={t("edit_admin")}
           sub_title={t("form_subtitle")}
           onClose={handleCloseEditPopup}
-          adminData={adminData ? {
-            id: adminData.id,
-            status: adminData.status === AdminVmStatus.ACTIVE ? AdminStatus.ACTIVE : AdminStatus.SUSPENDED, // Map status back if needed
-            userType: adminData.userType,
-            user: {
-              firstName: adminData.user.firstName,
-              lastName: adminData.user.lastName,
-              avatar: adminData.avatar, // Use top-level avatar
-              email: adminData.email, // Use top-level email
-              phone: adminData.phone, // Use top-level phone
-              address: adminData.user.address || "", // Provide default if missing
-              password: "", // Password is not needed for editing initial values
-              isVerified: adminData.isVerified,
-              roleId: adminData.user.roleId,
-            }
-          } : null}
+          adminData={
+            adminData
+              ? {
+                  id: adminData.id,
+                  status:
+                    adminData.status === AdminVmStatus.ACTIVE
+                      ? AdminStatus.ACTIVE
+                      : AdminStatus.SUSPENDED, // Map status back if needed
+                  userType: adminData.userType,
+                  user: {
+                    firstName: adminData.user.firstName,
+                    lastName: adminData.user.lastName,
+                    avatar: adminData.avatar, // Use top-level avatar
+                    email: adminData.email, // Use top-level email
+                    phone: adminData.phone, // Use top-level phone
+                    address: adminData.user.address || "", // Provide default if missing
+                    password: "", // Password is not needed for editing initial values
+                    isVerified: adminData.isVerified,
+                    roleId: adminData.user.roleId,
+                  },
+                }
+              : null
+          }
         />
       </Popup>
 
@@ -204,10 +241,15 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t("are_you_sure_delete")} {/* Consider specific message for admin */}
+              {t("are_you_sure_delete")}{" "}
+              {/* Consider specific message for admin */}
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Button onClick={handleDelete} label={t("buttons.confirm")} variant="danger"/>
+              <Button
+                onClick={handleDelete}
+                label={t("buttons.confirm")}
+                variant="danger"
+              />
               <Button
                 onClick={handleDeleteCancel}
                 label={t("buttons.cancel")}
@@ -223,10 +265,18 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t(adminData?.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")} {/* Adjust text */}
+              {t(
+                adminData?.isVerified
+                  ? "are_you_sure_suspend"
+                  : "are_you_sure_activate"
+              )}{" "}
+              {/* Adjust text */}
             </p>
             <div className="flex items-center justify-center gap-4">
-              <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleToggleVerification}
+                label={t("buttons.confirm")}
+              />
               <Button
                 onClick={handleSuspendCancel}
                 label={t("buttons.cancel")}
@@ -246,26 +296,46 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             <Button
               label={t("buttons.edit")}
               onClick={() => setEditPopupOpen(true)}
-              icon={<span className="inline-block w-6"><Edit2 /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Edit2 />
+                </span>
+              }
               variant="primary"
             />
             <Button
               label={t("buttons.reset_password")}
               onClick={() => setResetPasswordPopupOpen(true)}
-              icon={<span className="inline-block w-6"><Lock /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Lock />
+                </span>
+              }
               variant="secondary"
             />
             {/* Conditionally render Suspend/Activate button if applicable */}
             <Button
-              label={t(adminData?.status === AdminVmStatus.ACTIVE ? "buttons.suspend" : "buttons.activate")}
+              label={t(
+                adminData?.status === AdminVmStatus.ACTIVE
+                  ? "buttons.suspend"
+                  : "buttons.activate"
+              )}
               onClick={() => setShowSuspendConfirm(true)}
-              icon={<span className="inline-block w-6"><Suspend /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Suspend />
+                </span>
+              }
               variant="dark"
             />
             <Button
               label={t("buttons.delete")}
               onClick={() => setShowDeleteConfirm(true)}
-              icon={<span className="inline-block w-6"><Delete /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Delete />
+                </span>
+              }
               variant="danger"
             />
           </>
@@ -287,18 +357,21 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             {adminData?.name} {/* Display admin name */}
           </h2>
         </div>
-        <div className="flex items-center justify-between flex-wrap gap-y-4"> {/* Added flex-wrap and gap-y */}
+        <div className="flex items-start gap-8 flex-wrap mb-6">
           <GroupInfo
-            label={t("phone_number")}
-            content={adminData?.phone} // Use admin phone
+            label={t("name")}
+            content={adminData.name}
             copyIt
-            icon={<PhoneIcon />}
+            icon={<UserSquare />}
           />
           <GroupInfo
-            label={t("email")} // Changed label
-            content={adminData?.email} // Use admin email
-            copyIt
-            icon={<UserSquare />} // Changed icon
+            label={t("role")}
+            content={
+              adminData.roles && adminData.roles.length > 0
+                ? adminData.roles[0].name
+                : "N/A"
+            }
+            icon={<UserSquare />}
           />
           <GroupInfo
             label={t("status")}
@@ -306,7 +379,18 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             content={<Status status={adminData?.status} />} // Use admin status
             icon={<StatusCheck />}
           />
-           {/* Add other relevant admin info here using GroupInfo */}
+          <GroupInfo
+            label={t("email")}
+            content={adminData.email}
+            copyIt
+            icon={<Mail />}
+          />
+          <GroupInfo
+            label={t("phone")}
+            content={adminData.phone}
+            copyIt
+            icon={<PhoneIcon />}
+          />
         </div>
       </div>
     </div>

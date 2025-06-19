@@ -783,6 +783,8 @@
     "authentication_error": "Authentication error occurred. Please try again.",
     "signing_in": "Signing you in...",
     "redirecting_to_dashboard": "Please wait while we redirect you to the dashboard",
-    "sign_in": "Sign In"
+    "sign_in": "Sign In",
+    "loading_page": "Loading page...",
+    "loading_data": "Loading data..."
   }
 }

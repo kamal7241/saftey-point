@@ -36,7 +36,12 @@ const OTPForm = ({ email: propEmail }: { email?: string }) => {
       const response = await verifyOTP({ otp, email });
       if (response.success) {
         const accessToken = response.innerData?.accessToken;
-        Cookies.set("tokenOTP", accessToken, { secure: true, httpOnly: false });
+        Cookies.set("tokenOTP", accessToken, { 
+          secure: process.env.NODE_ENV === 'production', 
+          httpOnly: false,
+          sameSite: 'strict',
+          path: '/'
+        });
         localStorage.removeItem("forgotEmail");
         window.location.href = "/authentication/new-password";
       } else {

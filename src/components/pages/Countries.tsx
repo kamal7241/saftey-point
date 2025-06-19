@@ -4,6 +4,7 @@ import Table from "@/components/ui/Table";
 import { Country } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import NewCountryForm from "../forms/NewCountryForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
@@ -26,6 +27,9 @@ const Countries = () => {
     {}
   );
   const [loading, setLoading] = useState(false);
+
+  // Use the page loading hook to show loading state in sidebar
+  usePageLoading(loading);
 
   const getCountries = async () => {
     setLoading(true);

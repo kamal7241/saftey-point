@@ -4,6 +4,7 @@ import Table from "@/components/ui/Table";
 import { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { usePageLoading } from "@/hooks/usePageLoading";
 // import NewCourseForm from "../forms/NewCourseForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
@@ -33,6 +34,9 @@ const Courses = () => {
   const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
 
   const limit = 10;
+
+  // Use the page loading hook to show loading state in sidebar
+  usePageLoading(loading);
 
   const getCourses = async () => {
     setLoading(true);

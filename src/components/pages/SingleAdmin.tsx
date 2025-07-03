@@ -14,13 +14,13 @@ import PhoneIcon from "../ui/icons/PhoneIcon";
 import Suspend from "../ui/icons/Suspend";
 import StatusCheck from "../ui/icons/StatusCheck";
 import { useRouter } from "@/i18n/routing";
-import { deleteAdmin, fetchAdminById, resetAdminPassword, updateAdminStatus } from "@/api/adminService";
+import { deleteAdmin, fetchAdminById, resetAdminPassword, toAdmin, updateAdminStatus } from "@/api/adminService";
 import Popup from "../ui/Popup";
 import NewAdminForm from "../forms/NewAdminForm";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
 import { showToast } from "@/utils/toast";
 import UserSquare from "../ui/icons/UserSquare";
-import { AdminVmStatus } from "@/enum/admin-status.enum";
+import Mail from "../ui/icons/Mail";
 import { UserStatus } from "@/enum/user-status.enum";
 import { TableStatus } from "@/enum/table-status.enum";
 
@@ -45,11 +45,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
     try {
       const response = await fetchAdminById(adminID);
        if (response && response.admin) {
-         setAdminData({
-           ...response.admin,
-           userType: response.admin.type,
-           avatar: response.admin.image
-         });
+         setAdminData(toAdmin(response.admin));
        } else {
          throw new Error("Admin data not found in response");
        }
@@ -122,11 +118,11 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
      if (!adminData?.id) return;
     try {
       // Assuming toggleAdminVerification exists and works similarly
-      const result = await updateAdminStatus(Number(adminData.id), adminData.status === AdminVmStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE);
+      const result = await updateAdminStatus(Number(adminData.id), adminData.status === UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE);
       if (result.success) {
         await getAdminData(); // Refetch data
         showToast.success(tMsgs(
-          adminData.status === AdminVmStatus.ACTIVE ? "admin_suspended_successfully" : "admin_activated_successfully"
+          adminData.status === UserStatus.ACTIVE ? "admin_suspended_successfully" : "admin_activated_successfully"
         ));
       } else {
         setError(result.error || tMsgs("error_updating_status"));
@@ -166,20 +162,29 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           onClose={handleCloseEditPopup}
           adminData={adminData ? {
             id: adminData.id,
-            status: adminData.status === TableStatus.ACTIVE ? UserStatus.ACTIVE : UserStatus.INACTIVE, // Map status back if needed
+            status: adminData.status, // Map status back if needed
             userType: adminData.userType,
             user: {
               firstName: adminData.user.firstName,
               lastName: adminData.user.lastName,
-              avatar: adminData.avatar, // Use top-level avatar
+              avatar: adminData.image, // Use top-level avatar
               email: adminData.email, // Use top-level email
               phone: adminData.phone, // Use top-level phone
               address: adminData.user.address || "", // Provide default if missing
               password: "", // Password is not needed for editing initial values
               isVerified: adminData.isVerified,
-              roleId: adminData.user.roleId,
+              roleId: adminData.user.roleId || "",
             }
           } : null}
+          fieldsStatus={{
+            email: {
+              readOnly: true,
+            },
+            status: {
+              readOnly: true,
+            },
+           
+          }}
         />
       </Popup>
 
@@ -260,7 +265,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             />
             {/* Conditionally render Suspend/Activate button if applicable */}
             <Button
-              label={t(adminData?.status === AdminVmStatus.ACTIVE ? "buttons.suspend" : "buttons.activate")}
+              label={t(adminData?.status === UserStatus.ACTIVE ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
@@ -280,7 +285,7 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
         <h1 className="heading3">{t("admin_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
           <ImageWithFallback
-            src={`${process.env.NEXT_PUBLIC_URL}/${adminData?.avatar}`} // Use admin avatar
+            src={`${adminData?.image}`} // Use admin avatar
             alt="admin-profile"
             width={80}
             height={80}
@@ -291,17 +296,21 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
           </h2>
         </div>
         <div className="flex items-center justify-between flex-wrap gap-y-4"> {/* Added flex-wrap and gap-y */}
-          <GroupInfo
-            label={t("phone_number")}
-            content={adminData?.phone} // Use admin phone
+          
+        <GroupInfo
+            label={t("name")}
+            content={adminData.name}
             copyIt
-            icon={<PhoneIcon />}
+            icon={<UserSquare />}
           />
-          <GroupInfo
-            label={t("email")} // Changed label
-            content={adminData?.email} // Use admin email
-            copyIt
-            icon={<UserSquare />} // Changed icon
+        <GroupInfo
+            label={t("role")}
+            content={
+              adminData.roles && adminData.roles.length > 0
+                ? adminData.roles[0].name
+                : "N/A"
+            }
+            icon={<UserSquare />}
           />
           <GroupInfo
             label={t("status")}
@@ -310,6 +319,18 @@ export default function SingleAdmin({ adminData: initialAdminData, adminID }: Si
             icon={<StatusCheck />}
           />
            {/* Add other relevant admin info here using GroupInfo */}
+           <GroupInfo
+            label={t("email")}
+            content={adminData.email}
+            copyIt
+            icon={<Mail />}
+          />
+          <GroupInfo
+            label={t("phone")}
+            content={adminData.phone}
+            copyIt
+            icon={<PhoneIcon />}
+          />
         </div>
       </div>
     </div>

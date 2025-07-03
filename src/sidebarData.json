@@ -1,119 +1,180 @@
-[
-    {
-      "name": "Dashboard",
-      "link": "/dashboard",
-      "children": [],
-      "icon": "/images/icons/navbar/dashboard.svg",
-      "activeIcon": "/images/icons/navbar/dashboard-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Company Management",
-      "link": "/dashboard/company-management",
-      "children": [
-        { "name": "Companies", "link": "/dashboard/company-management/companies", "roles": ["admin"] },
-        { "name": "Branches", "link": "/dashboard/company-management/branches", "roles": ["admin"] }
-      ],
-      "icon": "/images/icons/navbar/company-management.svg",
-      "activeIcon": "/images/icons/navbar/company-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Admin Management",
-      "link": "/dashboard/admin-management",
-      "children": [
-        { "name": "Manage Admins", "link": "/dashboard/admin-management/manage-admins", "roles": ["admin"] },
-        { "name": "Roles & Permissions", "link": "/dashboard/admin-management/roles-permissions", "roles": ["admin"] }
-      ],
-      "icon": "/images/icons/navbar/admin-management.svg",
-      "activeIcon": "/images/icons/navbar/admin-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Staff Management",
-      "link": "/dashboard/staff-management",
-      "children": [],
-      "icon": "/images/icons/navbar/staff-management.svg",
-      "activeIcon": "/images/icons/navbar/staff-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "User Management",
-      "link": "/dashboard/user-management",
-      "children": [
-        { "name": "Users", "link": "/dashboard/user-management/users", "roles": ["admin"] },
-        { "name": "Certificates", "link": "/dashboard/user-management/certificates", "roles": ["admin"] },
-        { "name": "Exams", "link": "/dashboard/user-management/exams", "roles": ["admin"] },
-        { "name": "Rewards", "link": "/dashboard/user-management/rewards", "roles": ["admin"] }
-      ],
-      "icon": "/images/icons/navbar/user-management.svg",
-      "activeIcon": "/images/icons/navbar/user-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Courses Management",
-      "link": "/dashboard/courses-management",
-      "children": [
-        { "name": "Courses List", "link": "/dashboard/courses-management/list", "roles": ["admin"] },
-        { "name": "Manage Certificates", "link": "/dashboard/courses-management/certificates", "roles": ["admin"] },
-        { "name": "Exams", "link": "/dashboard/courses-management/exams", "roles": ["admin"] },
-        { "name": "Rewards", "link": "/dashboard/courses-management/rewards", "roles": ["admin"] }
-      ],
-      "icon": "/images/icons/navbar/user-management.svg",
-      "activeIcon": "/images/icons/navbar/user-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Presets",
-      "link": "/dashboard/presets",
-      "children": [
-        { "name": "Branches", "link": "/dashboard/presets/branches", "roles": ["admin"] },
-        { "name": "Discounts", "link": "/dashboard/presets/discounts", "roles": ["admin"] },
-        { "name": "Facility", "link": "/dashboard/presets/facility", "roles": ["admin"] },
-        { "name": "Currencies", "link": "/dashboard/presets/currencies", "roles": ["admin"] },
-        { "name": "Locations", "link": "/dashboard/presets/locations", "roles": ["admin"] },
-        { "name": "Partners", "link": "/dashboard/presets/partners", "roles": ["admin"] },
-        { "name": "Cancellations - Refunds", "link": "/dashboard/presets/cancellations-refunds", "comingSoon": true, "roles": ["admin"] }
-      ],
-      "icon": "/images/icons/navbar/user-management.svg",
-      "activeIcon": "/images/icons/navbar/user-management-active.svg",
-      "roles": ["admin"]
-    },
-    {
-      "name": "Dashboard",
-      "link": "/company/dashboard",
-      "children": [],
-      "icon": "/images/icons/navbar/dashboard.svg",
-      "activeIcon": "/images/icons/navbar/dashboard-active.svg",
-      "roles": ["company"]
-    },
-    {
-      "name": "Account Management",
-      "link": "/company/account-management",
-      "icon": "/images/icons/navbar/company-management.svg",
-      "activeIcon": "/images/icons/navbar/company-management-active.svg",
-      "roles": ["company"]
-    },
-    {
-      "name": "Branches Management",
-      "link": "/company/branches-management",
-      "icon": "/images/icons/navbar/company-management.svg",
-      "activeIcon": "/images/icons/navbar/company-management-active.svg",
-      "roles": ["company"]
-    },
-    {
-      "name": "Employee Management",
-      "link": "/company/employee-management",
-      "icon": "/images/icons/navbar/staff-management.svg",
-      "activeIcon": "/images/icons/navbar/staff-management-active.svg",
-      "roles": ["company"]
-    },
-    {
-      "name": "Courses Enrollments",
-      "link": "/company/courses-enrollments",
-      "icon": "/images/icons/navbar/user-management.svg",
-      "activeIcon": "/images/icons/navbar/user-management-active.svg",
-      "roles": ["company"]
-    }
-  ]
-  
+[{
+    "name": "Dashboard",
+    "link": "/dashboard",
+    "children": [],
+    "icon": "/images/icons/navbar/dashboard.svg",
+    "activeIcon": "/images/icons/navbar/dashboard-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "Admin Management",
+    "link": "/dashboard/admin-management",
+    "children": [{
+        "name": "Manage Admins",
+        "link": "/dashboard/admin-management/manage-admins",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Roles & Permissions",
+        "link": "/dashboard/admin-management/roles-permissions",
+        "roles": ["admin"]
+      }
+    ],
+    "icon": "/images/icons/navbar/admin-management.svg",
+    "activeIcon": "/images/icons/navbar/admin-management-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "Company Management",
+    "link": "/dashboard/company-management",
+    "children": [],
+    "icon": "/images/icons/navbar/company-management.svg",
+    "activeIcon": "/images/icons/navbar/company-management-active.svg",
+    "roles": ["admin"]
+  },
+
+  {
+    "name": "Staff Management",
+    "link": "/dashboard/staff-management",
+    "children": [],
+    "icon": "/images/icons/navbar/staff-management.svg",
+    "activeIcon": "/images/icons/navbar/staff-management-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "User Management",
+    "link": "/dashboard/user-management",
+    "children": [{
+        "name": "Users",
+        "link": "/dashboard/user-management/users",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Certificates",
+        "link": "/dashboard/user-management/certificates",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Exams",
+        "link": "/dashboard/user-management/exams",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Rewards",
+        "link": "/dashboard/user-management/rewards",
+        "roles": ["admin"]
+      }
+    ],
+    "icon": "/images/icons/navbar/user-management.svg",
+    "activeIcon": "/images/icons/navbar/user-management-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "Courses Management",
+    "link": "/dashboard/courses-management",
+    "children": [{
+        "name": "Courses List",
+        "link": "/dashboard/courses-management/list",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Manage Certificates",
+        "link": "/dashboard/courses-management/certificates",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Exams",
+        "link": "/dashboard/courses-management/exams",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Rewards",
+        "link": "/dashboard/courses-management/rewards",
+        "roles": ["admin"]
+      }
+    ],
+    "icon": "/images/icons/navbar/user-management.svg",
+    "activeIcon": "/images/icons/navbar/user-management-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "Presets",
+    "link": "/dashboard/presets",
+    "children": [{
+        "name": "Branches",
+        "link": "/dashboard/presets/branches",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Discounts",
+        "link": "/dashboard/presets/discounts",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Facility",
+        "link": "/dashboard/presets/facility",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Currencies",
+        "link": "/dashboard/presets/currencies",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Countries",
+        "link": "/dashboard/presets/locations",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Partners",
+        "link": "/dashboard/presets/partners",
+        "roles": ["admin"]
+      },
+      {
+        "name": "Cancellations - Refunds",
+        "link": "/dashboard/presets/cancellations-refunds",
+        "comingSoon": true,
+        "roles": ["admin"]
+      }
+    ],
+    "icon": "/images/icons/navbar/user-management.svg",
+    "activeIcon": "/images/icons/navbar/user-management-active.svg",
+    "roles": ["admin"]
+  },
+  {
+    "name": "Dashboard",
+    "link": "/company/dashboard",
+    "children": [],
+    "icon": "/images/icons/navbar/dashboard.svg",
+    "activeIcon": "/images/icons/navbar/dashboard-active.svg",
+    "roles": ["company"]
+  },
+  {
+    "name": "Account Management",
+    "link": "/company/account-management",
+    "icon": "/images/icons/navbar/company-management.svg",
+    "activeIcon": "/images/icons/navbar/company-management-active.svg",
+    "roles": ["company"]
+  },
+  {
+    "name": "Branches Management",
+    "link": "/company/branches-management",
+    "icon": "/images/icons/navbar/company-management.svg",
+    "activeIcon": "/images/icons/navbar/company-management-active.svg",
+    "roles": ["company"]
+  },
+  {
+    "name": "Employee Management",
+    "link": "/company/employee-management",
+    "icon": "/images/icons/navbar/staff-management.svg",
+    "activeIcon": "/images/icons/navbar/staff-management-active.svg",
+    "roles": ["company"]
+  },
+  {
+    "name": "Courses Enrollments",
+    "link": "/company/courses-enrollments",
+    "icon": "/images/icons/navbar/user-management.svg",
+    "activeIcon": "/images/icons/navbar/user-management-active.svg",
+    "roles": ["company"]
+  }
+]

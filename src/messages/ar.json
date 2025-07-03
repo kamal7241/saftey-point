@@ -21,7 +21,7 @@
     "partners": "الشركاء",
     "partner": "شريك",
     "currencies": "العملات",
-    "locations": "البلاد",
+    "countries": "البلاد",
     "coming_soon":"قريباً",
     "courses-enrollments": "تسجيلات الدورات",
     "employee-management": "إدارة الموظفين", 
@@ -144,12 +144,13 @@
   },
   "common": {
     "home": "الرئيسية",
+    "phone": "الهاتف",
     "name": "اسم",
     "about": "من نحن",
     "support": "الدعم",
     "copyright": "حقوق النشر © {year} سيفتي بوينت. جميع الحقوق محفوظة.",
     "dashboard": "لوحة القيادة",
-    "role": "دور",
+    "role": "الدور",
     "search_by_code": "ابحث بالرمز",
     "search_by_name": "ابحث بالاسم",
     "search_by_phone_code": "ابحث برمز الهاتف",
@@ -160,8 +161,8 @@
     "country_name": "اسم البلد",
     "phone_code": "رمز الهاتف",
     "emoji": "الرموز التعبيرية",
-    "loading_roles": "جاري تحميل الأدوار",
-    "select_role_placeholder": "اختر دور",
+    "loading_roles": "جاري تحميل الأدوار...",
+    "select_role_placeholder": "اختر دوراً",
     "presets": "الإعدادات المسبقة",
     "currencies": "العملات",
     "courses": "دورات",
@@ -187,7 +188,7 @@
     "userType": "نوع المستخدم",
     "manage-companies": "إدارة الشركات",
     "company-management": "إدارة الشركة",
-    "admin-management": "إدارة المشرف",
+    "admin-management": "إدارة المشرفين",
     "manage-admins": "إدارة المسؤولين",
     "manage-branches": "إدارة الفروع",
     "branch_details": "تفاصيل الفرع",
@@ -195,7 +196,7 @@
     "branch_name": "اسم الفرع",
     "roles-permissions": "الدور والأذونات",
     "address": "عنوان",
-    "permissions": "أذونات",
+    "permissions": "الصلاحيات",
     "add_role": "إضافة دور",
     "add_promo_code": "إضافة رمز ترويجي",
     "pin_location": "موقع دبوس",
@@ -203,6 +204,10 @@
     "pending": "قيد الانتظار",
     "default": "افتراضي",
     "suspended": "معلق",
+    "published": "تم التشغيل",
+    "in_review":"في المراجعة",
+    "draft": "مسوده",
+    "archived": "مؤرشفة",
     "inactive": "غير نشط",
     "searchplaceholder": "ابدأ الكتابة للبحث ...",
     "add_company": "أضف شركة",
@@ -231,7 +236,7 @@
     "logo_company": "شركة شعار",
     "add_company_subtitle": "مرحبًا بك مرة أخرى ، الحقول المميزة بـ (*) إلزامية",
     "add_branch_subtitle": "مرحبًا بك مرة أخرى ، الحقول المميزة بـ (*) إلزامية",
-    "form_subtitle": "مرحبًا بك مرة أخرى ، الحقول المميزة بـ (*) إلزامية",
+    "form_subtitle": "يرجى ملء النموذج أدناه لإضافة دور جديد",
     "fileuploader_note": "انقر على الصورة لتغييرها ملاحظة: اختر فقط JPG ، صور PNG ولا يزيد عن 5 ميجابايت في الحجم",
     "user_photo": "صورة المستخدم",
     "edit_facility": "تعديل التسهيل",
@@ -498,7 +503,10 @@
       "exam": "امتحان",
       "certificate": "شهادة",
       "sessions": "جلسات"
-    }
+    },
+    "confirm_delete": "تأكيد الحذف",
+    "role_name": "اسم الدور",
+    "role_description": "وصف الدور"
   },
   "validation": {
     "validFrom": {
@@ -723,7 +731,10 @@
       "name": "الوظيفة",
       "required": "الوظيفة مطلوبة",
       "placeholder": "أدخل الوظيفة"
-    }
+    },
+    "title_too_long": "يجب أن يكون العنوان أقصر من أو يساوي 255 حرفًا",
+    "invalid_date_format": "تنسيق التاريخ غير صالح",
+    "start_date_after_end_date": "يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء"
   },
   "messages": {
     "missing_examId": "معرف الامتحان المفقود",
@@ -777,6 +788,20 @@
     "session_updated_successfully": "تم تحديث الجلسة بنجاح",
     "error_updating_session": "خطأ في تحديث الجلسة",
     "partner_deleted_successfully": "تم حذف الشريك بنجاح",
-    "error_deleting_partner": "حدث خطأ أثناء حذف الشريك"
+    "error_deleting_partner": "حدث خطأ أثناء حذف الشريك",
+    "invalid_credentials": "بيانات الاعتماد غير صالحة. يرجى التحقق من بريدك الإلكتروني وكلمة المرور.",
+    "login_failed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+    "authentication_error": "حدث خطأ في المصادقة. يرجى المحاولة مرة أخرى.",
+    "signing_in": "جاري تسجيل دخولك...",
+    "redirecting_to_dashboard": "يرجى الانتظار بينما نقوم بتوجيهك إلى لوحة التحكم",
+    "sign_in": "تسجيل الدخول",
+    "loading_page": "جاري تحميل الصفحة...",
+    "loading_data": "جاري تحميل البيانات...",
+    "role_deleted_successfully": "تم حذف الدور بنجاح",
+    "error_deleting_role": "خطأ حذف الدور",
+    "role_updated_successfully": "تم تحديث الدور بنجاح",
+    "error_updating_role": "خطأ تحديث الدور",
+    "role_created_successfully": "تم إنشاء الدور بنجاح",
+    "error_creating_role": "خطأ إنشاء الدور"
   }
 }

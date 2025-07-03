@@ -15,6 +15,7 @@ interface FileUploaderProps {
   onChange?: (filePath: string | null) => void;
   small?: boolean;
   initialImageUrl?: string | null;
+  readOnly?: boolean;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
@@ -24,6 +25,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   subdirName = "common",
   small,
   initialImageUrl = null,
+  readOnly = false,
 }) => {
   const t = useTranslations("common");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -222,6 +224,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         className="hidden"
         accept="image/*,application/pdf"
         onChange={handleFileChange}
+        readOnly={readOnly}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import Textarea from "@/components/formsUI/Textarea";
 import Calendar from "@/components/ui/icons/Calendar";
 import { ErrorMessage, FormikProps, FormikValues } from "formik";
 import { useTranslations } from "next-intl";
+import { ChangeEvent } from "react";
 
 interface SessionProps {
   values: FormikValues;
@@ -12,6 +13,9 @@ interface SessionProps {
   setFieldValue: FormikProps<FormikValues>["setFieldValue"];
   errors: FormikValues;
 }
+
+type DateRange = [Date | null, Date | null];
+type TimeRange = { from: Date | null; to: Date | null };
 
 export default function SessionStep({
   values,
@@ -21,20 +25,49 @@ export default function SessionStep({
 }: SessionProps) {
   const t = useTranslations("common");
 
+  const handleDateChange = (value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange) => {
+    if (Array.isArray(value) && value.length === 2) {
+      const [startDate, endDate] = value;
+      if (startDate instanceof Date) {
+        setFieldValue('startDate', startDate.toISOString().split('T')[0]);
+      }
+      if (endDate instanceof Date) {
+        setFieldValue('endDate', endDate.toISOString().split('T')[0]);
+      }
+    }
+  };
+
+  const handleTimeChange = (value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange) => {
+    if (typeof value === 'object' && 'from' in value && 'to' in value) {
+      const { from, to } = value as TimeRange;
+      if (from instanceof Date) {
+        setFieldValue('startTime', from.toTimeString().split(' ')[0]);
+      }
+      if (to instanceof Date) {
+        setFieldValue('endTime', to.toTimeString().split(' ')[0]);
+      }
+    }
+  };
+
+  const dateRange: DateRange = [
+    values.startDate ? new Date(values.startDate) : null,
+    values.endDate ? new Date(values.endDate) : null
+  ];
+
   return (
     <div>
       <div className="mt-4 grid w-full grid-cols-6 gap-x-4 gap-y-6">
         <div className="col-span-6">
           <Input
-            label={t("sessionName")}
+            label={t("title")}
             type="text"
-            placeholder={t("sessionName")}
-            value={values.sessionName}
+            placeholder={t("title")}
+            value={values.title}
             onChange={handleChange}
-            name="sessionName"
+            name="title"
           />
           <ErrorMessage
-            name="sessionName"
+            name="title"
             component="div"
             className="text-xs text-red-500 py-1"
           />
@@ -118,48 +151,48 @@ export default function SessionStep({
             <p className="text-xs text-red-500 py-1">{errors.scheduleType}</p>
           )}
         </div>
-        <br />
         <div className="col-span-3">
           <Input
             label={t("date")}
             type="date"
             range={true}
             placeholder={t("date")}
-            value={values.session_date}
-            onChange={(dateRange) =>
-              setFieldValue("session_date", dateRange)
-            }
-            // onChange={(value) => {
-            //   if (typeof value === 'string') {
-            //     setFieldValue('session_date', value);
-            //   } else if (value instanceof Date) {
-            //     setFieldValue('session_date', value.toISOString());
-            //   }
-            // }}
-            name="session_date"
+            value={dateRange}
+            onChange={handleDateChange}
+            name="date"
             iconEnd={true}
             iconSVG={<Calendar />}
           />
           <ErrorMessage
-            name="session_date"
+            name="startDate"
+            component="div"
+            className="text-xs text-red-500"
+          />
+          <ErrorMessage
+            name="endDate"
             component="div"
             className="text-xs text-red-500"
           />
         </div>
         <div className="col-span-3">
           <Input
-            label={t("session_time")}
+            label={t("time")}
             type="time"
-            placeholder="Select Time Range"
-            value={values.session_time}
-            onChange={(timeRange) => setFieldValue("session_time", timeRange)}
-            name="session_time"
             timeRange={true}
+            placeholder={t("time")}
+            value=""
+            onChange={handleTimeChange}
+            name="time"
             iconEnd={true}
             iconSVG={<Calendar />}
           />
           <ErrorMessage
-            name="session_time"
+            name="startTime"
+            component="div"
+            className="text-xs text-red-500"
+          />
+          <ErrorMessage
+            name="endTime"
             component="div"
             className="text-xs text-red-500"
           />

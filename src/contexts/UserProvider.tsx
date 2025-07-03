@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 import { login as apiLogin } from '@/api/authService'; // Assuming login API service
 
 // Define the shape of the user object and context
@@ -31,6 +32,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // Try to load user data from cookies on initial load
@@ -60,23 +62,65 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setAccessToken(accToken);
     setRefreshToken(refToken);
 
-    Cookies.set('userInfo', JSON.stringify(userData), { secure: true, httpOnly: false });
-    Cookies.set('accessToken', accToken, { secure: true, httpOnly: false });
-    Cookies.set('refreshToken', refToken, { secure: true, httpOnly: false });
+    // Set cookies with proper options
+    Cookies.set('userInfo', JSON.stringify(userData), { 
+      secure: process.env.NODE_ENV === 'production', 
+      httpOnly: false,
+      sameSite: 'strict',
+      path: '/'
+    });
+    Cookies.set('accessToken', accToken, { 
+      secure: process.env.NODE_ENV === 'production', 
+      httpOnly: false,
+      sameSite: 'strict',
+      path: '/'
+    });
+    Cookies.set('refreshToken', refToken, { 
+      secure: process.env.NODE_ENV === 'production', 
+      httpOnly: false,
+      sameSite: 'strict',
+      path: '/'
+    });
   };
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
+      console.log('UserProvider - Starting login process');
       const response = await apiLogin(email, password);
-      const { user: loggedInUser, accessToken: newAccessToken, refreshToken: newRefreshToken } = response;
+      console.log('UserProvider - Login API response:', response);
+      
+      // Extract user and tokens from the expected response structure
+      const { user: loggedInUser, accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
+      
+      console.log('UserProvider - Extracted tokens:', { 
+        hasUser: !!loggedInUser, 
+        hasAccessToken: !!newAccessToken, 
+        hasRefreshToken: !!newRefreshToken 
+      });
+      
+      if (!loggedInUser || !newAccessToken) {
+        throw new Error('Invalid response structure from login API');
+      }
+      
       // Assuming the API returns user role, if not, you might need to fetch it or determine it
       const userWithRole: User = {
         ...loggedInUser,
         role: loggedInUser.role || (loggedInUser.email.includes('admin') ? 'admin' : 'company'), // Example role assignment
       };
+      
+      console.log('UserProvider - Setting user context and cookies');
       updateUserContext(userWithRole, newAccessToken, newRefreshToken);
-      window.location.href = '/dashboard'; // Or use Next.js router for navigation
+      
+      // Verify cookies are set
+      const verifyAccessToken = Cookies.get('accessToken');
+      console.log('UserProvider - Cookie verification - accessToken exists:', !!verifyAccessToken);
+      
+      // Add a small delay to ensure cookies are set before redirect
+      setTimeout(() => {
+        console.log('UserProvider - Redirecting to dashboard');
+        router.push('/dashboard');
+      }, 100);
     } catch (error) {
       console.error('Login failed in UserProvider:', error);
       throw error; // Re-throw to be caught by the calling component (e.g., LoginForm)
@@ -92,7 +136,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     Cookies.remove('userInfo');
     Cookies.remove('accessToken');
     Cookies.remove('refreshToken');
-    window.location.href = '/authentication/login'; // Redirect to login page
+    router.push('/authentication/login');
   };
 
   return (

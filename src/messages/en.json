@@ -21,6 +21,7 @@
     "partners": "Partners",
     "partner": "Partner",
     "currencies": "Currencies",
+    "countries": "Countries",
     "locations": "Locations",
     "coming_soon":"Coming Soon",
     "courses-enrollments": "Courses Enrollments",
@@ -143,6 +144,7 @@
   "common": {
     "admin_id": "Admin ID",
     "home": "Home",
+    "phone": "Phone",
     "name": "name",
     "about": "About",
     "support": "Support",
@@ -159,8 +161,8 @@
     "country_name": "Country Name",
     "phone_code": "Phone Code",
     "emoji": "Emoji",
-    "loading_roles": "Loading Roles",
-    "select_role_placeholder": "Select Role",
+    "loading_roles": "Loading roles...",
+    "select_role_placeholder": "Select a role",
     "presets": "Presets",
     "currencies": "Currencies",
     "courses": "Courses",
@@ -201,6 +203,10 @@
     "pending": "Pending",
     "default": "default",
     "suspended": "suspended",
+    "published": "Published",
+    "draft": "Draft",
+    "archived": "Archived",
+    "in_review":"In Review",
     "inactive": "Deactivated",
     "searchplaceholder": "Start typing to search...",
     "add_company": "Add Company",
@@ -229,7 +235,7 @@
     "logo_company": "Logo Company",
     "add_company_subtitle": "Welcome back, fields marked with (*) are mandatory",
     "add_branch_subtitle": "Welcome back, fields marked with (*) are mandatory",
-    "form_subtitle": "Welcome back, fields marked with (*) are mandatory",
+    "form_subtitle": "Please fill in the form below to add a new role",
     "fileuploader_note": "Click on the image to change it Note: Choose only JPG, PNG images and no more than 5MB in size",
     "user_photo": "User Photo",
     "edit_facility": "Edit Facility",
@@ -488,7 +494,10 @@
       "exam": "Exam",
       "certificate": "Certificate",
       "sessions": "Sessions"
-    }
+    },
+    "confirm_delete": "Confirm Delete",
+    "role_name": "Role Name",
+    "role_description": "Role Description"
   },
   "validation": {
     "validFrom": {
@@ -713,7 +722,10 @@
       "name": "Job Title",
       "required": "Job Title is required",
       "placeholder": "Enter job title"
-    }
+    },
+    "title_too_long": "Title must be shorter than or equal to 255 characters",
+    "invalid_date_format": "Invalid date format",
+    "start_date_after_end_date": "Start date must be before end date"
   },
   "messages": {
     "missing_examId": "Missing Exam ID",
@@ -767,6 +779,20 @@
     "session_updated_successfully": "Session updated successfully",
     "error_updating_session": "Error updating session",
     "partner_deleted_successfully": "Partner deleted successfully",
-    "error_deleting_partner": "Error deleting partner"
+    "error_deleting_partner": "Error deleting partner",
+    "invalid_credentials": "Invalid credentials. Please check your email and password.",
+    "login_failed": "Login failed. Please try again.",
+    "authentication_error": "Authentication error occurred. Please try again.",
+    "signing_in": "Signing you in...",
+    "redirecting_to_dashboard": "Please wait while we redirect you to the dashboard",
+    "sign_in": "Sign In",
+    "loading_page": "Loading page...",
+    "loading_data": "Loading data...",
+    "role_deleted_successfully": "Role deleted successfully",
+    "error_deleting_role": "Error deleting role",
+    "role_updated_successfully": "Role updated successfully",
+    "error_updating_role": "Error updating role",
+    "role_created_successfully": "Role created successfully",
+    "error_creating_role": "Error creating role"
   }
 }

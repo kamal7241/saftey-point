@@ -1,6 +1,6 @@
 "use client";
 import { submitCorporatePricing } from "@/api/courseService";
-import { fetchCountries } from "@/api/dashboardService";
+import { fetchCountries } from "@/api/countryService";
 import Input from "@/components/formsUI/Input";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
@@ -11,6 +11,7 @@ import SelectField from "../../formsUI/SelectField";
 import Button from "../../ui/Button";
 import SuccessMessage from "../../ui/SuccessMessage";
 import { fetchBranches } from "@/api/companiesService";
+import { Country } from "@/types/ui.types";
 
 interface FormPriceProps {
   title?: string;
@@ -38,7 +39,7 @@ export default function FormPrice({
   const tMsgs = useTranslations("messages");
   const tTable = useTranslations("tables");
   const tValidation = useTranslations("validation");
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   const [branches, setBranches] = useState([]);
 
   const [isSubmitted, setIsSubmitted] = useState(false);

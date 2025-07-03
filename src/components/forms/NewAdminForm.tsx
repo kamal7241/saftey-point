@@ -20,6 +20,12 @@ interface NewAdminFormProps {
   sub_title?: string;
   onClose?: () => void;
   adminData?: AdminData | null;
+  fieldsStatus?: {
+    [key in keyof FormValues]?: {
+      disabled?: boolean;
+      readOnly?: boolean;
+    };
+  };
 }
 
 interface FormValues {
@@ -71,6 +77,7 @@ export default function NewAdminForm({
   sub_title,
   onClose,
   adminData,
+  fieldsStatus
 }: NewAdminFormProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
@@ -101,17 +108,17 @@ export default function NewAdminForm({
     ? {
         firstName: adminData.user.firstName,
         lastName: adminData.user.lastName,
-        status: adminData.status.toLowerCase(),
+        status: adminData.status,
         email: adminData.user.email,
         phoneNumber: adminData.user.phone,
         password: "",
         file: adminData.user.avatar || null,
-        roleId: String(adminData.user.roleId || ""),
+        roleId: adminData.user.roleId || "",
       }
     : {
         firstName: "",
         lastName: "",
-        status: UserStatus.ACTIVE.toLowerCase(),
+        status: UserStatus.ACTIVE,
         email: "",
         phoneNumber: "",
         password: "",
@@ -204,6 +211,7 @@ export default function NewAdminForm({
                 label={t("user_photo")}
                 note={t("fileuploader_note")}
                 initialImageUrl={adminData ? `${adminData.user.avatar}` : null}
+                readOnly={fieldsStatus?.file?.readOnly}
               />
             </div>
 
@@ -216,6 +224,7 @@ export default function NewAdminForm({
                 value={values.firstName}
                 onChange={handleChange}
                 name="firstName"
+                readOnly={fieldsStatus?.firstName?.readOnly}
               />
               <ErrorMessage
                 name="firstName"
@@ -233,6 +242,7 @@ export default function NewAdminForm({
                 value={values.lastName}
                 onChange={handleChange}
                 name="lastName"
+                readOnly={fieldsStatus?.lastName?.readOnly}
               />
               <ErrorMessage
                 name="lastName"
@@ -248,11 +258,12 @@ export default function NewAdminForm({
                 name="status"
                 value={values.status}
                 onChange={(name, value) => setFieldValue(name, value)}
+                readOnly={fieldsStatus?.status?.readOnly}
                 options={[
-                  { value: "active", label: t("user_status.active") },
-                  { value: "inactive", label: t("user_status.inactive") },
-                  { value: "pending", label: t("user_status.pending") },
-                  { value: "expired", label: t("user_status.expired") },
+                  { value: UserStatus.ACTIVE, label: t("user_status.active") },
+                  { value: UserStatus.INACTIVE, label: t("user_status.inactive") },
+                  // { value: UserStatus.PENDING, label: t("user_status.pending") },
+                  // { value: UserStatus.EXPIRED, label: t("user_status.expired") },
                   // { value: "suspended", label: t("user_status.suspended") },
                 ]}
                 customDropdown
@@ -272,6 +283,7 @@ export default function NewAdminForm({
                 value={values.roleId}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={roles}
+                readOnly={fieldsStatus?.roleId?.readOnly}
                 // isLoading={loadingRoles}
                 placeholder={
                   loadingRoles ? "Loading roles..." : "Select a role"
@@ -293,6 +305,7 @@ export default function NewAdminForm({
                 value={values.email}
                 onChange={handleChange}
                 name="email"
+                readOnly={fieldsStatus?.email?.readOnly}
               />
               <ErrorMessage
                 name="email"
@@ -310,6 +323,7 @@ export default function NewAdminForm({
                 value={values.phoneNumber}
                 onChange={handleChange}
                 name="phoneNumber"
+                readOnly={fieldsStatus?.phoneNumber?.readOnly}
               />
               <ErrorMessage
                 name="phoneNumber"
@@ -348,6 +362,7 @@ export default function NewAdminForm({
                     value={values.password}
                     onChange={handleChange}
                     name="password"
+                    readOnly={fieldsStatus?.password?.readOnly}
                   />
                 </div>
                 <div className="col-span-1 self-end">

@@ -34,14 +34,15 @@ export const submitCourse = async (values: CourseFormValues, step: number): Prom
       const courseData: CreateCourseDTO = {
         title: values.courseTitle,
         status: values.status.toUpperCase(),
-        prerequisites: values.prerequisites.toUpperCase(),
         description: values.description,
         validity: values.validity,
         cover: values.courseCover,
         requiresMedicalTest: values.medicalTest === "yes",
         maxAttendees: Number(values.maxAttendees),
-        language: values.language,
-        level: values.level.toUpperCase(),
+        languageId: Number(values.languageId),
+        levelId: Number(values.levelId),
+        prerequisiteId: Number(values.prerequisiteId),
+        facilityId: Number(values.facilityId)
       };
 
       const response = await fetch(
@@ -78,18 +79,19 @@ export const submitCourse = async (values: CourseFormValues, step: number): Prom
 
 export const updateCourse = async (courseId: number, values: Partial<CourseFormValues>): Promise<CourseResponse> => {
   try {
-    const courseData: Partial<CreateCourseDTO> = {};
-    if (values.courseTitle !== undefined) courseData.title = values.courseTitle;
-    if (values.status !== undefined) courseData.status = values.status.toUpperCase();
-    if (values.prerequisites !== undefined) courseData.prerequisites = values.prerequisites.toUpperCase();
-    if (values.description !== undefined) courseData.description = values.description;
-    if (values.validity !== undefined) courseData.validity = values.validity;
-    if (values.courseCover !== undefined) courseData.cover = values.courseCover;
-    if (values.medicalTest !== undefined) courseData.requiresMedicalTest = values.medicalTest === "yes";
-    if (values.maxAttendees !== undefined) courseData.maxAttendees = Number(values.maxAttendees);
-    if (values.language !== undefined) courseData.language = values.language;
-    if (values.level !== undefined) courseData.level = values.level.toUpperCase();
-
+    const courseData: Partial<CreateCourseDTO> = {
+      title: values.courseTitle,
+      status: values.status?.toUpperCase(),
+      description: values.description,
+      validity: values.validity,
+      cover: values.courseCover,
+      requiresMedicalTest: values.medicalTest === "yes",
+      maxAttendees: Number(values.maxAttendees),
+      languageId: Number(values.languageId),
+      levelId: Number(values.levelId),
+      prerequisiteId: Number(values.prerequisiteId),
+      facilityId: Number(values.facilityId)
+    };
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/v1/courses/${courseId}`,
@@ -114,10 +116,9 @@ export const updateCourse = async (courseId: number, values: Partial<CourseFormV
     if (error instanceof Error) {
       console.error("Error updating course:", error);
       return { success: false, error: error.message };
-    } else {
-      console.error("Unexpected error:", error);
-      return { success: false, error: "An unexpected error occurred" };
     }
+    console.error("Unexpected error:", error);
+    return { success: false, error: "An unexpected error occurred" };
   }
 };
 
@@ -321,14 +322,26 @@ export const fetchCourses = async (offset: number = 0, limit: number = 10) => {
     }
 
     return {
-      courses: result.innerData.items.map((course: SingleCourse) => ({
+      courses: result.innerData.items.map((course: any): SingleCourse => ({
         id: course.id,
         title: course.title,
-        language: course.language,
-        enrollments: course.maxAttendees,
-        sessions: course.sessions,
-        level: course.level,
-        status: course.status === "ACTIVE" ? "1" : "0",
+        language: course.language?.name || null,
+        languageId: course.language?.id || null,
+        level: course.level?.name || null,
+        levelId: course.level?.id || null,
+        facility: course.facility?.name || null,
+        facilityId: course.facility?.id || null,
+        prerequisites: course.prerequisites,
+        validity: course.validity,
+        description: course.description,
+        cover: course.cover,
+        maxAttendees: course.maxAttendees,
+        requiresMedicalTest: course.requiresMedicalTest,
+        status: course.status,
+        createdAt: course.createdAt,
+        updatedAt: course.updatedAt,
+        deletedAt: course.deletedAt,
+        image: course.cover ? `${process.env.NEXT_PUBLIC_URL}${course.cover}` : '',
       })),
       totalCount: result.innerData.count
     };
@@ -715,5 +728,38 @@ export const updateCertificate = async (
       return { success: false, error: error.message };
     }
     return { success: false, error: 'An unexpected error occurred' };
+  }
+};
+
+export const deleteCourse = async (courseId: number): Promise<CourseResponse> => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/courses/${courseId}`,
+      {
+        method: "DELETE",
+        headers: {
+          accept: "*/*",
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to delete course");
+    }
+
+    return {
+      success: result.success,
+      message: result.innerData?.message || result.message,
+      timestamp: result.timestamp
+    };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error deleting course:", error);
+      return { success: false, error: error.message };
+    }
+    console.error("Unexpected error:", error);
+    return { success: false, error: "An unexpected error occurred" };
   }
 };

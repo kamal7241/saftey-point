@@ -1,9 +1,10 @@
 "use client";
-import { fetchCourses } from "@/api/courseService";
+import { deleteCourse, fetchCourses } from "@/api/courseService";
 import Table from "@/components/ui/Table";
 import { SingleCourse } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { usePageLoading } from "@/hooks/usePageLoading";
 // import NewCourseForm from "../forms/NewCourseForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
@@ -15,6 +16,7 @@ import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import { toast } from "react-toastify";
 
 const Courses = () => {
   const t = useTranslations("common");
@@ -28,17 +30,29 @@ const Courses = () => {
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState<number | null>(null);
 
   const limit = 10;
+
+  // Use the page loading hook to show loading state in sidebar
+  usePageLoading(loading);
+
+  const getCourses = async () => {
+    setLoading(true);
+    const offset = (currentPage - 1) * limit;
+    const response = await fetchCourses(offset, limit);
+    setCourses(response.courses.map((course: SingleCourse) => ({
+      ...course,
+      image: course.cover ? `${process.env.NEXT_PUBLIC_URL}${course.cover}` : ''
+    })));
+    console.log(response.courses);
+    
+    setTotalCount(response.totalCount);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const getCourses = async () => {
-      setLoading(true);
-      const offset = (currentPage - 1) * limit;
-      const response = await fetchCourses(offset, limit);
-      setCourses(response.courses);
-      setTotalCount(response.totalCount);
-      setLoading(false);
-    };
     getCourses();
   }, [currentPage]);
 
@@ -58,6 +72,7 @@ const Courses = () => {
 
   const columns: { header: string; accessor: keyof SingleCourse }[] = [
     { header: "course_id", accessor: "id" },
+    { header: "image", accessor: "image" },
     { header: "name", accessor: "title" },
     { header: "language", accessor: "language" },
     { header: "enrollments", accessor: "enrollments" },
@@ -66,7 +81,6 @@ const Courses = () => {
     { header: "status", accessor: "status" },
   ];
 
-
   const handlePageChange = (page: number) => setCurrentPage(page);
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) =>
     setFilters(appliedFilters);
@@ -74,8 +88,33 @@ const Courses = () => {
 
   // const handleView = (id: number) => router.push(`/dashboard/courses-management/list/${id}`);
   // const handleEdit = (id: number) => console.log("Editing course with ID:", id);
-  const handleDelete = (id: number) =>
-    console.log("Deleting course with ID:", id);
+  const handleDelete = async (id: number) => {
+    setCourseToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!courseToDelete) return;
+
+    try {
+      const response = await deleteCourse(courseToDelete);
+      if (response.success) {
+        toast.success(response.message || t("course_deleted_success"));
+        getCourses(); // Refresh the courses list
+      } else {
+        toast.error(response.error || t("delete_failed"));
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message || t("delete_failed"));
+      } else {
+        toast.error(t("delete_failed"));
+      }
+    } finally {
+      setDeleteConfirmOpen(false);
+      setCourseToDelete(null);
+    }
+  };
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
@@ -176,6 +215,25 @@ const Courses = () => {
       <Popup isOpen={addPopupOpen} onClose={() => setAddPopupOpen(false)}>
         Course Form
         {/* <NewCourseForm title={t("add_course")} sub_title={t("form_subtitle")} onClose={() => setAddPopupOpen(false)} /> */}
+      </Popup>
+
+      <Popup isOpen={deleteConfirmOpen} onClose={() => setDeleteConfirmOpen(false)}>
+        <div className="p-6">
+          <h3 className="mb-4 text-lg font-semibold">{t("confirm_delete")}</h3>
+          <p className="mb-6">{t("delete_course_confirmation")}</p>
+          <div className="flex justify-end gap-4">
+            <Button
+              label={t("cancel")}
+              onClick={() => setDeleteConfirmOpen(false)}
+              variant="transparent"
+            />
+            <Button
+              label={t("delete")}
+              onClick={confirmDelete}
+              variant="danger"
+            />
+          </div>
+        </div>
       </Popup>
     </div>
   );

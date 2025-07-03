@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ArrowDown } from "./ui/icons/ArrowDown";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/UserProvider";
+import { useLoading } from "@/contexts/LoadingProvider";
 
 type SidebarItem = {
   name: string;
@@ -29,6 +30,7 @@ const Sidebar = () => {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
   const { user } = useAuth();
+  const { isNavigating, isPageLoading } = useLoading();
   const currentUserRole = user?.role ?? "";
 
   const filterByRole = (items: SidebarItem[], role: string): SidebarItem[] => {
@@ -63,7 +65,7 @@ const Sidebar = () => {
       item.children?.some((child) => isActive(child.link))
     );
 
-    // Only set open item if it’s a top-level item with children
+    // Only set open item if it's a top-level item with children
     if (activeItem && activeItem.children) {
       setOpenItem(activeItem.name); // Set open item based on active parent
     } else if (!activeItem) {
@@ -99,6 +101,11 @@ const Sidebar = () => {
         </span>
       )}
       <span className="whitespace-nowrap capitalize">{item.name}</span>
+      {(isNavigating || isPageLoading) && active && (
+        <div className="ml-auto">
+          <div className="w-4 h-4 border-2 border-t-2 border-gray-300 border-solid rounded-full animate-spin border-t-primary"></div>
+        </div>
+      )}
     </>
   );
 

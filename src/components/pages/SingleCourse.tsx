@@ -72,15 +72,16 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
       courseTitle: courseData.title,
       description: courseData.description,
       status: courseData.status,
-      prerequisites: courseData.prerequisites,
+      prerequisiteId: courseData.prerequisites?.id?.toString(),
       validity: courseData.validity
         ? new Date(courseData.validity).toISOString().split("T")[0]
         : "",
       courseCover: courseData.cover,
       medicalTest: courseData.requiresMedicalTest ? "yes" : "no",
       maxAttendees: courseData.maxAttendees?.toString() ?? "",
-      language: courseData.language,
-      level: courseData.level?.toString(),
+      languageId: courseData.language?.id?.toString() ?? "",
+      levelId: courseData.level?.id?.toString() ?? "",
+      facilityId: courseData.facility?.id?.toString() ?? "",
     };
   };
 
@@ -96,6 +97,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
       isTheoreticalOnly: pricingItem.isTheoreticalOnly,
       type: pricingItem.type,
       isCompanyTraining: pricingItem.isCompanyTraining,
+      countryId: Number(pricingItem.countryId)
     };
   };
 

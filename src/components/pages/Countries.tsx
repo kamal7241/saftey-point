@@ -1,9 +1,10 @@
 "use client";
-import { fetchCountries } from "@/api/presetsService";
+import { fetchCountries } from "@/api/countryService";
 import Table from "@/components/ui/Table";
 import { Country } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { usePageLoading } from "@/hooks/usePageLoading";
 import NewCountryForm from "../forms/NewCountryForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
@@ -12,7 +13,6 @@ import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
-
 
 const Countries = () => {
   const t = useTranslations("common");
@@ -26,66 +26,57 @@ const Countries = () => {
   const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
     {}
   );
+  const [loading, setLoading] = useState(false);
+
+  // Use the page loading hook to show loading state in sidebar
+  usePageLoading(loading);
 
   const getCountries = async () => {
-    const offset = (currentPage - 1) * limit;
-    const apiResponse = await fetchCountries(offset, limit);
-    const countryData = Array.isArray(apiResponse.countries) ? apiResponse.countries : [];
-    setCountries(countryData);
-    setTotalCount(apiResponse.total);
+    setLoading(true);
+    try {
+      const offset = (currentPage - 1) * limit;
+      const apiResponse = await fetchCountries(offset, limit, {
+        countryId: filters.code,
+        name: searchTerm || filters.name,
+        phoneCode: filters.phoneCode,
+      });
+      const countryData = Array.isArray(apiResponse.countries)
+        ? apiResponse.countries
+        : [];
+      setCountries(countryData);
+      setTotalCount(apiResponse.total);
+    } catch (error) {
+      console.error("Error fetching countries:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getCountries();
-  }, [currentPage]);
+  }, [currentPage, filters, searchTerm]);
 
-  const filteredCountries = countries?.filter((certificate) => {
-    const matchesSearch = certificate.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return certificate[key as keyof Country]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
-    });
-    return matchesSearch && matchesFilters;
-  });
+  const filteredCountries = countries;
 
   const columns: { header: string; accessor: keyof Country }[] = [
+    { header: "id", accessor: "id" },
     { header: "country_name", accessor: "name" },
     { header: "country_code", accessor: "code" },
     { header: "phone_code", accessor: "phoneCode" },
     { header: "emoji", accessor: "emoji" },
+    { header: "status", accessor: "isActive" },
   ];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-    setFilters(appliedFilters);
-  };
 
-  const handleResetFilters = () => {
-    setFilters({});
-  };
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        [
-          "Code",
-          "Name",
-          "Phone Code",
-          "emoji",
-        ],
-        ...filteredCountries.map((c) => [
-          c.code,
-          c.name,
-          c.phoneCode,
-          c.emoji,
-        ]),
+        ["Code", "Name", "Phone Code", "emoji"],
+        ...filteredCountries.map((c) => [c.code, c.name, c.phoneCode, c.emoji]),
       ]
         .map((row) => row.join(","))
         .join("\n");
@@ -109,6 +100,7 @@ const Countries = () => {
       />
     </div>
   );
+
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
     { label: t("presets"), href: "/dashboard/presets" },
@@ -120,29 +112,19 @@ const Countries = () => {
 
   return (
     <div>
-      <PageHeader
-        breadcrumbItems={breadcrumbItems}
-        title={t("countries")}
-      />
+      <PageHeader breadcrumbItems={breadcrumbItems} title={t("countries")} />
 
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           {/* Search */}
-          <SearchForm onSearch={setSearchTerm} />
+          <SearchForm
+            onSearch={(value) => {
+              setSearchTerm(value);
+              setCurrentPage(1);
+            }}
+          />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
-            {/* <Button
-              label={t("buttons.add_country")}
-              onClick={() => setAddPopupOpen(true)}
-              icon={
-                <span className="inline-block w-6">
-                  <Add />
-                </span>
-              }
-              variant="primary"
-            /> */}
-
-            {/* Filters Button */}
             <Button
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}
@@ -168,31 +150,31 @@ const Countries = () => {
             fields={[
               {
                 type: "text",
-                label: "Code",
+                label: t("country_code"),
                 name: "code",
-                placeholder: t('search_by_code'),
+                placeholder: t("search_by_code"),
               },
               {
                 type: "text",
-                label: "Name",
+                label: t("country_name"),
                 name: "name",
-                placeholder: t('search_by_name'),
+                placeholder: t("search_by_name"),
               },
               {
                 type: "text",
-                label: "Phone Code",
+                label: t("phone_code"),
                 name: "phoneCode",
-                placeholder: t('search_by_phone_code'),
-              },
-              {
-                type: "text",
-                label: "Emoji",
-                name: "emoji",
-                placeholder: t('search_by_emoji'),
+                placeholder: t("search_by_phone_code"),
               },
             ]}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
+            onApply={(appliedFilters) => {
+              setFilters(appliedFilters);
+              setCurrentPage(1);
+            }}
+            onReset={() => {
+              setFilters({});
+              setCurrentPage(1);
+            }}
           />
         )}
         <Table
@@ -205,11 +187,12 @@ const Countries = () => {
           }}
           rowsPerPage={10}
           renderRowActions={renderRowActions}
+          isLoading={loading}
         />
       </div>
 
-
-      <Popup isOpen={addPopupOpen}
+      <Popup
+        isOpen={addPopupOpen}
         onClose={() => {
           setAddPopupOpen(false);
           getCountries();

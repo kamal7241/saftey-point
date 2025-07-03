@@ -5,11 +5,9 @@ import { useRouter } from "@/i18n/routing";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import Status from "../ui/Status";
 import Buildings2 from "../ui/icons/Buildings2";
 import { Delete } from "../ui/icons/Delete";
 import Edit2 from "../ui/icons/Edit2";
-import StatusCheck from "../ui/icons/StatusCheck";
 import Task from "../ui/icons/Task";
 import Popup from "../ui/Popup";
 import {
@@ -25,6 +23,8 @@ import PermissionForm from "../forms/PermissionForm";
 import SuccessMessage from "../ui/SuccessMessage";
 import Suspend from "../ui/icons/Suspend";
 import { RoleStatus } from "@/enum/role-status.enum";
+import StatusCheck from "../ui/icons/StatusCheck";
+import Status from "../ui/Status";
 
 type Permission = {
   name: string;
@@ -52,7 +52,6 @@ const transformFeaturesToSections = (
       { name: "Delete", isActive: feature.delete },
       { name: "Update", isActive: feature.update },
       { name: "List", isActive: feature.list },
-      { name: "Find", isActive: feature.find },
     ],
   }));
 };
@@ -73,7 +72,6 @@ const transformSectionsToFeatures = (
       delete: permissionsMap["delete"] ?? false,
       update: permissionsMap["update"] ?? false,
       list: permissionsMap["list"] ?? false,
-      find: permissionsMap["find"] ?? false,
     };
   });
 };
@@ -92,7 +90,11 @@ export default function RoleView({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const [formData, setFormData] = useState({ name: "", description: "", status: RoleStatus.DEACTIVATED });
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    status: RoleStatus.ACTIVATED,
+  });
   const [sectionsData, setSectionsData] = useState<PermissionSection[]>([]);
   const [formErrors, setFormErrors] = useState({
     name: "",
@@ -109,7 +111,14 @@ export default function RoleView({
       if (data) {
         setRoleData(data);
 
-        setFormData({ name: data.name, description: data.description, status: data.status });
+        setFormData({
+          name: data.name,
+          description: data.description,
+          /**
+           * @todo bind on status ready
+           */
+          status: RoleStatus.ACTIVATED,
+        });
         setSectionsData(transformFeaturesToSections(data.features));
       } else {
         setError("Role not found");
@@ -149,6 +158,7 @@ export default function RoleView({
   };
 
   const handleSubmit = async () => {
+    debugger;
     const currentErrors = { name: "", description: "", permissions: "", status: "" };
     let hasError = false;
     if (!formData.name.trim()) {
@@ -221,6 +231,7 @@ export default function RoleView({
       setSectionsData(transformFeaturesToSections(roleData.features));
       setFormErrors({ name: "", description: "", permissions: "", status: "" });
     }
+    router.back();
   };
   const closeAndNavigateToList = () => {
     setShowSuccess(false);
@@ -347,16 +358,29 @@ export default function RoleView({
               />
             )}
             <Button
-              label={roleData?.status === RoleStatus.ACTIVATED ? t("buttons.deactivate") : t("buttons.activate")}
+              label={
+                roleData?.status === RoleStatus.ACTIVATED
+                  ? t("buttons.deactivate")
+                  : t("buttons.activate")
+              }
               onClick={toggleRolesStatus}
-              icon={<span className="inline-block w-6"><Suspend /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Suspend />
+                </span>
+              }
               variant="dark"
               // disabled={isEditing}
+              className="hidden"
             />
             <Button
               label={t("buttons.delete")}
               onClick={handleDeleteClick}
-              icon={<span className="inline-block w-6"><Delete /></span>}
+              icon={
+                <span className="inline-block w-6">
+                  <Delete />
+                </span>
+              }
               variant="danger"
               disabled={isEditing}
             />
@@ -369,7 +393,7 @@ export default function RoleView({
         {!isEditing && ( // Show role details only when not editing
           <>
             <h1 className="heading3">{t("role_details")}</h1>
-            <div className="flex items-center justify-between gap-8 flex-wrap mb-6">
+            <div className="flex items-start gap-8 flex-wrap mb-6">
               <GroupInfo
                 label={t("name")}
                 content={roleData.name}
@@ -385,6 +409,7 @@ export default function RoleView({
                 label={t("status")}
                 content={<Status status={roleData.status || "0"} />}
                 icon={<StatusCheck />}
+                className="hidden"
               />
               {/* <GroupInfo label={t("role")} content={roleData.key} icon={<Task />} /> */}
             </div>
@@ -402,7 +427,7 @@ export default function RoleView({
           onSectionsChange={handleSectionsChange}
           onSubmit={handleSubmit}
           errors={formErrors}
-          onCancel={handleCancelEdit}
+          onCancel={isEditing ? handleCancelEdit : undefined}
         />
 
         {showSuccess && (

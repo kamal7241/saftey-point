@@ -120,6 +120,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
             extraClass="w-full px-4 py-3 h-[48px]"
             error={errors?.description}
           />
+          <div className="hidden">
             <SelectField
               label={t("status")}
               name="status"
@@ -138,6 +139,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
               error={errors?.status}
               customDropdown
             />
+          </div>
         </div>
       )}
       {errors?.permissions && (
@@ -211,10 +213,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
         <div className="flex justify-end gap-4 col-span-4">
           <Button
             label={t("buttons.close")}
-            // href={"/dashboard/admin-management"} // Or maybe call an onCancel prop
-            onClick={() => {
-              onCancel?.();
-            }}
+            onClick={() => onCancel?.()}
             variant="transparent"
             padding="py-3 px-4"
           />

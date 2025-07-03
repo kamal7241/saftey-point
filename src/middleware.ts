@@ -69,6 +69,11 @@ export default async function middleware(request: NextRequest) {
     "en";
   const pathname = request.nextUrl.pathname;
 
+  // Debug logging
+  console.log('Middleware - Pathname:', pathname);
+  console.log('Middleware - Token exists:', !!token);
+  console.log('Middleware - Token value:', token ? 'present' : 'missing');
+
   // Add custom headers
   const customHeadersResponse = customHeadersMiddleware(request);
 
@@ -77,11 +82,13 @@ export default async function middleware(request: NextRequest) {
 
   // If the user is already logged in, and tries to access the login page, redirect to the dashboard or another page
   if (publicRoutes.some(route => pathname.startsWith(route)) && token) {
+    console.log('Middleware - Redirecting logged in user from public route to dashboard');
     return NextResponse.redirect(new URL("/dashboard", request.url)); // Redirect to a protected page (e.g., dashboard)
   }
 
   // If no token is found, protect other routes and redirect to login
   if (!token && !publicRoutes.some(route => pathname.startsWith(route))) {
+    console.log('Middleware - No token found, redirecting to login');
     return NextResponse.redirect(new URL(`/authentication/login`, request.url));
   }
 

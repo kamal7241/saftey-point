@@ -1,5 +1,5 @@
 "use client";
-import { createCountry, updateCountry } from "@/api/presetsService";
+import { createCountry, updateCountry } from "@/api/countryService";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -7,20 +7,13 @@ import * as Yup from "yup";
 import Input from "../formsUI/Input";
 import Button from "../ui/Button";
 import SuccessMessage from "../ui/SuccessMessage";
-
-interface SingleCountry {
-  id: number;
-  code: string;
-  name: string;
-  phoneCode: string;
-  emoji: string;
-}
+import { Country } from "@/types/ui.types";
 
 interface NewCountryFormProps {
   title?: string;
   sub_title?: string;
   onClose?: () => void;
-  countryData?: SingleCountry | null;
+  countryData?: Country | null;
 }
 
 interface FormValues {
@@ -65,12 +58,12 @@ export default function NewCountryForm({
       };
 
   const handleSubmit = async (values: FormValues) => {
-    const apiData: SingleCountry = {
+    const apiData = {
       code: values.code,
       name: values.name,
       phoneCode: values.phoneCode,
       emoji: values.emoji,
-      id: countryData?.id || 0,
+      isActive: true,
     };
 
     setApiErrors(null);
@@ -90,9 +83,12 @@ export default function NewCountryForm({
             `An error occurred while ${countryData ? "updating" : "creating"} the country.`
         );
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      setApiErrors(error.message || "An unexpected error occurred.");
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiErrors(error.message);
+      } else {
+        setApiErrors("An unexpected error occurred.");
+      }
     }
   };
 

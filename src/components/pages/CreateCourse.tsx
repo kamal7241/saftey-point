@@ -118,7 +118,7 @@ export default function CreateCourse() {
             ...mainPricingData,
             price: Number(values[`price_${index}`]),
             discount: Number(values[`discount_${index}`] || 0),
-            countryId: values[`country_${index}`] || "",
+            countryId: values[`country_${index}`] ? Number(values[`country_${index}`]) : undefined
           };
           priceSetPromises.push(submitPricing(courseId, pricingData));
         }
@@ -130,7 +130,8 @@ export default function CreateCourse() {
 
         const hasError = results.some((result) => !result.success);
         if (hasError) {
-          toast.error(t("messages.error_creating_pricing"));
+          const errorResult = results.find(result => !result.success);
+          toast.error(errorResult?.message || t("messages.error_creating_pricing"));
           return;
         }
 
@@ -166,16 +167,30 @@ export default function CreateCourse() {
     } else if (currentStep === 4 && courseId) {
       const formattedValues = {
         ...values,
-        session_time: Array.isArray(values.session_time)
-          ? values.session_time.map((time) =>
-              time instanceof Date ? time.toISOString() : time
-            )
-          : values.session_time,
-        session_date:
-          values.session_date instanceof Date
-            ? values.session_date.toISOString().split("T")[0]
-            : values.session_date,
+        title: values.title || "",
+        description: values.description || "",
+        startDate: values.startDate instanceof Date 
+          ? values.startDate.toISOString().split('T')[0]
+          : values.startDate,
+        endDate: values.endDate instanceof Date 
+          ? values.endDate.toISOString().split('T')[0]
+          : values.endDate,
+        status: "ACTIVE"
       };
+
+      // Validate dates
+      const startDate = new Date(formattedValues.startDate);
+      const endDate = new Date(formattedValues.endDate);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        toast.error(t("validation.invalid_date_format"));
+        return;
+      }
+
+      if (startDate > endDate) {
+        toast.error(t("validation.start_date_after_end_date"));
+        return;
+      }
 
       const result = await submitSession(formattedValues, courseId);
       if (result.success && result.innerData?.id) {
@@ -183,7 +198,7 @@ export default function CreateCourse() {
         setShowSuccess(true);
         toast.success(t("messages.course_created_successfully"));
       } else {
-        toast.error(result.error || t("messages.error_creating_session"));
+        toast.error(result.message || t("messages.error_creating_session"));
         return;
       }
     } else {

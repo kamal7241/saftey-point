@@ -1,5 +1,5 @@
 "use client";
-import { deleteRole, fetchRoles, setRoleStatus } from "@/api/roleService";
+import { deleteRole, fetchRoles, RoleResponse, setRoleStatus } from "@/api/roleService";
 import Table from "@/components/ui/Table";
 import { useRouter } from "@/i18n/routing";
 import { showToast } from "@/utils/toast";
@@ -16,32 +16,14 @@ import { Export } from "../ui/icons/Export";
 import FilterForm from "../ui/FilterForm";
 import Toggler from "../formsUI/Toggler";
 import { RoleStatus } from "@/enum/role-status.enum";
-import { TableStatus } from "@/enum/table-status.enum";
 import { UserStatus } from "@/enum/user-status.enum";
 
 
-interface Role {
-  id: number;
-  key: string;
-  name: string;
-  description: string;
-  status: TableStatus;
-  isActive: boolean;
-  image?: string;
-  features: {
-    key: string;
-    name: string;
-    create: boolean;
-    delete: boolean;
-    update: boolean;
-    list: boolean;
-    find: boolean;
-  }[];
-  permissionsCount?: string;
-}
 
-export interface RoleVm extends Omit<Role, "status"> {
-  status: TableStatus;
+
+export interface RoleVm extends RoleResponse {
+  status: RoleStatus;
+  permissionsCount?: string;
 }
 
 const ManageRoles = () => {
@@ -60,21 +42,22 @@ const ManageRoles = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const getRoles = async () => {
-    setLoading(true);
     try {
+      setLoading(true);
       const data = await fetchRoles();
       setRoles(
         data.map((role) => ({
           ...role,
-          status: role.isActive ? TableStatus.ACTIVE : TableStatus.INACTIVE,
+          status: role.isActive ? RoleStatus.ACTIVATED : RoleStatus.DEACTIVATED,
           permissionsCount: `${role.features.reduce(
-            (count, feature) =>
-              count +
-              (feature.create ? 1 : 0) +
-              (feature.delete ? 1 : 0) +
-              (feature.update ? 1 : 0) +
-              (feature.list ? 1 : 0) +
-              (feature.find ? 1 : 0),
+            (count, feature) => {
+              const featureCount = 
+                (feature.create ? 1 : 0) +
+                (feature.delete ? 1 : 0) +
+                (feature.update ? 1 : 0) +
+                (feature.list ? 1 : 0);
+              return count + featureCount;
+            },
             0
           )}`,
         }))
@@ -119,11 +102,12 @@ const ManageRoles = () => {
             (feature.create ||
               feature.update ||
               feature.delete ||
-              feature.list ||
-              feature.find)
+              feature.list 
+              // feature.find
+            )
         );
       }
-      return role[key as keyof Role]
+      return role[key as keyof RoleVm]
         ?.toString()
         .toLowerCase()
         .includes(value.toLowerCase());
@@ -133,20 +117,20 @@ const ManageRoles = () => {
 
   const columns: {
     header: string;
-    accessor: keyof Role | "permissionsCount";
+    accessor: keyof RoleVm | "permissionsCount";
   }[] = [
     { header: "num", accessor: "id" },
     { header: "roles", accessor: "name" },
     { header: "permissions", accessor: "permissionsCount" },
-    { header: "status", accessor: "status" },
+    { header: "description", accessor: "description" },
   ];
 
   const handleView = (id: number) => {
     router.push(`/dashboard/admin-management/roles-permissions/${id}`);
   };
 
-  const toggleRoleStatus = async (role: Role) => {
-    const newStatus = role.status === TableStatus.ACTIVE ? TableStatus.INACTIVE : TableStatus.ACTIVE;
+  const toggleRoleStatus = async (role: RoleVm) => {
+    const newStatus = role.status === RoleStatus.ACTIVATED ? RoleStatus.DEACTIVATED : RoleStatus.ACTIVATED;
     setRoles((prev) =>
       prev.map((r) => (r.id === role.id ? { ...r, status: newStatus , isActive: !role.isActive } : r))
     );
@@ -163,9 +147,10 @@ const ManageRoles = () => {
     }
   };
 
-  const renderRowActions = (row: Role) => (
+  const renderRowActions = (row: RoleVm) => (
     <div className="flex gap-2 items-center">
       <Toggler
+        className="hidden"
         checked={row.status === RoleStatus.ACTIVATED}
         onChange={() => toggleRoleStatus(row)}
       />
@@ -236,11 +221,11 @@ const ManageRoles = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
       [
-        ["ID", "Name", "Status", "Permissions"],
+        ["ID", "Name", "Description", "Permissions"],
         ...filteredRoles.map((r) => [
           r.id,
           r.name,
-          r.status,
+          r.description,
           r.permissionsCount,
         ]),
       ]
@@ -277,6 +262,7 @@ const ManageRoles = () => {
               variant="primary"
             />
             <Button
+              className="hidden"
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}
               variant={!filtersOpen ? "transparent" : "selected"}

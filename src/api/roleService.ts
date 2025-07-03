@@ -1,6 +1,5 @@
 // import { Role } from "@/types/ui.types";
 
-import { RoleStatus } from "@/enum/role-status.enum";
 
 export interface RoleFeature {
   key: string;
@@ -9,7 +8,6 @@ export interface RoleFeature {
   delete: boolean;
   update: boolean;
   list: boolean;
-  find: boolean;
 }
 
 export interface RoleResponse {

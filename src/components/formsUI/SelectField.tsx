@@ -20,6 +20,7 @@ interface SelectFieldProps {
   extraClass?: string;
   customDropdown?: boolean;
   error?: string;
+  readOnly?: boolean;
 }
 
 const SelectField: React.FC<SelectFieldProps> = ({
@@ -31,7 +32,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
   placeholder = label,
   extraClass = "px-3 py-0 leading-[50px]",
   customDropdown = false,
-  error
+  error,
+  readOnly = false,
 }) => {
   const t = useTranslations("ui");
   const [isOpen, setIsOpen] = useState(false);
@@ -61,8 +63,8 @@ const SelectField: React.FC<SelectFieldProps> = ({
       <div className="relative">
         {customDropdown ? (
           <div
-            className={`border rounded-lg w-full ${extraClass} cursor-pointer ${error ? "!border-red-400" : ""}`}
-            onClick={() => setIsOpen((prev) => !prev)}
+            className={`border rounded-lg w-full ${extraClass}  ${error ? "!border-red-400" : ""} ${readOnly ? 'bg-gray-200 opacity-70 text-gray-800  cursor-not-allowed' : "cursor-pointer"}`}
+            onClick={() => !readOnly && setIsOpen((prev) => !prev)}
           >
             <div className="flex justify-between items-center">
               <span className="capitalize">{selectedLabel}</span>
@@ -78,6 +80,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
               value={value}
               onChange={(e) => onChange(name, e.target.value)}
               className={`border rounded-lg w-full appearance-none cursor-pointer outline-none ${extraClass}`}
+              disabled={readOnly}
             >
               <option value="">{placeholder}</option>
               {options.map((option) => (

@@ -129,14 +129,14 @@ const Branches = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        href={`/dashboard/company-management/branches/${row.id}`}
+        href={`/dashboard/presets/branches/${row.id}`}
       />
       <Button
         icon={<Edit />}
         noBackground={true}
         textColor="gray-900"
         noLabel={true}
-        href={`/dashboard/company-management/branches/${row.id}`}
+        href={`/dashboard/presets/branches/${row.id}`}
       />
       <Button
         icon={<Delete />}
@@ -177,8 +177,8 @@ const Branches = () => {
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management" },
-    { label: t("manage-branches"), href: "/dashboard/company-management/branches" },
+    { label: t("presets"), href: "/dashboard/presets" },
+    { label: t("manage-branches"), href: "/dashboard/presets/branches" },
   ];
 
   return (

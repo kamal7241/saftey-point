@@ -1,5 +1,5 @@
 "use client";
-import { fetchFacilities } from "@/api/presetsService";
+import { deleteFacility, fetchFacilities } from "@/api/presetsService";
 import Table from "@/components/ui/Table";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
@@ -10,13 +10,25 @@ import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import FilterForm from "../ui/FilterForm";
 import { Add } from "../ui/icons/Add";
+import { Delete } from "../ui/icons/Delete";
+import { Edit } from "../ui/icons/Edit";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
+import { showToast } from "@/utils/toast";
+
+interface SingleFacility {
+  id: number;
+  title: string;
+  titleArabic?: string;
+  description: string;
+  imageUrl: string;
+}
 
 interface Facility {
   id: number;
   title: string;
+  name: string;
   titleArabic?: string;
   description: string;
   imageUrl?: string;
@@ -40,6 +52,10 @@ const Facilities = () => {
     {}
   );
   const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [facilityToDelete, setFacilityToDelete] = useState<number | null>(null);
+  const [editPopupOpen, setEditPopupOpen] = useState(false);
+  const [facilityToEdit, setFacilityToEdit] = useState<SingleFacility | null>(null);
 
   const limit = 10;
   const getFacilities = async () => {
@@ -52,7 +68,7 @@ const Facilities = () => {
         response.innerData.facilities.map((facility: Facility) => ({
           ...facility,
           name: facility.title,
-          image: facility.imageUrl,
+          image: facility.imageUrl ? `${process.env.NEXT_PUBLIC_URL}${facility.imageUrl}` : '/placeholder-image.png',
           createdAt: format(new Date(facility.createdAt as string), "yyyy / MM / dd"),
           status: facility.deletedAt ? "0" : "1", // Set status based on deletedAt
         }))
@@ -95,9 +111,8 @@ const Facilities = () => {
     });
     return matchesSearch && matchesFilters;
   });
-
   const columns: { header: string; accessor: keyof Facility }[] = [
-    { header: "name", accessor: "title" },
+    { header: "name", accessor: "name" },
     { header: "description", accessor: "description" },
     { header: "created", accessor: "createdAt" },
   ];
@@ -139,6 +154,29 @@ const Facilities = () => {
     document.body.removeChild(link);
   };
 
+  const handleDelete = async () => {
+    if (!facilityToDelete) return;
+
+    try {
+      const result = await deleteFacility(facilityToDelete);
+      if (result.success) {
+        showToast.success(t("facility_deleted_successfully"));
+        getFacilities();
+      } else {
+        console.error("Failed to delete facility:", result.message);
+      }
+    } catch (error) {
+      console.error("Error deleting facility:", error);
+    }
+    setShowDeleteConfirm(false);
+    setFacilityToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setFacilityToDelete(null);
+  };
+
   const renderRowActions = (row: Facility) => (
     <div className="flex gap-2">
       <Button
@@ -147,6 +185,32 @@ const Facilities = () => {
         textColor="blue-400"
         noLabel={true}
         href={`/dashboard/presets/facility/${row.id}`}
+      />
+      <Button
+        icon={<Edit />}
+        noBackground={true}
+        textColor="gray-900"
+        noLabel={true}
+        onClick={() => {
+          setFacilityToEdit({
+            id: row.id,
+            title: row.title,
+            titleArabic: row.titleArabic,
+            description: row.description,
+            imageUrl: row.imageUrl || "",
+          });
+          setEditPopupOpen(true);
+        }}
+      />
+      <Button
+        icon={<Delete />}
+        noBackground={true}
+        textColor="red-500"
+        noLabel={true}
+        onClick={() => {
+          setFacilityToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
@@ -160,6 +224,25 @@ const Facilities = () => {
   return (
     <div>
       <PageHeader breadcrumbItems={breadcrumbItems} title={t("facility")} />
+
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button onClick={handleDelete} label={t("buttons.confirm")} />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
+
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           <SearchForm onSearch={setSearchTerm} />
@@ -243,6 +326,26 @@ const Facilities = () => {
             setAddPopupOpen(false);
             getFacilities();
           }}
+        />
+      </Popup>
+
+      <Popup
+        isOpen={editPopupOpen}
+        onClose={() => {
+          setEditPopupOpen(false);
+          setFacilityToEdit(null);
+          getFacilities();
+        }}
+      >
+        <NewFacilityForm
+          title={t("edit_facility")}
+          sub_title={t("form_subtitle")}
+          onClose={() => {
+            setEditPopupOpen(false);
+            setFacilityToEdit(null);
+            getFacilities();
+          }}
+          facilityData={facilityToEdit}
         />
       </Popup>
     </div>

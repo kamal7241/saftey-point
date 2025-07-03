@@ -7,7 +7,8 @@ import { useTranslations } from "next-intl";
 import Button from "../../ui/Button";
 import SelectField from "@/components/formsUI/SelectField";
 import { useEffect, useState } from "react";
-import { fetchCountries } from "@/api/dashboardService";
+import { fetchAllCountries } from "@/api/countryService";
+import { Country } from "@/types/ui.types";
 
 interface PricingFormProps {
   initialValues: Partial<PricingFormValues>;
@@ -24,10 +25,10 @@ export default function PricingForm({
 }: PricingFormProps) {
   const tValidation = useTranslations("validation");
   const t = useTranslations("common");
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<Country[]>([]);
   useEffect(() => {
     const getCountries = async () => {
-      const response = await fetchCountries();
+      const response = await fetchAllCountries();
       if (response.success) {
         setCountries(response.countries);
       }

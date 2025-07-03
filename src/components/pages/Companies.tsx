@@ -18,7 +18,6 @@ import { deleteCompany, fetchCompanies, toggleCompanyVerification } from "@/api/
 import { Company } from "@/types/ui.types";
 import { showToast } from "@/utils/toast";
 import NewCompanyForm from "../forms/NewCompanyForm";
-import PageHeader from "../global/PageHeader";
 import StatsCard from "../ui/StatsCard";
 import ClipboardClose from "../ui/icons/ClipboardClose";
 import ClipboardTick from "../ui/icons/ClipboardTick";
@@ -32,7 +31,7 @@ const Companies = () => {
   const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -46,7 +45,7 @@ const Companies = () => {
   const getUsers = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
-    const response = await fetchCompanies(offset, limit);
+    const response = await fetchCompanies(offset, limit, searchTerm);
     const data = await response.companies;
     setCompanies(response.companies);
     setTotalCount(response.totalCount);
@@ -65,7 +64,7 @@ const Companies = () => {
   };
   useEffect(() => {
     getUsers();
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
   const filteredCompanies = companies.filter((company) => {
     const matchesSearch = company.name
@@ -90,10 +89,9 @@ const Companies = () => {
   const columns: { header: string; accessor: keyof Company }[] = [
     { header: "company_id", accessor: "id" },
     { header: "name", accessor: "name" },
-    { header: "branches", accessor: "branches" },
-    { header: "status", accessor: "status" },
     { header: "employees", accessor: "employees" },
     { header: "created", accessor: "created" },
+    { header: "status", accessor: "status" },
   ];
 
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
@@ -213,19 +211,8 @@ const Companies = () => {
     setCompanyToDelete(null);
   };
 
-  const breadcrumbItems = [
-    { label: t("home"), href: "/" },
-    { label: t("company-management"), href: "/dashboard/company-management" },
-    { label: t("manage-companies"), href: "/dashboard/company-management/companies" },
-  ];
-
   return (
     <div>
-      <PageHeader
-        breadcrumbItems={breadcrumbItems}
-        title={t("manage-companies")}
-      />
-
       {showDeleteConfirm && (
         <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
           <div>
@@ -261,7 +248,7 @@ const Companies = () => {
         <StatsCard
           icon={<TimerEmpty />}
           color="warning"
-          number={companies.filter(c => c.status==="SUSPENDED").length}
+          number={companies.filter(c => c.status==="INACTIVE").length}
           name={t("suspended_companies")}
         />
         <StatsCard
@@ -288,13 +275,6 @@ const Companies = () => {
               variant="primary"
             />
 
-            {/* Filters Button */}
-            <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            />
-
             {/* Export Button */}
             <Button
               label={t("buttons.export")}
@@ -317,12 +297,6 @@ const Companies = () => {
                 label: "Company ID",
                 name: "id",
                 placeholder: "Company ID",
-              },
-              {
-                type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Name",
               },
               {
                 type: "select",

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { fetchCountryByCode, toggleCountryStatus } from "@/api/presetsService";
+import { fetchCountryByCode, toggleCountryStatus } from "@/api/countryService";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import PageHeader from "../global/PageHeader";

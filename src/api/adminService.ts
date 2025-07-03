@@ -1,6 +1,6 @@
-import { AdminStatus, AdminVmStatus } from "@/enum/admin-status.enum";
 import { AdminData } from "@/types/forms.types";
-import { AdminResponse } from "@/types/ui.types";
+import { Admin, AdminResponse } from "@/types/ui.types";
+import { UserStatus } from "@/enum/user-status.enum";
 
 export const submitAdmin = async (adminData: AdminData) => {
     try {
@@ -92,26 +92,37 @@ export const updateAdmin = async (
 
         const result = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || !result.success) {
             throw new Error(result.message || "Failed to update admin");
         }
 
         return { success: true, data: result };
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.error("Error updating admin:", error);
             return { success: false, error: error.message };
-        } else {
-            console.error("Unexpected error:", error);
-            return { success: false, error: "An unexpected error occurred" };
         }
+        return { success: false, error: "An unexpected error occurred" };
     }
 };
 
-export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
+export const fetchAdmins = async (offset: number = 0, limit: number = 10, name?: string): Promise<{
+    admins:AdminResponse[],
+    totalCount:number
+    error?:string
+    success?:boolean
+}> => {
     try {
+        const params = new URLSearchParams({
+            offset: offset.toString(),
+            limit: limit.toString()
+        });
+        
+        if (name) {
+            params.append('name', name);
+        }
+
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin?offset=${offset}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/admin?${params.toString()}`,
             {
                 headers: {
                     accept: "*/*",
@@ -126,29 +137,14 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10) => {
         }
 
         return {
-            admins: result.innerData.admins.map((admin: AdminResponse) => ({
-                id: admin.id,
-                name: `${admin.user.firstName} ${admin.user.lastName}`,
-                email: admin.user.email,
-                status: admin.status,
-                type: admin.userType,
-                phone: admin.user.phone,
-                image: admin.user.avatar.startsWith('http') 
-                    ? admin.user.avatar 
-                    : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
-                isVerified: admin.user.isVerified,
-                permissions: admin.rolePermissions
-                  ? admin.rolePermissions.map((p) => p.name)
-                  : admin.permissions || [],
-                role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : '',
-            })),
+            admins: result.innerData.admins,
             totalCount: result.innerData.count
         };
     } catch (error: unknown) {
         if (error instanceof Error) {
-            return { success: false, error: error.message };
+            return {admins:[], totalCount:0, success: false, error: error.message };
         }
-        return { success: false, error: "An unexpected error occurred" };
+        return { admins:[], totalCount:0, success: false, error: "An unexpected error occurred" };
     }
 };
 
@@ -185,7 +181,13 @@ export const fetchAdminById = async (adminId: string) => {
                     ? admin.user.avatar
                     : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
                 isVerified: admin.user.isVerified,
-                user: admin.user
+                user: {
+                    ...admin.user,
+                    roleId: admin.roles && admin.roles.length > 0 ? admin.roles[0].id.toString() : ''
+                },
+                role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : 'N/A',
+                roles: admin.roles || [],
+                rolePermissions: admin.rolePermissions
             }
         };
 
@@ -197,6 +199,27 @@ export const fetchAdminById = async (adminId: string) => {
         return { success: false, error: "An unexpected error occurred" };
     }
 };
+
+export const toAdmin = (admin: AdminResponse):Admin => {
+    return {
+        id: admin.id,
+        name: `${admin.user.firstName} ${admin.user.lastName}`,
+        email: admin.user.email,
+        status: admin.status,
+        userType: admin.userType,
+        type: admin.userType,
+        phone: admin.user.phone,
+        image: admin.user.avatar.startsWith('http')
+            ? admin.user.avatar
+            : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
+        isVerified: admin.user.isVerified,
+        user: {
+            ...admin.user,
+            roleId: admin.roles && admin.roles.length > 0 ? admin.roles[0].id.toString() : ''
+        },
+        role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : 'N/A',
+    }
+}
 
 export const deleteAdmin = async (id: number) => {
     try {
@@ -301,7 +324,7 @@ export const toggleAdminVerification = async (adminId: number, isVerified: boole
     }
 };
 
-export const updateAdminStatus = async (adminId: number, status: AdminStatus) => {
+export const updateAdminStatus = async (adminId: number, status: UserStatus) => {
     try {
         const response = await fetch(
             `${process.env.NEXT_PUBLIC_URL}/api/v1/admin/${adminId}`, // Adjusted endpoint

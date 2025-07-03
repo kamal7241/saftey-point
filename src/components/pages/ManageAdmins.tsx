@@ -19,6 +19,7 @@ import Eye from "../ui/icons/Eye";
 import Popup from "../ui/Popup";
 import Toggler from "../formsUI/Toggler";
 import { UserStatus } from "@/enum/user-status.enum";
+import { debounce } from "lodash";
 
 const ManageAdmins = () => {
   const t = useTranslations("common");
@@ -41,13 +42,27 @@ const ManageAdmins = () => {
   const getAdmins = async () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
-    const response = await fetchAdmins(offset, limit);
-    
+    const response = await fetchAdmins(offset, limit, searchTerm);
+
     if ("admins" in response) {
       setAdmins(
         response.admins.map((admin: AdminResponse) => ({
-          ...admin,
-          permissions: admin.permissions || [],
+          id: admin.id,
+          name: `${admin.user.firstName} ${admin.user.lastName}`,
+          email: admin.user.email,
+          status: admin.status,
+          type: admin.userType,
+          phone: admin.user.phone,
+          image: admin.user.avatar.startsWith("http")
+            ? admin.user.avatar
+            : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
+          isVerified: admin.user.isVerified,
+          permissions:
+            admin.rolePermissions?.map((p) => (p.name)) || [],
+          role:
+            admin.roles && admin.roles.length > 0 ? admin.roles[0].name : "N/A",
+          userType: admin.userType,
+          user: admin.user,
         }))
       );
       setTotalCount(response.totalCount);
@@ -60,7 +75,7 @@ const ManageAdmins = () => {
   useEffect(() => {
     getAdmins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+  }, [currentPage, searchTerm]);
 
   const filteredAdmins = admins.filter((admin) => {
     const matchesSearch = admin.name
@@ -76,21 +91,37 @@ const ManageAdmins = () => {
     return matchesSearch && matchesFilters;
   });
 
+  // Check if any filters are active (not empty/undefined)
+  const hasActiveFilters = Object.values(filters).some(
+    (value) => value && value.trim() !== ""
+  );
+
+  // Conditional pagination logic
+  const tableData = hasActiveFilters
+    ? filteredAdmins.slice((currentPage - 1) * limit, currentPage * limit) // Client-side pagination
+    : filteredAdmins; // Server-side pagination
+
+  const totalPages = hasActiveFilters
+    ? Math.ceil(filteredAdmins.length / limit) // Client-side total pages
+    : Math.ceil(totalCount / limit); // Server-side total pages
+
   const columns: { header: string; accessor: keyof Admin }[] = [
     { header: "user_id", accessor: "id" },
     { header: "name", accessor: "name" },
+    { header: "role", accessor: "role" },
     { header: "email", accessor: "email" },
     { header: "phone_number", accessor: "phone" },
-    { header: "role", accessor: "role" },
     { header: "permissions", accessor: "permissions" },
     { header: "status", accessor: "status" },
   ];
   const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
     setFilters(appliedFilters);
+    setCurrentPage(1);
   };
 
   const handleResetFilters = () => {
     setFilters({});
+    setCurrentPage(1);
   };
   const handleExport = () => {
     const csvContent =
@@ -104,7 +135,7 @@ const ManageAdmins = () => {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "companies.csv");
+    link.setAttribute("download", "admins.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -116,7 +147,10 @@ const ManageAdmins = () => {
   };
 
   const handleToggleStatus = async (admin: Admin) => {
-    const newStatus = admin.status === UserStatus.ACTIVE ? UserStatus.INACTIVE : UserStatus.ACTIVE;
+    const newStatus =
+      admin.status === UserStatus.ACTIVE
+        ? UserStatus.INACTIVE
+        : UserStatus.ACTIVE;
     try {
       const result = await updateAdminStatus(admin.id, newStatus);
       if (result.success) {
@@ -244,7 +278,7 @@ const ManageAdmins = () => {
       <div className="mt-6 bg-white rounded-2xl">
         <div className="flex justify-between items-center p-4 flex-wrap-reverse gap-6">
           {/* Search */}
-          <SearchForm onSearch={setSearchTerm} />
+          <SearchForm onSearch={debounce(setSearchTerm, 500)} />
           <div className="flex gap-3 justify-between items-stretch flex-wrap">
             <Button
               label={t("buttons.add_admin")}
@@ -259,6 +293,7 @@ const ManageAdmins = () => {
 
             {/* Filters Button */}
             <Button
+              className="hidden"
               label={t("buttons.filters")}
               onClick={() => setFiltersOpen((prev) => !prev)}
               variant={!filtersOpen ? "transparent" : "selected"}
@@ -300,9 +335,18 @@ const ManageAdmins = () => {
                 name: "status",
                 options: [
                   { value: UserStatus.ACTIVE, label: t("user_status.active") },
-                  { value: UserStatus.INACTIVE, label: t("user_status.inactive") },
-                  { value: UserStatus.PENDING, label: t("user_status.pending") },
-                  { value: UserStatus.EXPIRED, label: t("user_status.expired") },
+                  {
+                    value: UserStatus.INACTIVE,
+                    label: t("user_status.inactive"),
+                  },
+                  {
+                    value: UserStatus.PENDING,
+                    label: t("user_status.pending"),
+                  },
+                  {
+                    value: UserStatus.EXPIRED,
+                    label: t("user_status.expired"),
+                  },
                 ],
               },
             ]}
@@ -311,11 +355,11 @@ const ManageAdmins = () => {
           />
         )}
         <Table
-          data={filteredAdmins}
+          data={tableData}
           columns={columns}
           pagination={{
             currentPage,
-            totalPages: Math.ceil(totalCount / limit),
+            totalPages,
             onPageChange: setCurrentPage,
           }}
           rowsPerPage={limit}
@@ -329,6 +373,11 @@ const ManageAdmins = () => {
           title={t("add_admin")}
           sub_title={t("form_subtitle")}
           onClose={handleClose}
+          fieldsStatus={{
+            status: {
+              readOnly: true,
+            }
+          }}
         />
       </Popup>
     </div>

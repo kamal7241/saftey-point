@@ -27,7 +27,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
     {
@@ -37,7 +36,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
     {
@@ -47,7 +45,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
     {
@@ -57,7 +54,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
     {
@@ -67,7 +63,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
     {
@@ -77,7 +72,6 @@ export default function AddRole() {
         { name: t("delete"), isActive: false },
         { name: t("update"), isActive: false },
         { name: t("list"), isActive: false },
-        { name: t("find"), isActive: false },
       ],
     },
   ]);
@@ -87,7 +81,7 @@ export default function AddRole() {
     name: "",
     description: "",
     features: [],
-    status: RoleStatus.DEACTIVATED,
+    status: RoleStatus.ACTIVATED,
   });
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -134,7 +128,6 @@ export default function AddRole() {
           (p) => p.name === "Update" && p.isActive
         ),
         list: section.permissions.some((p) => p.name === "List" && p.isActive),
-        find: section.permissions.some((p) => p.name === "Find" && p.isActive),
       }));
 
       const response = await createRole({
@@ -160,6 +153,10 @@ export default function AddRole() {
   const closeAndNavigateToList = () => {
     setShowSuccess(false);
     router.push("/dashboard/admin-management/roles-permissions");
+  };
+
+  const handleCancel = () => {
+    router.back();
   };
 
   const breadcrumbItems = [
@@ -188,6 +185,7 @@ export default function AddRole() {
             onSectionsChange={handleSectionsChange}
             errors={errors}
             onSubmit={handleSubmit}
+            onCancel={handleCancel}
           />
         </div>
         <Popup isOpen={showSuccess} onClose={closeAndNavigateToList}>

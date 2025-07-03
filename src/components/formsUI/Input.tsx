@@ -87,7 +87,7 @@ const Input: React.FC<CustomInputProps> = ({
       <div
         className={`flex items-center gap-2 overflow-hidden rounded-lg text-gray-300 ${
           border ? "border border-gray-200" : ""
-        } ${error ? "!border-red-400" : ""} ${extraClass}`}
+        } ${error ? "!border-red-400" : ""} ${extraClass} ${readOnly ? "bg-gray-200 opacity-70 cursor-not-allowed" : ""}`}
       >
         {iconSVG && <span className={`${iconEnd ? "order-2 ms-auto" : ""}`}>{iconSVG}</span>}
         {icon && <Image src={icon} alt="icon" className="nav-icon" width={20} height={20} />}
@@ -150,7 +150,7 @@ const Input: React.FC<CustomInputProps> = ({
             readOnly={readOnly}
             onKeyDown={onKeyDown}
             min={min}
-            className="w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px] appearance-none"
+            className={`w-full border-none outline-none placeholder:text-gray-800 placeholder:text-opacity-30 leading-[50px] appearance-none ${readOnly ? "bg-gray-200 text-gray-800 opacity-70 cursor-not-allowed" : ""}`}
           />
         )}
 

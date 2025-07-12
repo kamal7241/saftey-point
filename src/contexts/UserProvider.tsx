@@ -3,17 +3,30 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
-import { login as apiLogin } from '@/api/authService'; // Assuming login API service
+import { login as apiLogin } from '@/api/authService';
+import { UserWithRoles } from '@/types/roles.types';
+import { 
+  getPrimaryRole, 
+  hasPermission, 
+  hasRole, 
+  hasAnyRole, 
+  getUserRoles, 
+  getUserPermissions,
+  getResourcePermissions
+} from '@/utils/roleUtils';
 
-// Define the shape of the user object and context
-interface User {
+// Legacy User interface for backward compatibility
+interface LegacyUser {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
-  role: 'admin' | 'company' | 'individual'; // Add other roles as needed
+  role: 'admin' | 'company' | 'individual';
   // Add other user properties as needed
 }
+
+// Union type to support both old and new user structures
+type User = UserWithRoles | LegacyUser;
 
 interface AuthContextType {
   user: User | null;
@@ -23,6 +36,20 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUserContext: (userData: User, accToken: string, refToken: string) => void;
+  // Role management functions
+  hasPermission: (permissionKey: string) => boolean;
+  hasRole: (roleKey: string) => boolean;
+  hasAnyRole: (roleKeys: string[]) => boolean;
+  getUserRoles: () => string[];
+  getUserPermissions: () => string[];
+  getPrimaryRole: () => string | null;
+  getResourcePermissions: (resource: string) => {
+    canCreate: boolean;
+    canRead: boolean;
+    canUpdate: boolean;
+    canDelete: boolean;
+    canList: boolean;
+  };
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -139,8 +166,32 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     router.push('/authentication/login');
   };
 
+  // Role management functions
+  const hasPermissionFn = (permissionKey: string) => hasPermission(user as UserWithRoles, permissionKey);
+  const hasRoleFn = (roleKey: string) => hasRole(user as UserWithRoles, roleKey);
+  const hasAnyRoleFn = (roleKeys: string[]) => hasAnyRole(user as UserWithRoles, roleKeys);
+  const getUserRolesFn = () => getUserRoles(user as UserWithRoles);
+  const getUserPermissionsFn = () => getUserPermissions(user as UserWithRoles);
+  const getPrimaryRoleFn = () => getPrimaryRole(user as UserWithRoles);
+  const getResourcePermissionsFn = (resource: string) => getResourcePermissions(user as UserWithRoles, resource);
+
   return (
-    <AuthContext.Provider value={{ user, accessToken, refreshToken, isLoading, login, logout, updateUserContext }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      accessToken, 
+      refreshToken, 
+      isLoading, 
+      login, 
+      logout, 
+      updateUserContext,
+      hasPermission: hasPermissionFn,
+      hasRole: hasRoleFn,
+      hasAnyRole: hasAnyRoleFn,
+      getUserRoles: getUserRolesFn,
+      getUserPermissions: getUserPermissionsFn,
+      getPrimaryRole: getPrimaryRoleFn,
+      getResourcePermissions: getResourcePermissionsFn,
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -61,13 +61,12 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
     try {
       const result = await toggleStaffVerification(
         Number(userData?.id),
-        // userData?.status
         (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
       );
       if (result.success) {
         handleClose();
       } else {
-        setError(result.error || "Failed to update company status");
+        setError(result.error || "Failed to update staff status");
       }
     } catch (error) {
       setError(
@@ -147,7 +146,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t(userData?.user.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")}
+              {t(userData?.status === "ACTIVE" ? "are_you_sure_suspend" : "are_you_sure_activate")}
             </p>
             <div className="flex items-center justify-center gap-4">
               <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
@@ -203,7 +202,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               variant="secondary"
             />
             <Button
-              label={t(userData?.status ? "buttons.suspend" : "buttons.activate")}
+              label={t(userData?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={
                 <span className="inline-block w-6">

@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from '@/contexts/UserProvider';
-import { useRouter } from '@/i18n/routing'; // Using the i18n router
+import { useRouter } from '@/i18n/routing';
 import React, { ComponentType, useEffect } from 'react';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -10,7 +10,7 @@ interface WithAuthRoleProps {
 
 const withAuthRole = <P extends object>(
   WrappedComponent: ComponentType<P>,
-  allowedRoles: Array<'admin' | 'company' | 'individual'>
+  allowedRoles: Array<string> // Now accepts any string role keys
 ) => {
   const ComponentWithAuth = (props: P & WithAuthRoleProps) => {
     const { user, isLoading, accessToken } = useAuth();
@@ -27,18 +27,31 @@ const withAuthRole = <P extends object>(
         return;
       }
 
-      // Check if the user's role is allowed
-      if (!allowedRoles.includes(user.role)) {
+      // Check if the user has any of the allowed roles
+      const isUserWithRoles = 'roles' in user;
+      const userRoles = isUserWithRoles ? user.roles.map(ur => ur.role.key) : [];
+      const primaryRole = isUserWithRoles ? user.primaryRole : (user as any).role;
+      
+      const hasAllowedRole = userRoles.some(role => allowedRoles.includes(role)) || 
+                            (primaryRole && allowedRoles.includes(primaryRole));
+      
+      if (!hasAllowedRole) {
         // If role is not allowed, redirect to a 'not authorized' page or dashboard
-        // For now, let's redirect to the dashboard. You might want a specific unauthorized page.
-        console.warn(`User with role '${user.role}' tried to access a route restricted to roles: ${allowedRoles.join(', ')}`);
+        console.warn(`User with roles '${userRoles.join(', ')}' tried to access a route restricted to roles: ${allowedRoles.join(', ')}`);
         router.replace('/dashboard'); // Or an '/unauthorized' page
       }
     }, [user, isLoading, accessToken, router]);
 
     // If loading, or if user is null (before redirect happens), or role not yet verified,
     // you might want to show a loading spinner or null
-    if (isLoading || !user || !accessToken || (user && !allowedRoles.includes(user.role))) {
+    const isUserWithRoles = user && 'roles' in user;
+    const userRoles = isUserWithRoles ? user.roles.map(ur => ur.role.key) : [];
+    const primaryRole = isUserWithRoles ? user.primaryRole : (user as any)?.role;
+    
+    const hasAllowedRole = userRoles.some(role => allowedRoles.includes(role)) || 
+                          (primaryRole && allowedRoles.includes(primaryRole));
+    
+    if (isLoading || !user || !accessToken || (user && !hasAllowedRole)) {
       // Render a loading state or null while checking auth/role and redirecting
       // This prevents a flash of the protected content
       return null; // Or <LoadingSpinner />

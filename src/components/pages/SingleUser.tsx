@@ -100,16 +100,12 @@ export default function SingleUser({ userID }: SingleUserProps) {
 
   const handleToggleVerification = async () => {
     try {
-      // const result = await toggleUserVerification(
-      //   Number(userData?.id),
-      //   !userData?.isVerified
-      // );
-      const result = await toggleUserVerification(Number(userData?.id), (userData?.status.toLowerCase() === "active") ? "INACTIVE" : "ACTIVE");
+      const result = await toggleUserVerification(Number(userData?.id), (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE");
       if (result.success) {
         const newData = await fetchUserById(Number(userID));
         setUserData(newData);
         showToast.success(tMsgs(
-          userData?.isVerified
+          userData?.status === "ACTIVE"
             ? "user_suspended_successfully"
             : "user_activated_successfully"
         ));
@@ -214,7 +210,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t(userData?.isVerified ? "are_you_sure_suspend" : "are_you_sure_activate")}
+              {t(userData?.status === "ACTIVE" ? "are_you_sure_suspend" : "are_you_sure_activate")}
             </p>
             <div className="flex items-center justify-center gap-4">
               <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
@@ -262,7 +258,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
               variant="secondary"
             />
             <Button
-              label={t(userData?.isVerified ? "buttons.suspend" : "buttons.activate")}
+              label={t(userData?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={<span className="inline-block w-6"><Suspend /></span>}
               variant="dark"
@@ -330,15 +326,9 @@ export default function SingleUser({ userID }: SingleUserProps) {
                 icon={<Buildings2 />}
               />
             )}
-            {/* <GroupInfo
-              label={t("status")}
-              content={<Status status={userData?.status.toString() ?? ""} />
-              }
-              icon={<StatusCheck />}
-            /> */}
             <GroupInfo
               label={t("status")}
-              content={<Status status={userData?.isVerified.toString() ?? ""} />
+              content={<Status status={userData?.status ?? ""} />
               }
               icon={<StatusCheck />}
             />

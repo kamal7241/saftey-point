@@ -8,7 +8,7 @@ import NewStaffForm from "../forms/NewStaffForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
-import FilterForm from "../ui/FilterForm";
+
 import { Add } from "../ui/icons/Add";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
@@ -20,41 +20,20 @@ const StaffManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const [staffManagement, setStaffManagement] = useState<SingleStaffUI[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
   const limit = 10;
   const getStaffManagement = async () => {
     const offset = (currentPage - 1) * limit;
-    const response = await fetchStaffManagement(offset, limit);
+    const response = await fetchStaffManagement(offset, limit, searchTerm);
     const data = await response;
     setStaffManagement(data.users);
     setTotalCount(response.totalCount);
   };
   useEffect(() => {
     getStaffManagement();
-  }, [currentPage]);
-
-  const filteredStaffManagement = staffManagement.filter((staff: SingleStaffUI) => {
-    const matchesSearch = staff.name ?? ""
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-
-    const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-
-      const companyValue = staff[key as keyof SingleStaffUI];
-      if (typeof companyValue === 'string') {
-        return companyValue.toLowerCase() === value.toLowerCase();
-      }
-
-      return companyValue?.toString().toLowerCase() === value.toLowerCase();
-    });
-
-    return matchesSearch && matchesFilters;
-  });
+  }, [currentPage, searchTerm]);
 
   const columns: { header: string; accessor: keyof SingleStaffUI }[] = [
     { header: "users_id", accessor: "id" },
@@ -65,13 +44,7 @@ const StaffManagement = () => {
     { header: "status", accessor: "status" },
   ];
 
-  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-    setFilters(appliedFilters);
-  };
 
-  const handleResetFilters = () => {
-    setFilters({});
-  };
   const handleClose = async () => {
     setAddPopupOpen(false);
     getStaffManagement();
@@ -89,7 +62,7 @@ const StaffManagement = () => {
           "exam_date",
           "score",
         ],
-        ...filteredStaffManagement.map((c) => [
+        ...staffManagement.map((c) => [
           c.id,
           c.name,
           c.email,
@@ -153,12 +126,6 @@ const StaffManagement = () => {
               }
               variant="primary"
             />
-            {/* Filters Button */}
-            <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            />
 
             {/* Export Button */}
             <Button
@@ -174,52 +141,8 @@ const StaffManagement = () => {
           </div>
         </div>
 
-        {filtersOpen && (
-          <FilterForm
-            fields={[
-              {
-                type: "text",
-                label: t("user_id"),
-                name: "id",
-                placeholder: t("user_id"),
-              },
-              {
-                type: "text",
-                label: t("name"),
-                name: "name",
-                placeholder: t("name"),
-              },
-              {
-                type: "select",
-                label: t("status"),
-                placeholder: t("status"),
-                name: "status",
-                options: [
-                  { value: "ACTIVE", label: t("user_status.active") },
-                  { value: "INACTIVE", label: t("user_status.inactive") },
-                  { value: "PENDING", label: t("user_status.pending") },
-                  { value: "SUSPENDED", label: t("user_status.suspended") },
-                ],
-              },
-              {
-                type: "select",
-                label: t("role"),
-                placeholder: t("role"),
-                name: "type",
-                options: [
-                  { value: "admin", label: t("user_role.admin") },
-                  { value: "company", label: t("user_role.company") },
-                  { value: "staff", label: t("user_role.staff") },
-                  { value: "user", label: t("user_role.user") },
-                ],
-              }
-            ]}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
-        )}
         <Table
-          data={filteredStaffManagement}
+          data={staffManagement}
           columns={columns}
           pagination={{
             currentPage,

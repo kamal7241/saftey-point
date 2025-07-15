@@ -17,18 +17,24 @@ export const fetchHandouts = async (offset: number = 0, limit: number = 10): Pro
     }
 
     // Map the API response to match the Handout interface
-    const mappedHandouts = (result.innerData?.items || result.innerData?.handouts || []).map((item: any) => ({
-      id: item.id,
-      title: item.title || '',
-      description: item.description || '',
-      fileUrl: item.fileUrl || '',
-      fileType: item.fileType || '',
-      fileSize: item.fileSize || 0,
-      isActive: item.isActive,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      deletedAt: item.deletedAt,
-    }));
+          const mappedHandouts = (result.innerData?.items || result.innerData?.handouts || []).map((item: any) => ({
+        id: item.id,
+        title: item.title || '',
+        description: item.description || '',
+        fileUrl: item.fileUrl || '',
+        fileName: item.fileName || '',
+        fileSize: item.fileSize || 0,
+        fileType: item.fileType || '',
+        type: item.type || '',
+        accessLevel: item.accessLevel || 'ENROLLED',
+        isRequired: item.isRequired || false,
+        sortOrder: item.sortOrder || 0,
+        isActive: item.isActive,
+        courseId: item.courseId || 0,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        deletedAt: item.deletedAt,
+      }));
 
     return {
       success: result.success,
@@ -71,9 +77,15 @@ export const fetchHandoutById = async (id: string): Promise<SingleHandoutRespons
         title: handout.title || '',
         description: handout.description || '',
         fileUrl: handout.fileUrl || '',
-        fileType: handout.fileType || '',
+        fileName: handout.fileName || '',
         fileSize: handout.fileSize || 0,
+        fileType: handout.fileType || '',
+        type: handout.type || '',
+        accessLevel: handout.accessLevel || 'ENROLLED',
+        isRequired: handout.isRequired || false,
+        sortOrder: handout.sortOrder || 0,
         isActive: handout.isActive,
+        courseId: handout.courseId || 0,
         createdAt: handout.createdAt,
         updatedAt: handout.updatedAt,
         deletedAt: handout.deletedAt,

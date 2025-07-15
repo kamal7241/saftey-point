@@ -313,9 +313,14 @@ export interface HandoutDTO {
   id?: number;
   title: string;
   description: string;
-  fileUrl: string;
-  fileType: string;
-  fileSize: number;
+  fileUrl?: string;
+  fileName?: string;
+  fileSize?: number;
+  fileType?: string;
+  type?: string;
+  accessLevel?: string;
+  isRequired?: boolean;
+  sortOrder?: number;
   isActive: boolean;
 }
 
@@ -324,8 +329,13 @@ export interface Handout {
   title: string;
   description: string;
   fileUrl: string;
-  fileType: string;
+  fileName: string;
   fileSize: number;
+  fileType: string;
+  type: string;
+  accessLevel: string;
+  isRequired: boolean;
+  sortOrder: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

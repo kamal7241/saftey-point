@@ -131,8 +131,8 @@ export default function Handouts() {
 
       {handouts.length === 0 ? (
         <div className="text-center py-8">
-          <FontAwesomeIcon icon={faFileAlt} className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500 text-lg">{t("no_handouts_found")}</p>
+          <FontAwesomeIcon icon={faFileAlt} className="w-16 h-16 text-gray-900 mx-auto mb-4" />
+          <p className="text-gray-900 text-lg">{t("no_handouts_found")}</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -158,11 +158,13 @@ export default function Handouts() {
                       {handout.isActive ? t("active") : t("inactive")}
                     </span>
                   </div>
-                  <p className="text-gray-600 mb-3">{handout.description}</p>
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <span>{t("file_type")}: {handout.fileType}</span>
-                    <span>{t("file_size")}: {formatFileSize(handout.fileSize)}</span>
-                    <span>{t("created")}: {new Date(handout.createdAt).toLocaleDateString()}</span>
+                  <p className="text-gray-900 mb-3">{handout.description}</p>
+                  <div className="flex items-center space-x-4 text-sm text-gray-900">
+                    <span><b>{t("file_type")}:</b> {handout.type}</span>
+                    <span><b>{t("file_size")}:</b> {formatFileSize(handout.fileSize)}</span>
+                    <span><b>{t("access_level")}:</b> {handout.accessLevel}</span>
+                    <span><b>{t("sort_order")}:</b> {handout.sortOrder}</span>
+                    <span><b>{t("created")}:</b> {new Date(handout.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -212,8 +214,13 @@ export default function Handouts() {
               title: currentHandout.title,
               description: currentHandout.description,
               fileUrl: currentHandout.fileUrl,
-              fileType: currentHandout.fileType,
+              fileName: currentHandout.fileName,
               fileSize: currentHandout.fileSize,
+              fileType: currentHandout.fileType,
+              type: currentHandout.type,
+              accessLevel: currentHandout.accessLevel,
+              isRequired: currentHandout.isRequired,
+              sortOrder: currentHandout.sortOrder,
               isActive: currentHandout.isActive,
             }}
             onSubmit={handleEditSubmit}

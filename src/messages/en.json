@@ -31,7 +31,8 @@
     "cancellations-refunds": "Cancellations and Refunds",
     "rewards": "rewards",
     "course-types": "Course Types",
-    "course_type": "Course Type"
+    "course_type": "Course Type",
+    "handouts": "Handouts"
   },
   "about_page": {
     "title": "About Safety Dashboard",
@@ -385,6 +386,20 @@
     "enter_file_type": "Enter file type",
     "enter_file_url": "Enter file URL",
     "enter_file_size": "Enter file size",
+    "file": "File",
+    "upload_file": "Upload File",
+    "file_upload_note": "Click to upload a file. Supported formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT. Max size: 10MB.",
+    "access_level": "Access Level",
+    "select_access_level": "Select access level",
+    "sort_order": "Sort Order",
+    "enter_sort_order": "Enter sort order",
+    "course_id": "Course ID",
+    "enter_course_id": "Enter course ID",
+    "is_required": "Is Required",
+    "required": "Required",
+    "optional": "Optional",
+    "select_file_type": "Select file type",
+    "please_upload_file": "Please upload a file",
     "trainees": "Trainees",
     "fees": "Fees",
     "courseTitle": "Course Title",
@@ -564,7 +579,8 @@
       "back": "Back",
       "edit": "Edit",
       "delete": "Delete",
-      "download": "Download"
+      "download": "Download",
+      "add_handout": "Add Handout"
     },
     "tab": {
       "course_info": "Course Info",

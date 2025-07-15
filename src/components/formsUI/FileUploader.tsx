@@ -7,6 +7,8 @@ import UploadImg from "../ui/icons/UploadImg";
 import AttachCircle from "../ui/icons/AttachCircle";
 import Spinner from "../ui/icons/Spinner";
 import ImageWithFallback from "../ui/ImageWithFallback";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileAlt, faFilePdf, faFileWord, faFilePowerpoint, faFileExcel, faFileText } from "@fortawesome/free-solid-svg-icons";
 
 interface FileUploaderProps {
   label?: string;
@@ -15,6 +17,7 @@ interface FileUploaderProps {
   onChange?: (filePath: string | null) => void;
   small?: boolean;
   initialImageUrl?: string | null;
+  isDocumentUploader?: boolean;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
@@ -24,6 +27,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   subdirName = "common",
   small,
   initialImageUrl = null,
+  isDocumentUploader = false,
 }) => {
   const t = useTranslations("common");
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -32,6 +36,27 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   const [loading, setLoading] = useState(false);
 
   const BASE_URL = process.env.NEXT_PUBLIC_URL || "";
+
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return <FontAwesomeIcon icon={faFilePdf} className="w-8 h-8 text-red-500" />;
+      case 'doc':
+      case 'docx':
+        return <FontAwesomeIcon icon={faFileWord} className="w-8 h-8 text-blue-500" />;
+      case 'ppt':
+      case 'pptx':
+        return <FontAwesomeIcon icon={faFilePowerpoint} className="w-8 h-8 text-orange-500" />;
+      case 'xls':
+      case 'xlsx':
+        return <FontAwesomeIcon icon={faFileExcel} className="w-8 h-8 text-green-500" />;
+      case 'txt':
+        return <FontAwesomeIcon icon={faFileText} className="w-8 h-8 text-gray-500" />;
+      default:
+        return <FontAwesomeIcon icon={faFileAlt} className="w-8 h-8 text-gray-500" />;
+    }
+  };
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
@@ -89,6 +114,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     if (onChange) onChange(null);
   };
 
+  const getFileName = (url: string) => {
+    return url.split('/').pop() || 'File';
+  };
+
   return (
     <div
       className={`relative ${small
@@ -116,13 +145,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           {fileUrl ? (
             <div className="flex h-[50px] w-full items-center justify-center">
               <div className="relative h-7 w-7 flex-none overflow-hidden">
-                <Image
-                  src={`${fileUrl}`}
-                  alt="Safety Image Uploaded file"
-                  fill
-                  className="h-full w-full cursor-pointer rounded-full object-cover"
-                  onClick={triggerFileInput}
-                />
+                {isDocumentUploader ? (
+                  <div className="flex items-center justify-center h-full w-full">
+                    {getFileIcon(getFileName(fileUrl))}
+                  </div>
+                ) : (
+                  <Image
+                    src={`${fileUrl}`}
+                    alt="Safety Image Uploaded file"
+                    fill
+                    className="h-full w-full cursor-pointer rounded-full object-cover"
+                    onClick={triggerFileInput}
+                  />
+                )}
               </div>
 
               <div className="ms-auto">
@@ -164,20 +199,19 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         <div className="flex items-center gap-3">
           {fileUrl ? (
             <div className="relative h-20 w-20 flex-none overflow-hidden">
-              {/* <Image
-                src={`${fileUrl}`}
-                alt="Safety Image Uploaded file"
-                fill
-                className="h-full w-full cursor-pointer rounded-full object-cover"
-                onClick={triggerFileInput}
-              /> */}
-              <ImageWithFallback
-                src={`${fileUrl}`}
-                alt="Safety Image Uploaded file"
-                width={70}
-                height={70}
-                className="rounded-full object-cover w-20 h-20"
-              />
+              {isDocumentUploader ? (
+                <div className="flex items-center justify-center h-full w-full bg-gray-100 rounded-lg">
+                  {getFileIcon(getFileName(fileUrl))}
+                </div>
+              ) : (
+                <ImageWithFallback
+                  src={`${fileUrl}`}
+                  alt="Safety Image Uploaded file"
+                  width={70}
+                  height={70}
+                  className="rounded-full object-cover w-20 h-20"
+                />
+              )}
             </div>
           ) : (
             <div
@@ -196,6 +230,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
             <p className="mt-1 text-sm font-normal leading-normal text-dark">
               {note}
             </p>
+            {fileUrl && isDocumentUploader && (
+              <p className="mt-1 text-xs text-gray-500">
+                {getFileName(fileUrl)}
+              </p>
+            )}
           </div>
           {fileUrl && (
             <div className="ms-auto">
@@ -220,7 +259,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         type="file"
         ref={inputRef}
         className="hidden"
-        accept="image/*,application/pdf"
+        accept={isDocumentUploader ? "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain" : "image/*,application/pdf"}
         onChange={handleFileChange}
       />
     </div>

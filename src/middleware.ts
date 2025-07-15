@@ -62,12 +62,19 @@ function customHeadersMiddleware(request: NextRequest) {
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // Skip middleware entirely for root path
+  if (pathname === "/") {
+    console.log('Middleware - Skipping middleware for root path');
+    return NextResponse.next();
+  }
+
   const token = request.cookies.get("accessToken")?.value;
   const locale =
     request.cookies.get("NEXT_LOCALE")?.value ||
     request.headers.get("accept-language")?.split(",")[0] ||
     "en";
-  const pathname = request.nextUrl.pathname;
 
   // Debug logging
   console.log('Middleware - Pathname:', pathname);
@@ -77,8 +84,30 @@ export default async function middleware(request: NextRequest) {
   // Add custom headers
   const customHeadersResponse = customHeadersMiddleware(request);
 
-  // Publicly accessible routes (e.g., login, signup)
+  // Publicly accessible routes (e.g., login, signup, landing page)
   const publicRoutes = ["/authentication/login", "/authentication/signup", "/authentication/forget","/authentication/otp","/authentication/new-password"];
+
+  // Special handling for locale root paths - always allow access to landing page
+  if (pathname === "/en" || pathname === "/ar") {
+    console.log('Middleware - Allowing access to landing page');
+    const intlResponse = await intlMiddleware(request);
+    
+    // Set NEXT_LOCALE cookie
+    intlResponse.cookies.set("NEXT_LOCALE", locale, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 365 * 24 * 60 * 60, // 1 year
+      sameSite: "strict",
+    });
+
+    // Merge custom headers
+    customHeadersResponse.headers.forEach((value, key) => {
+      intlResponse.headers.set(key, value);
+    });
+
+    return intlResponse;
+  }
 
   // If the user is already logged in, and tries to access the login page, redirect to the dashboard or another page
   if (publicRoutes.some(route => pathname.startsWith(route)) && token) {
@@ -125,5 +154,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|.*\\..*).*)", "/((?!).*)"],
 };

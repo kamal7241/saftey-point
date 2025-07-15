@@ -1,6 +1,5 @@
-import {redirect} from 'next/navigation';
- 
-// Redirect the user to the default locale when `/` is requested
+import LandingPage from "@/components/LandingPage";
+
 export default function RootPage() {
-  redirect('/en');
+  return <LandingPage />;
 }

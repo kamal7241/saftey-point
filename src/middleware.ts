@@ -84,7 +84,7 @@ export default async function middleware(request: NextRequest) {
   if (publicRoutes.some(route => pathname.startsWith(route)) && token) {
     console.log('Middleware - Redirecting logged in user from public route to dashboard');
     try {
-      return NextResponse.redirect(new URL("/dashboard", request.url)); // Redirect to a protected page (e.g., dashboard)
+    return NextResponse.redirect(new URL("/dashboard", request.url)); // Redirect to a protected page (e.g., dashboard)
     } catch (error) {
       console.error('Failed to construct redirect URL:', error);
       // Fallback redirect
@@ -96,7 +96,7 @@ export default async function middleware(request: NextRequest) {
   if (!token && !publicRoutes.some(route => pathname.startsWith(route))) {
     console.log('Middleware - No token found, redirecting to login');
     try {
-      return NextResponse.redirect(new URL(`/authentication/login`, request.url));
+    return NextResponse.redirect(new URL(`/authentication/login`, request.url));
     } catch (error) {
       console.error('Failed to construct redirect URL:', error);
       // Fallback redirect

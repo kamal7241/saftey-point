@@ -1,6 +1,10 @@
-import Level from "@/components/ui/icons/Level";
-import Teacher from "@/components/ui/icons/Teacher";
-import Validity from "@/components/ui/icons/Validity";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUserTie,
+  faCalendarCheck,
+  faEye,
+  faImage,
+} from "@fortawesome/free-solid-svg-icons";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import GroupInfo from "../../ui/GroupInfo";
@@ -95,32 +99,32 @@ export default function CertificateTabContent({
           <GroupInfo
             label={t("certificate_name")}
             content={certificate.title}
-            icon={<Teacher />}
+            icon={<FontAwesomeIcon icon={faUserTie} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("validFrom")}
             content={new Date(certificate.validFrom).toLocaleDateString()}
-            icon={<Validity />}
+            icon={<FontAwesomeIcon icon={faCalendarCheck} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("validTo")}
             content={new Date(certificate.validTo).toLocaleDateString()}
-            icon={<Validity />}
+            icon={<FontAwesomeIcon icon={faCalendarCheck} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("issueDate")}
             content={new Date(certificate.issueDate).toLocaleDateString()}
-            icon={<Validity />}
+            icon={<FontAwesomeIcon icon={faCalendarCheck} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("displaySource")}
             content={certificate.displaySource ? t("yes") : t("no")}
-            icon={<Level />}
+            icon={<FontAwesomeIcon icon={faEye} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("watermark")}
             content={certificate.watermark ? t("yes") : t("no")}
-            icon={<Level />}
+            icon={<FontAwesomeIcon icon={faImage} className="w-4 h-4" />}
           />
           <div className="col-span-3 flex justify-end">
             <Button

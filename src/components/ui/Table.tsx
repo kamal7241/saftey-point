@@ -1,3 +1,4 @@
+"use client";
 // components/Table.tsx
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
@@ -244,6 +245,14 @@ const Table = <T extends { image?: string }>({
                               )}
                             </span>
                           </div>
+                        ) : column.accessor === "language" && typeof row[column.accessor] === "object" ? (
+                          <span>{(row[column.accessor] as { name?: string })?.name || "-"}</span>
+                        ) : column.accessor === "level" && typeof row[column.accessor] === "object" ? (
+                          <span>{(row[column.accessor] as { name?: string })?.name || "-"}</span>
+                        ) : column.accessor === "facility" && typeof row[column.accessor] === "object" ? (
+                          <span>{(row[column.accessor] as { title?: string })?.title || "-"}</span>
+                        ) : column.accessor === "courseType" && typeof row[column.accessor] === "object" ? (
+                          <span>{(row[column.accessor] as { code?: string })?.code || "-"}</span>
                         ) : Array.isArray(row[column.accessor]) ? (
                           (row[column.accessor] as string[]).join(", ")
                         ) : column.accessor &&

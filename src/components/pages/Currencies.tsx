@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
-import FilterForm from "../ui/FilterForm";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
 import { Delete } from "../ui/icons/Delete";
@@ -17,6 +16,7 @@ import Table from "@/components/ui/Table";
 
 // Add this to imports
 import { Add } from "../ui/icons/Add";
+import { Edit } from "../ui/icons/Edit";
 import Popup from "../ui/Popup";
 import NewCurrencyForm from "../forms/NewCurrencyForm";
 
@@ -28,10 +28,10 @@ const Currencies = () => {
     const [currencyToDelete, setCurrencyToDelete] = useState<number | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filtersOpen, setFiltersOpen] = useState(false);
     const [currencies, setCurrencies] = useState<Currency[]>([]);
     const [addPopupOpen, setAddPopupOpen] = useState(false);
-    const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
+    const [editPopupOpen, setEditPopupOpen] = useState(false);
+    const [currencyToEdit, setCurrencyToEdit] = useState<Currency | null>(null);
 
     const getCurrencies = async () => {
         const response = await fetchCurrencies();
@@ -51,14 +51,7 @@ const Currencies = () => {
         const matchesSearch = currency.name
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
-        const matchesFilters = Object.entries(filters).every(([key, value]) => {
-            if (!value) return true;
-            return currency[key as keyof Currency]
-                ?.toString()
-                .toLowerCase()
-                .includes(value.toLowerCase());
-        });
-        return matchesSearch && matchesFilters;
+        return matchesSearch;
     });
 
     const columns: { header: string; accessor: keyof Currency }[] = [
@@ -76,13 +69,7 @@ const Currencies = () => {
         setCurrentPage(page);
     };
 
-    const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-        setFilters(appliedFilters);
-    };
 
-    const handleResetFilters = () => {
-        setFilters({});
-    };
 
     const handleExport = () => {
         const csvContent =
@@ -144,6 +131,16 @@ const Currencies = () => {
                 onClick={() => handleView(row.id)}
             />
             <Button
+                icon={<Edit />}
+                noBackground={true}
+                textColor="gray-900"
+                noLabel={true}
+                onClick={() => {
+                    setCurrencyToEdit(row);
+                    setEditPopupOpen(true);
+                }}
+            />
+            <Button
                 icon={<Delete />}
                 noBackground={true}
                 textColor="red-500"
@@ -189,15 +186,10 @@ const Currencies = () => {
                     <SearchForm onSearch={setSearchTerm} />
                     <div className="flex gap-3 justify-between items-stretch flex-wrap">
                         <Button
-                            label={t("buttons.add_currency")}
+                            label={t("add_currency")}
                             onClick={() => setAddPopupOpen(true)}
                             icon={<span className="w-6 inline-block"><Add /></span>}
                             variant="primary"
-                        />
-                        <Button
-                            label={t("buttons.filters")}
-                            onClick={() => setFiltersOpen((prev) => !prev)}
-                            variant={!filtersOpen ? "transparent" : "selected"}
                         />
                         <Button
                             label={t("buttons.export")}
@@ -208,36 +200,7 @@ const Currencies = () => {
                     </div>
                 </div>
 
-                {filtersOpen && (
-                    <FilterForm
-                        fields={[
-                            {
-                                type: "text",
-                                label: "Name",
-                                name: "name",
-                                placeholder: "Currency Name",
-                            },
-                            {
-                                type: "text",
-                                label: "Code",
-                                name: "code",
-                                placeholder: "Currency Code",
-                            },
-                            {
-                                type: "select",
-                                label: "Status",
-                                name: "isActive",
-                                placeholder: "Status",
-                                options: [
-                                    { value: "true", label: "Active" },
-                                    { value: "false", label: "Inactive" },
-                                ],
-                            },
-                        ]}
-                        onApply={handleApplyFilters}
-                        onReset={handleResetFilters}
-                    />
-                )}
+
 
                 <Table
                     data={filteredCurrencies}
@@ -264,6 +227,23 @@ const Currencies = () => {
                         setAddPopupOpen(false);
                         getCurrencies();
                     }}
+                />
+            </Popup>
+
+            <Popup isOpen={editPopupOpen} onClose={() => {
+                setEditPopupOpen(false);
+                setCurrencyToEdit(null);
+                getCurrencies();
+            }}>
+                <NewCurrencyForm
+                    title={t("edit_currency")}
+                    sub_title={t("edit_currency_subtitle")}
+                    onClose={() => {
+                        setEditPopupOpen(false);
+                        setCurrencyToEdit(null);
+                        getCurrencies();
+                    }}
+                    currencyData={currencyToEdit}
                 />
             </Popup>
         </div>

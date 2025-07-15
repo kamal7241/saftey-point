@@ -19,7 +19,7 @@ export default function GroupInfo({ icon, label, content, copyIt, block }: Group
     <div className={`flex flex-col gap-1.5 ${block?"w-full":"w-64"}`}>
       <div className="text-light-400 flex items-start justify-start gap-2">
         {icon && <span className="w-6">{icon}</span>}
-        {label}
+        <span className="font-semibold">{label}</span>
       </div>
       <div className="flex items-center justify-between gap-2 whitespace-nowrap text-dark">
         {content}

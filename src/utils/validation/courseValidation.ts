@@ -12,6 +12,7 @@ export const getCourseInfoValidationSchema = (t: (key: string) => string) => {
     levelId: Yup.string().required(t("level.required")),
     languageId: Yup.string().required(t("language.required")),
     facilityId: Yup.string().required(t("facility.required")),
+    courseTypeId: Yup.string().required(t("courseType.required")),
     maxAttendees: Yup.number()
       .required(t("maxAttendees.required"))
       .positive(t("maxAttendees.positive"))

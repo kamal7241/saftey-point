@@ -80,6 +80,7 @@ export interface CreateCourseDTO {
   levelId: number;
   prerequisiteId: number;
   facilityId: number;
+  courseTypeId: number;
 }
 
 export interface CourseResponse {
@@ -235,4 +236,119 @@ export interface UpdateQuestionDTO {
     matchWith: string;
     options: string[];
   }>;
+}
+
+export interface CourseTypeDTO {
+  code: string;
+  nameEnglish: string;
+  nameArabic: string;
+  isActive: boolean;
+}
+
+export interface CourseType {
+  id: number;
+  code: string;
+  nameEnglish: string;
+  nameArabic: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface CourseTypeResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    count: number;
+    courseTypes: CourseType[];
+  };
+  error?: string;
+}
+
+export interface SingleCourseTypeResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    courseType?: CourseType;
+  };
+  error?: string;
+}
+
+export interface CourseEnrollmentUser {
+  id: number;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+  email: string;
+  phone: string;
+}
+
+export interface UserCourseEnrollment {
+  id: number;
+  user: CourseEnrollmentUser;
+}
+
+export interface CourseEnrollment {
+  id: number;
+  createdAt: string;
+  status: string;
+  completedAt: string | null;
+  isCompleted: boolean;
+  lastActivityDate: string;
+  progressPercentage: number;
+  certificateIssued: boolean;
+  certificateIssueDate: string | null;
+  userCourseEnrollment: UserCourseEnrollment;
+}
+
+export interface CourseEnrollmentsResponse {
+  items: CourseEnrollment[];
+  count: number;
+}
+
+export interface HandoutDTO {
+  id?: number;
+  title: string;
+  description: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  isActive: boolean;
+}
+
+export interface Handout {
+  id: number;
+  title: string;
+  description: string;
+  fileUrl: string;
+  fileType: string;
+  fileSize: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+}
+
+export interface HandoutResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    count: number;
+    handouts: Handout[];
+  };
+  error?: string;
+}
+
+export interface SingleHandoutResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    handout?: Handout;
+  };
+  error?: string;
 }

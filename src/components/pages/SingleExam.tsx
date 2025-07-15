@@ -115,7 +115,7 @@ export default function SingleExam({ examID, examData }: SingleExamProps) {
                   <Lock />
                 </span>
               }
-              variant="secondary"
+              variant="dark"
             />
             <Button
               label={t("buttons.suspend")}

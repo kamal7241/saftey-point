@@ -53,7 +53,7 @@ export default function Button({
       "bg-red-400 text-white border border-red-400 hover:bg-opacity-80";
   } else if (variant === "secondary") {
     variantClasses =
-      "bg-blue-400 text-white border border-transparent hover:bg-opacity-80";
+      "bg-gray-900 text-white border border-gray-900 hover:bg-opacity-80";
   } else if (variant === "success") {
     variantClasses =
       "bg-green-400 text-white border border-transparent hover:bg-opacity-80";

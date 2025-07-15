@@ -76,7 +76,7 @@ export default function SingleCurrency({ currencyData, currencyID }: SingleCurre
                     title={t("edit_currency")}
                     sub_title={t("form_subtitle")}
                     onClose={handleClose}
-                    // currencyData={currencyDetails}
+                    currencyData={currencyDetails}
                 />
             </Popup>
 
@@ -129,7 +129,20 @@ export default function SingleCurrency({ currencyData, currencyID }: SingleCurre
 
             <div className="content-height mt-6 flex flex-col gap-4 rounded-2xl bg-white p-4">
                 <h1 className="heading3">{t("currency_details")}</h1>
-                <div className="grid grid-cols-3 gap-6">
+                
+                {/* Currency Header */}
+                <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
+                    <div className="flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
+                        <MoneyIcon />
+                    </div>
+                    <div>
+                        <h2 className="heading2">{currencyDetails.name}</h2>
+                        <p className="text-gray-600">{currencyDetails.code} - {currencyDetails.symbol}</p>
+                    </div>
+                </div>
+
+                {/* Currency Details Grid */}
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                     <GroupInfo
                         label={t("currencyName")}
                         content={currencyDetails.name}
@@ -152,7 +165,7 @@ export default function SingleCurrency({ currencyData, currencyID }: SingleCurre
                     />
                     <GroupInfo
                         label={t("created")}
-                        content={ new Date(currencyDetails.createdAt).toDateString()}
+                        content={new Date(currencyDetails.createdAt).toLocaleDateString()}
                         icon={<CodeIcon />}
                     />
                     <GroupInfo
@@ -162,6 +175,26 @@ export default function SingleCurrency({ currencyData, currencyID }: SingleCurre
                         }
                         icon={<StatusCheck />}
                     />
+                </div>
+
+                {/* Additional Information */}
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <h3 className="text-lg font-semibold mb-3">{t("additional_info")}</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p className="text-sm text-gray-600">{t("last_updated")}</p>
+                            <p className="font-medium">
+                                {currencyDetails.updatedAt 
+                                    ? new Date(currencyDetails.updatedAt).toLocaleDateString()
+                                    : t("not_available")
+                                }
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">{t("currency_id")}</p>
+                            <p className="font-medium">{currencyDetails.id}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

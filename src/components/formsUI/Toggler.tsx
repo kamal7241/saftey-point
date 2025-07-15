@@ -2,14 +2,14 @@ import React from "react";
 
 interface TogglerProps {
   checked: boolean;
-  onChange: () => void;
+  onChange: (checked: boolean) => void;
   disabled?: boolean;
 }
 
 const Toggler: React.FC<TogglerProps> = ({ checked, onChange, disabled }) => (
   <button
     type="button"
-    onClick={onChange}
+    onClick={() => onChange(!checked)}
     disabled={disabled}
     className={`w-[30px] h-[22px]  rounded-full flex items-center justify-center transition-colors
       ${checked ? "bg-primary" : "bg-gray-600"}

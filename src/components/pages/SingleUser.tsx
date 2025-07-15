@@ -255,7 +255,7 @@ export default function SingleUser({ userID }: SingleUserProps) {
               label={t("buttons.reset_password")}
               onClick={() => setResetPasswordPopupOpen(true)}
               icon={<span className="inline-block w-6"><Lock /></span>}
-              variant="secondary"
+              variant="dark"
             />
             <Button
               label={t(userData?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}

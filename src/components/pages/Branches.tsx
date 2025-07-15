@@ -2,14 +2,12 @@
 import { deleteBranch, fetchBranches } from "@/api/companiesService";
 import Table from "@/components/ui/Table";
 import { Branch } from "@/types/ui.types";
-import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import NewBranchForm from "../forms/NewBranchForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
-import FilterForm from "../ui/FilterForm";
 import { Add } from "../ui/icons/Add";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
@@ -24,29 +22,15 @@ const Branches = () => {
   const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [branches, setBranches] = useState<Branch[]>([]);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [branchToDelete, setBranchToDelete] = useState<number | null>(null);
-  const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
 
   const getBranches = async () => {
     const response = await fetchBranches();
     const data = await response.branches;
     setBranches(data);
-
-    const uniqueDates = Array.from(
-      new Set(data.map((item: Branch) => item.createdAt))
-    );
-
-    const formattedDates = uniqueDates.map((date) => {
-      const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
-      return { value: formattedDate, label: formattedDate };
-    });
-
-    setCreatedOptions(formattedDates as { value: string; label: string }[]);
   };
 
   useEffect(() => {
@@ -57,14 +41,7 @@ const Branches = () => {
     const matchesSearch = item.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return item[key as keyof Branch]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
-    });
-    return matchesSearch && matchesFilters;
+    return matchesSearch;
   });
 
   const columns: { header: string; accessor: keyof Branch }[] = [
@@ -79,13 +56,7 @@ const Branches = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-    setFilters(appliedFilters);
-  };
 
-  const handleResetFilters = () => {
-    setFilters({});
-  };
 
   const handleExport = () => {
     const csvContent =
@@ -220,13 +191,6 @@ const Branches = () => {
               variant="primary"
             />
 
-            {/* Filters Button */}
-            <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            />
-
             {/* Export Button */}
             <Button
               label={t("buttons.export")}
@@ -241,43 +205,7 @@ const Branches = () => {
           </div>
         </div>
 
-        {filtersOpen && (
-          <FilterForm
-            fields={[
-              {
-                type: "text",
-                label: t("branch_name"),
-                name: "name",
-                placeholder: t("branch_name"),
-              },
-              {
-                type: "text",
-                label: t("address"),
-                name: "location_name",
-                placeholder: t("address"),
-              },
-              {
-                type: "select",
-                label: t("status"),
-                placeholder: t("status"),
-                name: "status",
-                options: [
-                  { value: "1", label: "Active" },
-                  { value: "0", label: "Inactive" },
-                ],
-              },
-              {
-                type: "select",
-                label: t("created_at"),
-                placeholder: t("created_at"),
-                name: "created",
-                options: createdOptions,
-              },
-            ]}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
-        )}
+
         <Table
           data={filteredBranches.map(branch => ({ ...branch, image: undefined }))}
           columns={columns}

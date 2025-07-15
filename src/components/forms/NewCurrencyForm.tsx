@@ -1,5 +1,5 @@
 "use client";
-import { createCurrency } from "@/api/presetsService";
+import { createCurrency, updateCurrency } from "@/api/presetsService";
 import { ErrorMessage, Form, Formik } from "formik";
 import { useTranslations } from "next-intl";
 import React, { useState } from "react";
@@ -13,6 +13,14 @@ interface NewCurrencyFormProps {
     title?: string;
     sub_title?: string;
     onClose?: () => void;
+    currencyData?: {
+        id: number;
+        name: string;
+        exchangeRate: number;
+        symbol: string;
+        code: string;
+        isActive: boolean;
+    } | null;
 }
 
 interface FormValues {
@@ -35,12 +43,21 @@ export default function NewCurrencyForm({
     title,
     sub_title,
     onClose,
+    currencyData,
 }: NewCurrencyFormProps) {
     const t = useTranslations("common");
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [apiErrors, setApiErrors] = useState<string | null>(null);
 
-    const initialValues: FormValues = {
+    const initialValues: FormValues = currencyData
+        ? {
+            name: currencyData.name,
+            exchangeRate: currencyData.exchangeRate.toString(),
+            symbol: currencyData.symbol,
+            code: currencyData.code,
+            isActive: currencyData.isActive.toString(),
+        }
+        : {
         name: "",
         exchangeRate: "",
         symbol: "",
@@ -58,7 +75,13 @@ export default function NewCurrencyForm({
         };
 
         try {
-            const result = await createCurrency(apiData);
+            let result;
+            if (currencyData) {
+                result = await updateCurrency(currencyData.id, apiData);
+            } else {
+                result = await createCurrency(apiData);
+            }
+            
             if (result.success) {
                 setIsSubmitted(true);
                 setApiErrors(null);
@@ -74,8 +97,8 @@ export default function NewCurrencyForm({
         return (
             <div className="py-10">
                 <SuccessMessage
-                    title="Successfully Added"
-                    msg="Currency has been created successfully!"
+                    title={"Successfully " + (currencyData ? "Updated" : "Added")}
+                    msg={"Currency has been " + (currencyData ? "updated" : "created") + " successfully!"}
                     bigger
                 />
             </div>

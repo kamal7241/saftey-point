@@ -199,7 +199,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
                   <Lock />
                 </span>
               }
-              variant="secondary"
+              variant="dark"
             />
             <Button
               label={t(userData?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}

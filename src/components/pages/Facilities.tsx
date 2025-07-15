@@ -8,7 +8,6 @@ import NewFacilityForm from "../forms/NewFacilityForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
-import FilterForm from "../ui/FilterForm";
 import { Add } from "../ui/icons/Add";
 import { Delete } from "../ui/icons/Delete";
 import { Edit } from "../ui/icons/Edit";
@@ -43,15 +42,10 @@ const Facilities = () => {
   // const tMsgs = useTranslations("messages");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [facilities, setFacilities] = useState<Facility[]>([]);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
-  const [filters, setFilters] = useState<{ [key: string]: string | undefined }>(
-    {}
-  );
-  const [createdOptions, setCreatedOptions] = useState<{ value: string; label: string }[]>([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [facilityToDelete, setFacilityToDelete] = useState<number | null>(null);
   const [editPopupOpen, setEditPopupOpen] = useState(false);
@@ -62,7 +56,6 @@ const Facilities = () => {
     setLoading(true);
     const offset = (currentPage - 1) * limit;
     const response = await fetchFacilities(offset, limit);
-    const data = await response.innerData.facilities;
     if (response.success) {
       setFacilities(
         response.innerData.facilities.map((facility: Facility) => ({
@@ -74,21 +67,6 @@ const Facilities = () => {
         }))
       );
       setTotalCount(response.innerData.count);
-
-      const uniqueDates = Array.from(
-        new Set(data.map((item: Facility) => item.createdAt))
-      );
-  
-      const formattedDates: { value: string; label: string }[] = [];
-      const seenDates = new Set<string>();
-      uniqueDates.forEach((date) => {
-        const formattedDate = format(new Date(date as string), "yyyy / MM / dd");
-        if (!seenDates.has(formattedDate)) {
-          formattedDates.push({ value: formattedDate, label: formattedDate });
-          seenDates.add(formattedDate);
-        }
-      });
-      setCreatedOptions(formattedDates);
     }
     setLoading(false);
   };
@@ -102,14 +80,7 @@ const Facilities = () => {
     const matchesSearch = facility.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesFilters = Object.entries(filters).every(([key, value]) => {
-      if (!value) return true;
-      return facility[key as keyof Facility]
-        ?.toString()
-        .toLowerCase()
-        .includes(value.toLowerCase());
-    });
-    return matchesSearch && matchesFilters;
+    return matchesSearch;
   });
   const columns: { header: string; accessor: keyof Facility }[] = [
     { header: "name", accessor: "name" },
@@ -117,13 +88,7 @@ const Facilities = () => {
     { header: "created", accessor: "createdAt" },
   ];
 
-  const handleApplyFilters = (appliedFilters: { [key: string]: string }) => {
-    setFilters(appliedFilters);
-  };
 
-  const handleResetFilters = () => {
-    setFilters({});
-  };
 
 
   const handleExport = () => {
@@ -258,11 +223,6 @@ const Facilities = () => {
               variant="primary"
             />
             <Button
-              label={t("buttons.filters")}
-              onClick={() => setFiltersOpen((prev) => !prev)}
-              variant={!filtersOpen ? "transparent" : "selected"}
-            />
-            <Button
               label={t("buttons.export")}
               onClick={handleExport}
               variant="dark"
@@ -275,27 +235,7 @@ const Facilities = () => {
           </div>
         </div>
 
-        {filtersOpen && (
-          <FilterForm
-            fields={[
-              {
-                type: "text",
-                label: "Name",
-                name: "name",
-                placeholder: "Facility Name",
-              },
-              {
-                type: "select",
-                label: "Created",
-                placeholder: "Created",
-                name: "createdAt",
-                options: createdOptions,
-              },
-            ]}
-            onApply={handleApplyFilters}
-            onReset={handleResetFilters}
-          />
-        )}
+
 
         <Table
           data={filteredFacilities}

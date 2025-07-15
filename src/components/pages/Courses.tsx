@@ -79,6 +79,7 @@ const Courses = () => {
     { header: "sessions", accessor: "sessions" },
     { header: "level", accessor: "level" },
     { header: "status", accessor: "status" },
+    { header: "created", accessor: "createdAt" },
   ];
 
   const handlePageChange = (page: number) => setCurrentPage(page);

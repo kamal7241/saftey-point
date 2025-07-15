@@ -29,10 +29,10 @@ export default function SessionStep({
     if (Array.isArray(value) && value.length === 2) {
       const [startDate, endDate] = value;
       if (startDate instanceof Date) {
-        setFieldValue('startDate', startDate.toISOString().split('T')[0]);
+        setFieldValue('session_date.0', startDate.toISOString().split('T')[0]);
       }
       if (endDate instanceof Date) {
-        setFieldValue('endDate', endDate.toISOString().split('T')[0]);
+        setFieldValue('session_date.1', endDate.toISOString().split('T')[0]);
       }
     }
   };
@@ -41,17 +41,17 @@ export default function SessionStep({
     if (typeof value === 'object' && 'from' in value && 'to' in value) {
       const { from, to } = value as TimeRange;
       if (from instanceof Date) {
-        setFieldValue('startTime', from.toTimeString().split(' ')[0]);
+        setFieldValue('session_time.from', from);
       }
       if (to instanceof Date) {
-        setFieldValue('endTime', to.toTimeString().split(' ')[0]);
+        setFieldValue('session_time.to', to);
       }
     }
   };
 
   const dateRange: DateRange = [
-    values.startDate ? new Date(values.startDate) : null,
-    values.endDate ? new Date(values.endDate) : null
+    values.session_date?.[0] ? new Date(values.session_date[0]) : null,
+    values.session_date?.[1] ? new Date(values.session_date[1]) : null
   ];
 
   return (
@@ -62,12 +62,12 @@ export default function SessionStep({
             label={t("title")}
             type="text"
             placeholder={t("title")}
-            value={values.title}
+            value={values.sessionName}
             onChange={handleChange}
-            name="title"
+            name="sessionName"
           />
           <ErrorMessage
-            name="title"
+            name="sessionName"
             component="div"
             className="text-xs text-red-500 py-1"
           />
@@ -164,12 +164,12 @@ export default function SessionStep({
             iconSVG={<Calendar />}
           />
           <ErrorMessage
-            name="startDate"
+            name="session_date.0"
             component="div"
             className="text-xs text-red-500"
           />
           <ErrorMessage
-            name="endDate"
+            name="session_date.1"
             component="div"
             className="text-xs text-red-500"
           />
@@ -187,12 +187,12 @@ export default function SessionStep({
             iconSVG={<Calendar />}
           />
           <ErrorMessage
-            name="startTime"
+            name="session_time.from"
             component="div"
             className="text-xs text-red-500"
           />
           <ErrorMessage
-            name="endTime"
+            name="session_time.to"
             component="div"
             className="text-xs text-red-500"
           />

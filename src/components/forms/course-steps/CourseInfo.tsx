@@ -31,7 +31,7 @@ export default function CourseInfo({
 }: CourseInfoProps) {
   const t = useTranslations("common");
   const tTable = useTranslations("tables");
-  const { languages, levels, facilities, loading } = useLookups();
+  const { languages, levels, facilities, courseTypes, loading } = useLookups();
 
   const languageOptions = languages.map(lang => ({
     value: lang.id.toString(),
@@ -46,6 +46,11 @@ export default function CourseInfo({
   const facilityOptions = facilities.map(facility => ({
     value: facility.id.toString(),
     label: facility.title
+  }));
+
+  const courseTypeOptions = courseTypes.map(courseType => ({
+    value: courseType.id.toString(),
+    label: courseType.code
   }));
 
   const statusOptions = [
@@ -75,8 +80,12 @@ export default function CourseInfo({
       if (values.facilityId && !facilityOptions.find(opt => opt.value === values.facilityId.toString())) {
         setFieldValue('facilityId', '');
       }
+      // Ensure course type value is valid
+      if (values.courseTypeId && !courseTypeOptions.find(opt => opt.value === values.courseTypeId.toString())) {
+        setFieldValue('courseTypeId', '');
+      }
     }
-  }, [loading, languageOptions, levelOptions, facilityOptions, values, setFieldValue]);
+  }, [loading, languageOptions, levelOptions, facilityOptions, courseTypeOptions, values, setFieldValue]);
 
   const handleDateChange = (value: string | ChangeEvent<HTMLInputElement> | DateRange | TimeRange) => {
     if (typeof value === 'string') {
@@ -229,6 +238,21 @@ export default function CourseInfo({
           />
           {errors.facility && (
             <p className="text-xs text-red-500 py-1">{errors.facility}</p>
+          )}
+        </div>
+
+        {/* Course Type */}
+        <div className="col-span-2">
+          <SelectField
+            label={t("course_type")}
+            name="courseTypeId"
+            value={values.courseTypeId}
+            onChange={(name, value) => setFieldValue(name, value)}
+            options={courseTypeOptions}
+            customDropdown
+          />
+          {errors.courseTypeId && (
+            <p className="text-xs text-red-500 py-1">{errors.courseTypeId}</p>
           )}
         </div>
 

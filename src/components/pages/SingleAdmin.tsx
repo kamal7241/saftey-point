@@ -311,7 +311,7 @@ export default function SingleAdmin({
                   <Lock />
                 </span>
               }
-              variant="secondary"
+              variant="dark"
             />
             {/* Conditionally render Suspend/Activate button if applicable */}
             <Button

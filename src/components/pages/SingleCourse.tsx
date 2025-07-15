@@ -21,6 +21,7 @@ import PricingTabContent from "./SingleCourse/PricingTabContent";
 import ExamTabContent from "./SingleCourse/ExamTabContent";
 import CertificateTabContent from "./SingleCourse/CertificateTabContent";
 import SessionsTabContent from "./SingleCourse/SessionsTabContent";
+import EnrollmentsTabContent from "./SingleCourse/EnrollmentsTabContent";
 import CourseHeaderActions from "./SingleCourse/CourseHeaderActions";
 import CourseTabs from "./SingleCourse/CourseTabs";
 import PricingForm from "./SingleCourse/PricingForm";
@@ -35,7 +36,8 @@ type ActiveTab =
   | "pricing"
   | "exam"
   | "certificate"
-  | "sessions";
+  | "sessions"
+  | "enrollments";
 
 export default function SingleCourse({ courseID }: SingleCourseProps) {
   const t = useTranslations("common");
@@ -56,6 +58,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     examData,
     certificateData,
     sessionData,
+    enrollmentsData,
     loading: initialLoading,
     tabLoading,
     error,
@@ -63,7 +66,8 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     refetchPricingData,
     refetchCertificateData,
     refetchExamData,
-    refetchSessionData
+    refetchSessionData,
+    refetchEnrollmentsData
   } = useCourseData(courseID, activeTab);
 
   const getInitialFormValues = (): Partial<CourseFormValues> => {
@@ -82,6 +86,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
       languageId: courseData.language?.id?.toString() ?? "",
       levelId: courseData.level?.id?.toString() ?? "",
       facilityId: courseData.facility?.id?.toString() ?? "",
+      courseTypeId: courseData.courseType?.id?.toString() ?? "",
     };
   };
 
@@ -317,6 +322,13 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
             isLoading={tabLoading}
             refetchSessionData={refetchSessionData}
             courseId={Number(courseID)}
+          />
+        );
+      case "enrollments":
+        return (
+          <EnrollmentsTabContent
+            enrollmentsData={enrollmentsData}
+            isLoading={tabLoading}
           />
         );
       default:

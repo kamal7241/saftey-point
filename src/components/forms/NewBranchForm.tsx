@@ -60,7 +60,7 @@ export default function NewBranchForm({
     const apiData: any = {
       ...branchData,
       name: values.name,
-      status: values.status.toUpperCase(),
+      status: values.status?.toUpperCase() || "PENDING",
       address: values.address,
       latitude: values.pinLocation[0].toString(),
       longitude: values.pinLocation[1].toString(),
@@ -154,7 +154,7 @@ console.log("apiData", apiData);
               <SelectField
                 label={tTable("status")}
                 name="status"
-                value={values.status.toLowerCase()}
+                value={values.status?.toLowerCase() || ""}
                 onChange={(name, value) => setFieldValue(name, value)}
                 options={[
                   { value: "active", label: t("company_status.active") },

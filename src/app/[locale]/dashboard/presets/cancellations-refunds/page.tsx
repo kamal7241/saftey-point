@@ -1,7 +1,6 @@
 export const runtime = "edge";
-import NotDevelopedYet from "@/components/NotDevelopedYet";
-
+import CancellationFees from "@/components/pages/CancellationFees";
 
 export default function Page() {
-  return <NotDevelopedYet />;
+  return <CancellationFees />;
 }

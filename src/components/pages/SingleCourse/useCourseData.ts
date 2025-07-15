@@ -5,12 +5,14 @@ import {
   fetchCourseExams,
   fetchCoursePricing,
   fetchCourseSession,
+  fetchCourseEnrollments,
 } from "@/api/courseService";
 import type { SingleCourse } from "@/types/ui.types";
+import { CourseEnrollment } from "@/types/api.types";
 import { showToast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 
-type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions";
+type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions" | "enrollments";
 
 export function useCourseData(courseID: string, activeTab: ActiveTab) {
   const tMsgs = useTranslations("messages");
@@ -23,6 +25,7 @@ export function useCourseData(courseID: string, activeTab: ActiveTab) {
   const [certificateData, setCertificateData] = useState<any[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sessionData, setSessionData] = useState<any[]>([]);
+  const [enrollmentsData, setEnrollmentsData] = useState<CourseEnrollment[]>([]);
   const [loading, setLoading] = useState(true); // General loading for initial course fetch
   const [tabLoading, setTabLoading] = useState(false); // Specific loading for tab data
   const [error, setError] = useState<string | null>(null);
@@ -103,6 +106,20 @@ export function useCourseData(courseID: string, activeTab: ActiveTab) {
     }
   }, [courseID, tMsgs]);
 
+  const getEnrollmentsData = useCallback(async () => {
+    setTabLoading(true);
+    try {
+        const data = await fetchCourseEnrollments(Number(courseID));
+        setEnrollmentsData(data?.items || []);
+    } catch (err) {
+        showToast.error(tMsgs("error_fetching_enrollments"));
+        console.error(err);
+        setEnrollmentsData([]);
+    } finally {
+        setTabLoading(false);
+    }
+  }, [courseID, tMsgs]);
+
   // Fetch base course data on mount
   useEffect(() => {
     getCourseData();
@@ -123,11 +140,14 @@ export function useCourseData(courseID: string, activeTab: ActiveTab) {
       case "exam":
         getExamData();
         break;
+      case "enrollments":
+        getEnrollmentsData();
+        break;
       // No specific fetch needed for 'course_info' as it uses courseData
       default:
         break;
     }
-  }, [activeTab, getCertificateData, getSessionData, getPricingData, getExamData]);
+  }, [activeTab, getCertificateData, getSessionData, getPricingData, getExamData, getEnrollmentsData]);
 
   return {
     courseData,
@@ -135,6 +155,7 @@ export function useCourseData(courseID: string, activeTab: ActiveTab) {
     examData,
     certificateData,
     sessionData,
+    enrollmentsData,
     loading, // Initial course loading
     tabLoading, // Loading state for data fetched based on tab
     error,
@@ -143,5 +164,6 @@ export function useCourseData(courseID: string, activeTab: ActiveTab) {
     refetchCertificateData: getCertificateData, // Expose refetch function for certificate data
     refetchSessionData: getSessionData, // Expose refetch function for session data
     refetchExamData: getExamData, // Expose refetch function for exam data
+    refetchEnrollmentsData: getEnrollmentsData, // Expose refetch function for enrollments data
   };
 }

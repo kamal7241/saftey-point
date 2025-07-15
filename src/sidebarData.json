@@ -78,6 +78,11 @@
         "roles": ["admin"]
       },
       {
+        "name": "Course Types",
+        "link": "/dashboard/courses-management/course-types",
+        "roles": ["admin"]
+      },
+      {
         "name": "Manage Certificates",
         "link": "/dashboard/courses-management/certificates",
         "roles": ["admin"]
@@ -106,11 +111,6 @@
         "roles": ["admin"]
       },
       {
-        "name": "Discounts",
-        "link": "/dashboard/presets/discounts",
-        "roles": ["admin"]
-      },
-      {
         "name": "Facility",
         "link": "/dashboard/presets/facility",
         "roles": ["admin"]
@@ -133,7 +133,11 @@
       {
         "name": "Cancellations - Refunds",
         "link": "/dashboard/presets/cancellations-refunds",
-        "comingSoon": true,
+        "roles": ["admin"]
+      },
+      {
+        "name": "Handouts",
+        "link": "/dashboard/presets/handouts",
         "roles": ["admin"]
       }
     ],

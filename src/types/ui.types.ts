@@ -162,6 +162,34 @@ export interface Currency {
     status?: boolean;
 }
 
+export interface CourseType {
+    id: number;
+    code: string;
+    nameEnglish: string;
+    nameArabic: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    image?: string;
+}
+
+export interface CancellationFee {
+    id: number;
+    name: string;
+    description: string;
+    type: 'FULL_REFUND' | 'PERCENTAGE' | 'FIXED_AMOUNT' | 'NO_REFUND';
+    percentage: string | null;
+    fixedAmount: number | null;
+    hoursBeforeStart: number;
+    isActive: boolean;
+    sortOrder: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    image?: string;
+}
+
 export interface SingleStaff {
     id?: number;
     status: string;
@@ -211,6 +239,8 @@ export interface SingleCourse {
     levelId: number | null;
     facility: Facility | null;
     facilityId: number | null;
+    courseType: CourseType | null;
+    courseTypeId: number | null;
     prerequisites: Level | null;
     validity: string;
     description: string;

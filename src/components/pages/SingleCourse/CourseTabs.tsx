@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 
-type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions";
-const TABS: ActiveTab[] = ["course_info", "pricing", "certificate", "exam", "sessions"];
+type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions" | "enrollments";
+const TABS: ActiveTab[] = ["course_info", "pricing", "certificate", "exam", "sessions", "enrollments"];
 
 interface CourseTabsProps {
   activeTab: ActiveTab;

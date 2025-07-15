@@ -53,7 +53,7 @@ export default function CertificateForm({
           <div className="mt-6 flex justify-end gap-4 border-t border-gray-200 pt-4">
             <Button
               type="button"
-              variant="secondary"
+              variant="dark"
               onClick={onCancel}
               disabled={isLoading}
               label={t("buttons.cancel")}

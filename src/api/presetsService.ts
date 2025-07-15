@@ -34,13 +34,39 @@ export const fetchCurrencies = async (offset: number = 0, limit: number = 10) =>
 
 export const fetchCurrencyById = async (id: string) => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/currency/${id}`
-        );
+        const url = `${process.env.NEXT_PUBLIC_URL}/api/v1/currency/${id}`;
+        console.log("Fetching currency from:", url);
+        
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            console.error("HTTP error:", response.status, response.statusText);
+            return {
+                success: false,
+                message: `HTTP ${response.status}: ${response.statusText}`,
+                data: null
+            };
+        }
+        
         const result = await response.json();
+        console.log("Currency API response:", result);
 
         if (!result.success) {
-            throw new Error("Failed to fetch currency");
+            console.error("API error:", result.message);
+            return {
+                success: false,
+                message: result.message || "Failed to fetch currency",
+                data: null
+            };
+        }
+
+        if (!result.innerData?.currency) {
+            console.error("No currency data in response:", result);
+            return {
+                success: false,
+                message: "No currency data found",
+                data: null
+            };
         }
 
         return {
@@ -52,7 +78,7 @@ export const fetchCurrencyById = async (id: string) => {
         console.error("Error fetching currency:", error);
         return {
             success: false,
-            message: "Failed to fetch currency",
+            message: error instanceof Error ? error.message : "Failed to fetch currency",
             data: null
         };
     }
@@ -88,6 +114,41 @@ export const createCurrency = async (currencyData: {
         return {
             success: false,
             message: "Failed to create currency",
+            data: null
+        };
+    }
+};
+
+export const updateCurrency = async (id: number, currencyData: {
+    name: string;
+    exchangeRate: number;
+    symbol: string;
+    code: string;
+    isActive: boolean;
+}) => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/currency/${id}`,
+            {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(currencyData),
+            }
+        );
+        const result = await response.json();
+
+        return {
+            success: result.success,
+            message: result.message,
+            data: result.data
+        };
+    } catch (error) {
+        console.error("Error updating currency:", error);
+        return {
+            success: false,
+            message: "Failed to update currency",
             data: null
         };
     }

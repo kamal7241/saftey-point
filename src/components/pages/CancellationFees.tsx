@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { fetchPartners, deletePartner } from "@/api/partnerService";
+import { fetchCancellationFees, deleteCancellationFee } from "@/api/cancellationFeesService";
 import Table from "@/components/ui/Table";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { showToast } from "@/utils/toast";
-import NewPartnerForm from "../forms/NewPartnerForm";
+import NewCancellationFeeForm from "../forms/NewCancellationFeeForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
@@ -15,44 +14,46 @@ import Eye from "../ui/icons/Eye";
 import { Edit } from "../ui/icons/Edit";
 import { Delete } from "../ui/icons/Delete";
 import Popup from "../ui/Popup";
+import { showToast } from "@/utils/toast";
+import { CancellationFee } from "@/types/ui.types";
 
-const Partners = () => {
+const CancellationFees = () => {
     const t = useTranslations("common");
     const tMsgs = useTranslations("messages");
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
-    const [partners, setPartners] = useState<any[]>([]);
+    const [cancellationFees, setCancellationFees] = useState<CancellationFee[]>([]);
     const [addPopupOpen, setAddPopupOpen] = useState(false);
     const [editPopupOpen, setEditPopupOpen] = useState(false);
-    const [partnerToEdit, setPartnerToEdit] = useState<any>(null);
+    const [cancellationFeeToEdit, setCancellationFeeToEdit] = useState<CancellationFee | null>(null);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [partnerToDelete, setPartnerToDelete] = useState<number | null>(null);
+    const [cancellationFeeToDelete, setCancellationFeeToDelete] = useState<number | null>(null);
     const [totalCount, setTotalCount] = useState(0);
 
     const limit = 10;
 
     const handleDelete = async () => {
-        if (!partnerToDelete) return;
+        if (!cancellationFeeToDelete) return;
 
         try {
-            const result = await deletePartner(partnerToDelete);
+            const result = await deleteCancellationFee(cancellationFeeToDelete);
             if (result.success) {
-                showToast.success(tMsgs('partner_deleted_successfully'));
-                await getPartners();
+                showToast.success(tMsgs('cancellation_fee_deleted_successfully'));
+                await getCancellationFees();
             } else {
-                console.error("Failed to delete partner:", result.message);
+                console.error("Failed to delete cancellation fee:", result.message);
             }
         } catch (error) {
-            console.error("Error deleting partner:", error);
+            console.error("Error deleting cancellation fee:", error);
         }
         setShowDeleteConfirm(false);
-        setPartnerToDelete(null);
+        setCancellationFeeToDelete(null);
     };
 
     const handleDeleteCancel = () => {
         setShowDeleteConfirm(false);
-        setPartnerToDelete(null);
+        setCancellationFeeToDelete(null);
     };
 
     const handleExport = () => {
@@ -62,16 +63,26 @@ const Partners = () => {
                 [
                     "ID",
                     "Name",
-                    "Website",
+                    "Description",
+                    "Type",
+                    "Percentage",
+                    "Fixed Amount",
+                    "Hours Before Start",
+                    "Sort Order",
                     "Status",
                     "Created At",
                 ],
-                ...filteredPartners.map((p: any) => [
-                    p.id,
-                    p.name,
-                    p.website,
-                    p.status === "1" ? "Active" : "Inactive",
-                    p.createdAt,
+                ...filteredCancellationFees.map((fee: CancellationFee) => [
+                    fee.id,
+                    fee.name,
+                    fee.description,
+                    fee.type,
+                    fee.percentage || "N/A",
+                    fee.fixedAmount || "N/A",
+                    fee.hoursBeforeStart,
+                    fee.sortOrder,
+                    fee.isActive ? "Active" : "Inactive",
+                    fee.createdAt,
                 ]),
             ]
                 .map((row) => row.join(","))
@@ -79,23 +90,22 @@ const Partners = () => {
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "partners.csv");
+        link.setAttribute("download", "cancellation-fees.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
 
-    const getPartners = async () => {
+    const getCancellationFees = async () => {
         setLoading(true);
         const offset = (currentPage - 1) * limit;
-        const response = await fetchPartners(offset, limit);
+        const response = await fetchCancellationFees(offset, limit);
         if (response.success) {
-            setPartners(
-                response.innerData.partners.map((partner: any) => ({
-                    ...partner,
-                    name: partner.name,
-                    createdAt: new Date(partner.createdAt).toDateString(),
-                    status: partner.deletedAt ? "0" : "1",
+            setCancellationFees(
+                response.innerData.cancellationFees.map((fee: any) => ({
+                    ...fee,
+                    name: fee.name,
+                    createdAt: new Date(fee.createdAt).toDateString(),
                 }))
             );
             setTotalCount(response.innerData.count);
@@ -104,33 +114,37 @@ const Partners = () => {
     };
 
     useEffect(() => {
-        getPartners();
+        getCancellationFees();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
 
-    const filteredPartners = partners.filter((partner) => {
-        const matchesSearch = partner.name
+    const filteredCancellationFees = cancellationFees.filter((fee) => {
+        const matchesSearch = fee.name
             .toLowerCase()
             .includes(searchTerm.toLowerCase());
         return matchesSearch;
     });
 
-    const columns: { header: string; accessor: keyof any }[] = [
-        { header: "name", accessor: "name" },
-        { header: "website", accessor: "website" },
-        { header: "created", accessor: "createdAt" },
+    const columns: { header: string; accessor: keyof CancellationFee }[] = [
+        { header: t("tables.name"), accessor: "name" },
+        { header: t("tables.description"), accessor: "description" },
+        { header: t("tables.type"), accessor: "type" },
+        { header: t("tables.percentage"), accessor: "percentage" },
+        { header: t("tables.fixed_amount"), accessor: "fixedAmount" },
+        { header: t("tables.hours_before_start"), accessor: "hoursBeforeStart" },
+        { header: t("tables.sort_order"), accessor: "sortOrder" },
+        { header: t("tables.status"), accessor: "isActive" },
+        { header: t("tables.created"), accessor: "createdAt" },
     ];
 
-
-
-    const renderRowActions = (row: any) => (
+    const renderRowActions = (row: CancellationFee) => (
         <div className="flex gap-2">
             <Button
                 icon={<Eye />}
                 noBackground={true}
                 textColor="blue-400"
                 noLabel={true}
-                href={`/dashboard/presets/partners/${row.id}`}
+                href={`/dashboard/presets/cancellation-fees/${row.id}`}
             />
             <Button
                 icon={<Edit />}
@@ -138,7 +152,7 @@ const Partners = () => {
                 textColor="gray-900"
                 noLabel={true}
                 onClick={() => {
-                    setPartnerToEdit(row);
+                    setCancellationFeeToEdit(row);
                     setEditPopupOpen(true);
                 }}
             />
@@ -148,7 +162,7 @@ const Partners = () => {
                 textColor="red-500"
                 noLabel={true}
                 onClick={() => {
-                    setPartnerToDelete(row.id);
+                    setCancellationFeeToDelete(row.id);
                     setShowDeleteConfirm(true);
                 }}
             />
@@ -158,12 +172,12 @@ const Partners = () => {
     const breadcrumbItems = [
         { label: t("home"), href: "/" },
         { label: t("presets"), href: "/dashboard/presets" },
-        { label: t("partner"), href: "/dashboard/presets/partners" },
+        { label: t("cancellation_fees"), href: "/dashboard/presets/cancellation-fees" },
     ];
 
     return (
         <div>
-            <PageHeader breadcrumbItems={breadcrumbItems} title={t("partners")} />
+            <PageHeader breadcrumbItems={breadcrumbItems} title={t("cancellation_fees")} />
 
             {showDeleteConfirm && (
                 <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
@@ -188,7 +202,7 @@ const Partners = () => {
                     <SearchForm onSearch={setSearchTerm} />
                     <div className="flex gap-3 justify-between items-stretch flex-wrap">
                         <Button
-                            label={t("buttons.add_partner")}
+                            label={t("buttons.add_cancellation_fee")}
                             onClick={() => setAddPopupOpen(true)}
                             icon={
                                 <span className="w-6 inline-block">
@@ -211,14 +225,13 @@ const Partners = () => {
                 </div>
 
                 <Table
-                    data={filteredPartners}
+                    data={filteredCancellationFees}
                     columns={columns}
                     pagination={{
                         currentPage,
                         totalPages: Math.ceil(totalCount / limit),
                         onPageChange: (page) => setCurrentPage(page),
                     }}
-                    
                     rowsPerPage={limit}
                     renderRowActions={renderRowActions}
                     isLoading={loading}
@@ -229,15 +242,15 @@ const Partners = () => {
                 isOpen={addPopupOpen}
                 onClose={() => {
                     setAddPopupOpen(false);
-                    getPartners();
+                    getCancellationFees();
                 }}
             >
-                <NewPartnerForm
-                    title={t("add_partner")}
-                    sub_title={t("form_subtitle")}
+                <NewCancellationFeeForm
+                    title={t("add_cancellation_fee")}
+                    sub_title={t("add_cancellation_fee_subtitle")}
                     onClose={() => {
                         setAddPopupOpen(false);
-                        getPartners();
+                        getCancellationFees();
                     }}
                 />
             </Popup>
@@ -246,23 +259,23 @@ const Partners = () => {
                 isOpen={editPopupOpen}
                 onClose={() => {
                     setEditPopupOpen(false);
-                    setPartnerToEdit(null);
-                    getPartners();
+                    setCancellationFeeToEdit(null);
+                    getCancellationFees();
                 }}
             >
-                <NewPartnerForm
-                    title={t("edit_partner")}
-                    sub_title={t("edit_partner_subtitle")}
+                <NewCancellationFeeForm
+                    title={t("edit_cancellation_fee")}
+                    sub_title={t("edit_cancellation_fee_subtitle")}
                     onClose={() => {
                         setEditPopupOpen(false);
-                        setPartnerToEdit(null);
-                        getPartners();
+                        setCancellationFeeToEdit(null);
+                        getCancellationFees();
                     }}
-                    partnerData={partnerToEdit}
+                    cancellationFeeData={cancellationFeeToEdit}
                 />
             </Popup>
         </div>
     );
 };
 
-export default Partners;
+export default CancellationFees; 

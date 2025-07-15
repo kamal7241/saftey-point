@@ -55,6 +55,7 @@ export default function CreateCourse() {
     language: "en",
     maxAttendees: "",
     medicalTest: "no",
+    courseTypeId: "",
     price: "",
     certificate: "",
     certificateName: "",
@@ -62,6 +63,14 @@ export default function CreateCourse() {
     issue_date: "",
     displayScore: "no",
     watermark: "no",
+    // Session step fields
+    sessionName: "",
+    session_date: ["", ""],
+    session_time: { from: null, to: null },
+    trainer: "",
+    assistant: "",
+    assessor: "",
+    scheduleType: "",
   });
 
   const StepComponents = [
@@ -165,22 +174,18 @@ export default function CreateCourse() {
         }
       }
     } else if (currentStep === 4 && courseId) {
-      const formattedValues = {
-        ...values,
-        title: values.title || "",
+      // Format session data to match API expectations
+      const sessionData = {
+        title: values.sessionName || "",
         description: values.description || "",
-        startDate: values.startDate instanceof Date 
-          ? values.startDate.toISOString().split('T')[0]
-          : values.startDate,
-        endDate: values.endDate instanceof Date 
-          ? values.endDate.toISOString().split('T')[0]
-          : values.endDate,
+        startDate: values.session_date?.[0] || "",
+        endDate: values.session_date?.[1] || "",
         status: "ACTIVE"
       };
 
       // Validate dates
-      const startDate = new Date(formattedValues.startDate);
-      const endDate = new Date(formattedValues.endDate);
+      const startDate = new Date(sessionData.startDate);
+      const endDate = new Date(sessionData.endDate);
 
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         toast.error(t("validation.invalid_date_format"));
@@ -192,13 +197,13 @@ export default function CreateCourse() {
         return;
       }
 
-      const result = await submitSession(formattedValues, courseId);
+      const result = await submitSession(sessionData, courseId);
       if (result.success && result.innerData?.id) {
         setFormData((prev) => ({ ...prev, ...values }));
         setShowSuccess(true);
         toast.success(t("messages.course_created_successfully"));
       } else {
-        toast.error(result.message || t("messages.error_creating_session"));
+        toast.error(result.error || t("messages.error_creating_session"));
         return;
       }
     } else {

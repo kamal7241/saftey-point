@@ -209,7 +209,7 @@ export default function SingleCompany({ companyData, companyID }: SingleCompanyP
                   <Lock />
                 </span>
               }
-              variant="secondary"
+              variant="dark"
             />
             <Button
               label={t(userData?.user.isVerified ? "buttons.suspend" : "buttons.activate")}

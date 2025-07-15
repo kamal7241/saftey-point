@@ -42,7 +42,8 @@ export const submitCourse = async (values: CourseFormValues, step: number): Prom
         languageId: Number(values.languageId),
         levelId: Number(values.levelId),
         prerequisiteId: Number(values.prerequisiteId),
-        facilityId: Number(values.facilityId)
+        facilityId: Number(values.facilityId),
+        courseTypeId: Number(values.courseTypeId)
       };
 
       const response = await fetch(
@@ -90,7 +91,8 @@ export const updateCourse = async (courseId: number, values: Partial<CourseFormV
       languageId: Number(values.languageId),
       levelId: Number(values.levelId),
       prerequisiteId: Number(values.prerequisiteId),
-      facilityId: Number(values.facilityId)
+      facilityId: Number(values.facilityId),
+      courseTypeId: Number(values.courseTypeId)
     };
 
     const response = await fetch(
@@ -325,12 +327,14 @@ export const fetchCourses = async (offset: number = 0, limit: number = 10) => {
       courses: result.innerData.items.map((course: any): SingleCourse => ({
         id: course.id,
         title: course.title,
-        language: course.language?.name || null,
+        language: course.language || null,
         languageId: course.language?.id || null,
-        level: course.level?.name || null,
+        level: course.level || null,
         levelId: course.level?.id || null,
-        facility: course.facility?.name || null,
+        facility: course.facility || null,
         facilityId: course.facility?.id || null,
+        courseType: course.courseType || null,
+        courseTypeId: course.courseTypeId || null,
         prerequisites: course.prerequisites,
         validity: course.validity,
         description: course.description,
@@ -761,5 +765,28 @@ export const deleteCourse = async (courseId: number): Promise<CourseResponse> =>
     }
     console.error("Unexpected error:", error);
     return { success: false, error: "An unexpected error occurred" };
+  }
+};
+
+export const fetchCourseEnrollments = async (courseId: number) => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL}/api/v1/course/${courseId}/enrollments`,
+      {
+        headers: {
+          accept: '*/*',
+        },
+      }
+    );
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Failed to fetch course enrollments');
+    }
+
+    return result.innerData;
+  } catch (error) {
+    console.error('Error fetching course enrollments:', error);
+    return null;
   }
 };

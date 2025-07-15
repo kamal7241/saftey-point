@@ -12,6 +12,7 @@ export interface CourseFormValues {
     languageId: string;
     levelId: string;
     facilityId: string;
+    courseTypeId: string;
 }
 
 

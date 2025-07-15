@@ -4,10 +4,14 @@ import { useTranslations } from "next-intl";
 import { FormikValues } from "formik";
 import GroupInfo from "../../ui/GroupInfo";
 import QuestionsTable from "../../forms/course-steps/QuestionsTable";
-import Note from "../../ui/icons/Note";
-import NoteFlat from "../../ui/icons/NoteFlat";
-import Timer from "../../ui/icons/Timer";
-import TaskBorder from "../../ui/icons/TaskBorder";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faNoteSticky,
+  faFileAlt,
+  faClock,
+  faCheckSquare,
+  faEdit,
+} from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/ui/Button";
 import Popup from "@/components/ui/Popup";
 import { submitExam, updateExam } from "@/api/courseService";
@@ -116,33 +120,33 @@ export default function ExamTabContent({
             <GroupInfo
               label={t("examName")}
               content={exam.title}
-              icon={<Note />}
+              icon={<FontAwesomeIcon icon={faNoteSticky} className="w-4 h-4" />}
             />
             <GroupInfo
               label={t("examType")}
               content={exam.examType}
-              icon={<NoteFlat />}
+              icon={<FontAwesomeIcon icon={faFileAlt} className="w-4 h-4" />}
             />
             <GroupInfo
               label={t("examDuration")}
               content={`${exam.duration} ${t("mins")}`}
-              icon={<Timer />}
+              icon={<FontAwesomeIcon icon={faClock} className="w-4 h-4" />}
             />
             <GroupInfo
               label={t("totalMarks")}
               content={`${exam.totalMarks}`}
-              icon={<TaskBorder />}
+              icon={<FontAwesomeIcon icon={faCheckSquare} className="w-4 h-4" />}
             />
             <GroupInfo
               label={t("passMarks")}
               content={`${exam.passMarks}`}
-              icon={<TaskBorder />}
+              icon={<FontAwesomeIcon icon={faCheckSquare} className="w-4 h-4" />}
             />
             <div className="col-span-3">
               <GroupInfo
                 label={t("discription")}
                 content={`${exam.instructions}`}
-                icon={<TaskBorder />}
+                icon={<FontAwesomeIcon icon={faEdit} className="w-4 h-4" />}
               />
             </div>
             <div className="flex gap-2 col-span-3">
@@ -153,7 +157,7 @@ export default function ExamTabContent({
                   setCurrentExam(exam);
                   setShowEditPopup(true);
                 }}
-                variant="secondary"
+                variant="dark"
               />
             </div>
           </div>

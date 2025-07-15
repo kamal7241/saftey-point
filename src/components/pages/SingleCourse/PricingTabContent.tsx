@@ -1,10 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Button from "@/components/ui/Button";
-import { Flag } from "@/components/ui/icons/Flag";
-import Note from "@/components/ui/icons/Note";
-import PriceIcon from "@/components/ui/icons/PriceIcon";
-import Theoretical from "@/components/ui/icons/Theoretical";
-import TicketDiscount from "@/components/ui/icons/TicketDiscount";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faFlag,
+  faNoteSticky,
+  faMoneyBill,
+  faGraduationCap,
+  faTicket,
+  faBuilding,
+} from "@fortawesome/free-solid-svg-icons";
 import { useTranslations } from "next-intl";
 import GroupInfo from "../../ui/GroupInfo";
 import { useState } from "react";
@@ -104,39 +108,39 @@ export default function PricingTabContent({
           <GroupInfo
             label={t("country")}
             content={pricing.country?.name || ""}
-            icon={<Flag />}
+            icon={<FontAwesomeIcon icon={faFlag} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("price")}
             content={pricing.price}
-            icon={<PriceIcon />}
+            icon={<FontAwesomeIcon icon={faMoneyBill} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("discount")}
             content={pricing.discount}
-            icon={<TicketDiscount />}
+            icon={<FontAwesomeIcon icon={faTicket} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("theoreticalOnly")}
             content={pricing.isTheoreticalOnly ? t("yes") : t("no")}
-            icon={<Theoretical />}
+            icon={<FontAwesomeIcon icon={faGraduationCap} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("type")}
             content={pricing.type}
-            icon={<Note />}
+            icon={<FontAwesomeIcon icon={faNoteSticky} className="w-4 h-4" />}
           />
           <GroupInfo
             label={t("companyTraining")}
             content={pricing.isCompanyTraining ? t("yes") : t("no")}
-            icon={<Note />}
+            icon={<FontAwesomeIcon icon={faBuilding} className="w-4 h-4" />}
           />
           <div className="col-span-3 flex justify-end">
             <Button
               type="button"
               label={t("buttons.edit")}
               onClick={() => onEditPricing(pricing.id)}
-              variant="secondary"
+              variant="dark"
             />
           </div>
         </div>

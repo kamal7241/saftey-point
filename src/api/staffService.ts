@@ -25,6 +25,9 @@ export const fetchStaffManagement = async (offset: number = 0, limit: number = 1
                 type: staff.userType.toLowerCase(),
                 phone: staff.user.phone,
                 image: `${process.env.NEXT_PUBLIC_URL}/${staff.user.avatar}`,
+                roleName: staff.role?.name || "No Role",
+                roleDescription: staff.role?.description || "",
+                roleId: staff.role?.id || staff.roleId || staff.user.roleId,
             })),
             totalCount: result.innerData.count
         };
@@ -57,6 +60,7 @@ export const submitStaff = async (values: SingleStaff) => {
         resume: values.resume || "",
         status: values.status || "pending",
         userType: values.userType || "STAFF",
+        roleId: values.roleId || values.user.roleId || 1, // Use roleId from staff level first
         user: {
             firstName: values.user.firstName,
             lastName: values.user.lastName || "",
@@ -106,6 +110,7 @@ export const updateStaff = async (
     if (values.resume !== currentData.resume) apiData.resume = values.resume;
     if (values.status !== currentData.status) apiData.status = values.status;
     if (values.userType !== currentData.userType) apiData.userType = values.userType;
+    if (values.roleId !== currentData.roleId) apiData.roleId = values.roleId;
 
     // Compare nested `user` fields
     const userUpdates: Partial<SingleStaff["user"]> = {};
@@ -122,6 +127,9 @@ export const updateStaff = async (
         userUpdates.phone = values.user.phone;
     if (values.user.isVerified !== currentData.user.isVerified)
         userUpdates.isVerified = values.user.isVerified;
+    if (values.user.roleId !== currentData.user.roleId) {
+        userUpdates.roleId = values.user.roleId;    
+    }
 
     if (Object.keys(userUpdates).length > 0) {
         apiData.user = userUpdates as SingleStaff["user"]; // Type assertion to match the expected type
@@ -129,7 +137,6 @@ export const updateStaff = async (
 
     // If no changes detected, return early
     if (Object.keys(apiData).length === 0) {
-        console.log("No changes detected, skipping update.");
         return { success: true, data: currentData };
     }
 

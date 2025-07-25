@@ -242,7 +242,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
               label={t("role")}
-              content={t(`user_role.${userData?.userType.toLowerCase()}`)}
+              content={userData?.role?.name || t(`user_role.${userData?.userType.toLowerCase()}`)}
               icon={<MedalStar />}
             />
             <GroupInfo
@@ -258,6 +258,15 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               icon={<Buildings2 />}
             />
           </div>
+          {userData?.role?.description && (
+            <div className="grid grid-cols-1 gap-6">
+              <GroupInfo
+                label={t("role_description")}
+                content={userData.role.description}
+                icon={<MedalStar />}
+              />
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
               label={t("resume")}

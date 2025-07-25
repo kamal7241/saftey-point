@@ -57,14 +57,14 @@ export const addStaffValidationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phoneNumber: Yup.string().required("Phone number is required"),
-  role: Yup.string().required("Role is required"),
+  role: Yup.number().required("Role is required").typeError("Role is required"),
   password: Yup.string()
     .required("Password is required")
     .min(8, "Password must be at least 8 characters")
     .matches(/[a-zA-Z]/, "Password must contain at least one letter")
     .matches(/[0-9]/, "Password must contain at least one number"),
-  resume: Yup.mixed().required("Resume is required"),
-  avatar: Yup.mixed().required("Avatar is required"),
+  resume: Yup.mixed().notRequired(),
+  avatar: Yup.mixed().notRequired(),
 });
 export const editStaffValidationSchema = Yup.object({
   firstName: Yup.string().required("First Name is required"),
@@ -74,7 +74,8 @@ export const editStaffValidationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phoneNumber: Yup.string().required("Phone number is required"),
-  avatar: Yup.mixed().required("Avatar is required"),
+  role: Yup.number().required("Role is required").typeError("Role is required"),
+  avatar: Yup.mixed().notRequired(),
 });
 
 

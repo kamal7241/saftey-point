@@ -26,7 +26,7 @@ interface FormValues {
   lastName: string;
   status: string;
   email: string;
-  role: number | ""; // Changed to number or empty string to store role ID
+  role: number | ""; // Role ID as number or empty string
   phoneNumber: string;
   password: string;
   resume: string | null;
@@ -51,7 +51,7 @@ export default function NewStaffForm({
       phoneNumber: userData.user.phone || "",
       password: "",
       resume: null,
-      role: userData ? "" : "", // Initialize role ID, assuming we'll select it. Or map userData.userType to ID if possible.
+      role: userData.role?.id ? Number(userData.role.id) : userData.user.roleId ? Number(userData.user.roleId) : "", // Use role.id first, fallback to user.roleId
       avatar: userData.user.avatar,
     }
     : {
@@ -65,7 +65,6 @@ export default function NewStaffForm({
       role: "", // Role ID will be a number or empty string
       avatar: null,
     };
-
 
   const handleGeneratePassword = (
     setFieldValue: (field: string, value: string) => void
@@ -81,6 +80,7 @@ export default function NewStaffForm({
       resume: values.resume ?? "",
       status: values.status || "pending",
       userType: "staff".toUpperCase(),
+      roleId: typeof values.role === 'number' ? values.role : undefined, // Set roleId at staff level
       user: {
         id: userData ? userData.user.id : 0,
         firstName: values.firstName,
@@ -90,7 +90,7 @@ export default function NewStaffForm({
         phone: values.phoneNumber,
         password: values.password,
         isVerified: false,
-        roleId: values.role? values.role.toString() : "",
+        roleId: values.role || "", // Keep as number or empty string
       },
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -142,8 +142,9 @@ export default function NewStaffForm({
         validationSchema={userData ? editStaffValidationSchema : addStaffValidationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, handleChange, setFieldValue }) => (
-          <Form className="mt-4 grid w-full grid-cols-4 gap-4">
+        {({ values, handleChange, setFieldValue }) => {
+          return (
+            <Form className="mt-4 grid w-full grid-cols-4 gap-4">
             {apiErrors && (
               <div className="col-span-4">
                 <div className="text-red-500">{apiErrors}</div>
@@ -204,7 +205,9 @@ export default function NewStaffForm({
                 label={tTable("role")}
                 name="role"
                 value={values.role}
-                onChange={(name, value) => setFieldValue(name, value)}
+                onChange={(name, value) => {
+                  setFieldValue(name, value);
+                }}
                 customDropdown
                 placeholder={t('select_role_placeholder')}
               />
@@ -332,7 +335,8 @@ export default function NewStaffForm({
               />
             </div>
           </Form>
-        )}
+        );
+        }}
       </Formik>
     </div>
   );

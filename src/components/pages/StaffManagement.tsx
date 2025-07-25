@@ -1,25 +1,33 @@
 "use client";
-import { fetchStaffManagement } from "@/api/staffService";
+import { fetchStaffManagement, deleteStaff } from "@/api/staffService";
 import Table from "@/components/ui/Table";
 import { SingleStaffUI } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { useRouter } from "@/i18n/routing";
 import NewStaffForm from "../forms/NewStaffForm";
 import SearchForm from "../formsUI/SearchForm";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
+import { showToast } from "@/utils/toast";
 
 import { Add } from "../ui/icons/Add";
 import { Export } from "../ui/icons/Export";
 import Eye from "../ui/icons/Eye";
+import { Edit } from "../ui/icons/Edit";
+import { Delete } from "../ui/icons/Delete";
 import Popup from "../ui/Popup";
 
 
 const StaffManagement = () => {
   const t = useTranslations("common");
+  const tMsgs = useTranslations("messages");
+  const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [addPopupOpen, setAddPopupOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [staffToDelete, setStaffToDelete] = useState<number | null>(null);
 
   const [staffManagement, setStaffManagement] = useState<SingleStaffUI[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -40,7 +48,7 @@ const StaffManagement = () => {
     { header: "name", accessor: "name" },
     { header: "email", accessor: "email" },
     { header: "phone", accessor: "phone" },
-    { header: "role", accessor: "type" },
+    { header: "role", accessor: "roleName" },
     { header: "status", accessor: "status" },
   ];
 
@@ -49,6 +57,40 @@ const StaffManagement = () => {
     setAddPopupOpen(false);
     getStaffManagement();
   };
+
+  const handleDelete = async () => {
+    if (!staffToDelete) return;
+
+    try {
+      const result = await deleteStaff(staffToDelete);
+      if (result.success) {
+        showToast.success(tMsgs("staff_deleted_successfully") || "Staff deleted successfully");
+        await getStaffManagement();
+      } else {
+        showToast.error(result.error || tMsgs("error_deleting_staff") || "Error deleting staff");
+        console.error("Failed to delete staff:", result.error);
+      }
+    } catch (error) {
+      showToast.error(tMsgs("error_deleting_staff") || "Error deleting staff");
+      console.error("Error deleting staff:", error);
+    }
+    setShowDeleteConfirm(false);
+    setStaffToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+    setStaffToDelete(null);
+  };
+
+  const handleView = (id: number) => {
+    router.push(`/dashboard/staff-management/${id}`);
+  };
+
+  const handleEdit = (id: number) => {
+    router.push(`/dashboard/staff-management/${id}`);
+  };
+
   const handleExport = () => {
     const csvContent =
       "data:text/csv;charset=utf-8," +
@@ -56,18 +98,19 @@ const StaffManagement = () => {
         [
           "ID",
           "Name",
+          "Email",
+          "Phone",
+          "Role",
+          "Role Description",
           "Status",
-          "assigned_to",
-          "expiry_date",
-          "exam_date",
-          "score",
         ],
         ...staffManagement.map((c) => [
           c.id,
           c.name,
           c.email,
           c.phone,
-          c.type,
+          c.roleName,
+          c.roleDescription,
           c.status,
         ]),
       ]
@@ -89,7 +132,24 @@ const StaffManagement = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        href={`/dashboard/staff-management/${row.id}`}
+        onClick={() => handleView(row.id)}
+      />
+      <Button
+        icon={<Edit />}
+        noBackground={true}
+        textColor="gray-900"
+        noLabel={true}
+        onClick={() => handleEdit(row.id)}
+      />
+      <Button
+        icon={<Delete />}
+        noBackground={true}
+        textColor="red-500"
+        noLabel={true}
+        onClick={() => {
+          setStaffToDelete(row.id);
+          setShowDeleteConfirm(true);
+        }}
       />
     </div>
   );
@@ -108,6 +168,29 @@ const StaffManagement = () => {
         breadcrumbItems={breadcrumbItems}
         title={t("staff-management")}
       />
+
+      {/* Delete Confirmation Popup */}
+      {showDeleteConfirm && (
+        <Popup isOpen={showDeleteConfirm} onClose={handleDeleteCancel}>
+          <div>
+            <p className="p-5 text-center text-2xl">
+              {t("are_you_sure_delete")}
+            </p>
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                onClick={handleDelete}
+                label={t("buttons.confirm")}
+                variant="danger"
+              />
+              <Button
+                onClick={handleDeleteCancel}
+                label={t("buttons.cancel")}
+                variant="dark"
+              />
+            </div>
+          </div>
+        </Popup>
+      )}
 
       {/* Table */}
       <div className="mt-6 bg-white rounded-2xl">

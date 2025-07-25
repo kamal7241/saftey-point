@@ -54,11 +54,29 @@ const StaffRoleSelectField: React.FC<StaffRoleSelectFieldProps> = ({
   }));
 
   if (loading) {
-    return <p>{t('loading_roles')}</p>;
+    return (
+      <div className="col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {label}
+        </label>
+        <div className="flex items-center justify-center p-4 border border-gray-300 rounded-md bg-gray-50">
+          <p className="text-sm text-gray-500">{t('loading_roles')}</p>
+        </div>
+      </div>
+    );
   }
 
   if (fetchError) {
-    return <p className="text-xs text-red-500">{t('error_loading_roles')} {fetchError}</p>;
+    return (
+      <div className="col-span-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          {label}
+        </label>
+        <div className="flex items-center justify-center p-4 border border-red-300 rounded-md bg-red-50">
+          <p className="text-sm text-red-500">{t('error_loading_roles')} {fetchError}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -69,7 +87,8 @@ const StaffRoleSelectField: React.FC<StaffRoleSelectFieldProps> = ({
       onChange={(fieldName, selectedValue) => {
         // Convert back to number if your form expects a number ID
         const numericValue = parseInt(selectedValue, 10);
-        onChange(fieldName, isNaN(numericValue) ? selectedValue : numericValue);
+        const finalValue = isNaN(numericValue) ? "" : numericValue;
+        onChange(fieldName, finalValue);
       }}
       options={roleOptions}
       placeholder={placeholder}

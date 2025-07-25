@@ -196,6 +196,14 @@ export interface SingleStaff {
     userType: string;
     image?: string;
     resume?: string;
+    roleId?: number;
+    role?: {
+        id: number;
+        name: string;
+        description: string;
+        permissions: string[];
+        isActive: boolean;
+    };
     user: {
         id: number;
         firstName: string;
@@ -206,6 +214,10 @@ export interface SingleStaff {
         password?: string;
         isVerified: boolean;
         roleId: number | string;
+        individual?: any;
+        staff?: any;
+        company?: any;
+        admin?: any;
     };
 }
 export interface SingleStaffUI {
@@ -218,6 +230,9 @@ export interface SingleStaffUI {
     phone?: string;
     isVerified: boolean;
     avatar: string;
+    roleName?: string;
+    roleDescription?: string;
+    roleId?: number;
 }
 
 export interface SingleExam {

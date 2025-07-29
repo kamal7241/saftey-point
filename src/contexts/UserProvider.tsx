@@ -172,7 +172,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const hasAnyRoleFn = (roleKeys: string[]) => hasAnyRole(user as UserWithRoles, roleKeys);
   const getUserRolesFn = () => getUserRoles(user as UserWithRoles);
   const getUserPermissionsFn = () => getUserPermissions(user as UserWithRoles);
-  const getPrimaryRoleFn = () => getPrimaryRole(user as UserWithRoles);
+  const getPrimaryRoleFn = () => {
+    const primaryRole = getPrimaryRole(user as UserWithRoles);
+    // If no primary role is found, try to determine from user data
+    if (!primaryRole && user) {
+      // Check if user has legacy role property
+      if ('role' in user && user.role) {
+        return user.role;
+      }
+      // Check if user has roles array
+      if ('roles' in user && user.roles && user.roles.length > 0) {
+        return user.roles[0].role?.key || 'admin'; // Default to admin if no role key
+      }
+      // Default fallback
+      return 'admin';
+    }
+    return primaryRole;
+  };
   const getResourcePermissionsFn = (resource: string) => getResourcePermissions(user as UserWithRoles, resource);
 
   return (

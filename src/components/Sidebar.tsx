@@ -18,6 +18,7 @@ type SidebarItem = {
   comingSoon?: boolean;
   roles?: string[]; // Add roles property
 };
+
 const toTranslationKey = (name: string) =>
   name
     .toLowerCase()
@@ -42,7 +43,14 @@ const Sidebar = () => {
       }));
   };
 
-  const roleSpecificSidebarData = filterByRole(sidebarData as SidebarItem[], currentUserRole);
+  // Get role-specific sidebar data
+  let roleSpecificSidebarData = filterByRole(sidebarData as SidebarItem[], currentUserRole);
+
+  // If no role-specific items found, show all items (fallback)
+  if (roleSpecificSidebarData.length === 0) {
+    console.log('No role-specific sidebar items found for role:', currentUserRole, 'Showing all items as fallback');
+    roleSpecificSidebarData = sidebarData as SidebarItem[];
+  }
 
   const translatedSidebarData = roleSpecificSidebarData.map((item: SidebarItem) => ({
     ...item,
@@ -158,6 +166,24 @@ const Sidebar = () => {
       );
     });
   };
+
+  // Debug logging
+  console.log('Sidebar - Current user role:', currentUserRole);
+  console.log('Sidebar - Role-specific items count:', roleSpecificSidebarData.length);
+  console.log('Sidebar - Translated items count:', translatedSidebarData.length);
+  console.log('Sidebar - All sidebar data count:', sidebarData.length);
+  console.log('Sidebar - Available roles in data:', [...new Set(sidebarData.flatMap(item => item.roles || []))]);
+
+  // If no items are found at all, show a fallback message
+  if (translatedSidebarData.length === 0) {
+    console.warn('Sidebar - No items found to display');
+    return (
+      <div className="p-4 text-center text-gray-500">
+        <p>No navigation items available</p>
+        <p className="text-sm mt-2">Role: {currentUserRole || 'None'}</p>
+      </div>
+    );
+  }
 
   return (
     <div>

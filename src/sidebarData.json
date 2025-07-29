@@ -4,7 +4,7 @@
     "children": [],
     "icon": "/images/icons/navbar/dashboard.svg",
     "activeIcon": "/images/icons/navbar/dashboard-active.svg",
-    "roles": ["admin"]
+    "roles": ["admin", "company", "individual"]
   },
   {
     "name": "Admin Management",
@@ -180,5 +180,21 @@
     "icon": "/images/icons/navbar/user-management.svg",
     "activeIcon": "/images/icons/navbar/user-management-active.svg",
     "roles": ["company"]
+  },
+  {
+    "name": "Profile",
+    "link": "/profile",
+    "children": [],
+    "icon": "/images/icons/user.svg",
+    "activeIcon": "/images/icons/user.svg",
+    "roles": ["admin", "company", "individual"]
+  },
+  {
+    "name": "Settings",
+    "link": "/settings",
+    "children": [],
+    "icon": "/images/icons/toolbox.svg",
+    "activeIcon": "/images/icons/toolbox.svg",
+    "roles": ["admin", "company", "individual"]
   }
 ]

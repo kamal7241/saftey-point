@@ -36,6 +36,12 @@ export default function DashboardLayout({
     setMounted(true);
   }, []);
 
+  // Debug logging for mobile sidebar
+  useEffect(() => {
+    console.log('Dashboard Layout - Mobile sidebar state:', isMobileOpen);
+    console.log('Dashboard Layout - Pathname:', pathname);
+  }, [isMobileOpen, pathname]);
+
   if (!mounted) {
     return null;
   }
@@ -43,8 +49,8 @@ export default function DashboardLayout({
     <>
       <ProtectedRoute>
         <div className="dashboard-layout flex h-svh">
-          <nav className={`fixed start-0 top-0 z-40 h-screen w-[312px] flex-shrink-0 overflow-hidden bg-white sm:px-5 px-3 shadow-custom transition-transform sm:translate-x-0
-            ${isMobileOpen ? "" : "-translate-x-full"}
+          <nav className={`fixed start-0 top-0 z-40 h-screen w-[312px] flex-shrink-0 overflow-hidden bg-white sm:px-5 px-3 shadow-custom transition-transform duration-300 ease-in-out
+            ${isMobileOpen ? "translate-x-0" : "-translate-x-full sm:translate-x-0"}
             `}>
             <div className="flex h-full w-full flex-col justify-start">
               <div className="flex justify-center">

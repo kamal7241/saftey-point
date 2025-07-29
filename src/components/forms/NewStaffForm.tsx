@@ -81,7 +81,21 @@ export default function NewStaffForm({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
     if (userData && userData.staff?.id) {
-      result = await updateStaff(userData.staff.id, values, userData);
+      // Convert SingleStaff to StaffData format expected by updateStaff
+      const staffData = {
+        id: userData.id,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        phone: userData.phone,
+        avatar: userData.avatar,
+        isVerified: userData.isVerified,
+        staff: {
+          ...userData.staff,
+          staffRole: userData.staff.staffRole || undefined
+        }
+      };
+      result = await updateStaff(userData.staff.id, values, staffData);
     } else {
       result = await submitStaff(values);
     }

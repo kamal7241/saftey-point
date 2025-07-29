@@ -55,7 +55,10 @@ export default function SingleAdmin({
         setAdminData({
           ...response.admin,
           userType: response.admin.type,
-          avatar: response.admin.image,
+          user: {
+            ...response.admin.user,
+            roleId: response.admin.user.roleId || ""
+          }
         });
       } else {
         throw new Error("Admin data not found in response");
@@ -203,13 +206,13 @@ export default function SingleAdmin({
                   user: {
                     firstName: adminData.user.firstName,
                     lastName: adminData.user.lastName,
-                    avatar: adminData.avatar, // Use top-level avatar
+                    avatar: adminData.user.avatar, // Use user.avatar instead of top-level avatar
                     email: adminData.email, // Use top-level email
                     phone: adminData.phone, // Use top-level phone
                     address: adminData.user.address || "", // Provide default if missing
                     password: "", // Password is not needed for editing initial values
                     isVerified: adminData.isVerified,
-                    roleId: adminData.user.roleId,
+                    roleId: adminData.user.roleId || "",
                   },
                 }
               : null
@@ -347,7 +350,7 @@ export default function SingleAdmin({
         <h1 className="heading3">{t("admin_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
           <ImageWithFallback
-            src={`${process.env.NEXT_PUBLIC_URL}/${adminData?.avatar}`} // Use admin avatar
+            src={`${process.env.NEXT_PUBLIC_URL}/${adminData?.user.avatar}`} // Use user.avatar instead of top-level avatar
             alt="admin-profile"
             width={80}
             height={80}

@@ -1,5 +1,39 @@
 // Updated to match new backend structure
 
+interface StaffFormValues {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    password?: string;
+    resume?: string | null;
+    avatar?: string | null;
+    role?: number | string;
+    status?: string;
+    isVerified?: boolean;
+}
+
+interface StaffData {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    avatar?: string;
+    isVerified: boolean;
+    staff?: {
+        id: number;
+        status: string;
+        userType: string;
+        resume?: string;
+        staffRole?: {
+            id: number;
+            name: string;
+            description: string;
+        };
+    };
+}
+
 export const fetchStaffManagement = async (offset: number = 0, limit: number = 10, name?: string) => {
     try {
         const queryParams = new URLSearchParams();
@@ -17,7 +51,7 @@ export const fetchStaffManagement = async (offset: number = 0, limit: number = 1
         }
 
         return {
-            users: result.innerData.staff.map((staff: any) => ({
+            users: result.innerData.staff.map((staff: StaffData) => ({
                 id: staff.id, // User ID for backward compatibility
                 staffId: staff.staff?.id, // Staff ID for staff operations
                 name: `${staff.firstName} ${staff.lastName}`,
@@ -56,7 +90,7 @@ export const fetchStaffById = async (userID: number) => {
     }
 };
 
-export const submitStaff = async (values: any) => {
+export const submitStaff = async (values: StaffFormValues) => {
     const apiData = {
         firstName: values.firstName,
         lastName: values.lastName || "",
@@ -101,10 +135,10 @@ export const submitStaff = async (values: any) => {
 };
 export const updateStaff = async (
     id: number,
-    values: any,
-    currentData: any
+    values: StaffFormValues,
+    currentData: StaffData
 ) => {
-    const apiData: any = {};
+    const apiData: Record<string, unknown> = {};
 
     // Compare user fields (now directly on apiData)
     if (values.firstName && values.firstName !== currentData.firstName)

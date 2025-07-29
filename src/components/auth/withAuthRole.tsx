@@ -8,6 +8,10 @@ interface WithAuthRoleProps {
   // You can add any additional props that your wrapped component might need
 }
 
+interface UserWithRole {
+  role?: string;
+}
+
 const withAuthRole = <P extends object>(
   WrappedComponent: ComponentType<P>,
   allowedRoles: Array<string> // Now accepts any string role keys
@@ -30,7 +34,7 @@ const withAuthRole = <P extends object>(
       // Check if the user has any of the allowed roles
       const isUserWithRoles = 'roles' in user;
       const userRoles = isUserWithRoles ? user.roles.map(ur => ur.role.key) : [];
-      const primaryRole = isUserWithRoles ? user.primaryRole : (user as any).role;
+      const primaryRole = isUserWithRoles ? user.primaryRole : (user as UserWithRole).role;
       
       const hasAllowedRole = userRoles.some(role => allowedRoles.includes(role)) || 
                             (primaryRole && allowedRoles.includes(primaryRole));
@@ -46,7 +50,7 @@ const withAuthRole = <P extends object>(
     // you might want to show a loading spinner or null
     const isUserWithRoles = user && 'roles' in user;
     const userRoles = isUserWithRoles ? user.roles.map(ur => ur.role.key) : [];
-    const primaryRole = isUserWithRoles ? user.primaryRole : (user as any)?.role;
+    const primaryRole = isUserWithRoles ? user.primaryRole : (user as UserWithRole)?.role;
     
     const hasAllowedRole = userRoles.some(role => allowedRoles.includes(role)) || 
                           (primaryRole && allowedRoles.includes(primaryRole));

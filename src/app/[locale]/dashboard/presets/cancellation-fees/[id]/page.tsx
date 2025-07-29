@@ -9,17 +9,32 @@ import { useRouter } from "@/i18n/routing";
 import { CancellationFee } from "@/types/ui.types";
 import Loader from "@/components/ui/Loader";
 
-export default function CancellationFeeViewPage({ params }: { params: { id: string } }) {
+interface CancellationFeeViewPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function CancellationFeeViewPage({ params }: CancellationFeeViewPageProps) {
   const t = useTranslations("common");
   const router = useRouter();
   const [cancellationFee, setCancellationFee] = useState<CancellationFee | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
+    const getParams = async () => {
+      const { id: paramId } = await params;
+      setId(paramId);
+    };
+    getParams();
+  }, [params]);
+
+  useEffect(() => {
+    if (!id) return;
+
     const fetchData = async () => {
       try {
-        const result = await fetchCancellationFeeById(params.id);
+        const result = await fetchCancellationFeeById(id);
         if (result.success && result.data) {
           setCancellationFee(result.data);
         } else {
@@ -33,7 +48,7 @@ export default function CancellationFeeViewPage({ params }: { params: { id: stri
     };
 
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   const breadcrumbItems = [
     { label: t("home"), href: "/" },

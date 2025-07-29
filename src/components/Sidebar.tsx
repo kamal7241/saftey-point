@@ -29,9 +29,9 @@ const Sidebar = () => {
   const pathname = usePathname() as string;
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [openItems, setOpenItems] = useState<{ [key: string]: boolean }>({});
-  const { user } = useAuth();
+  const { getPrimaryRole } = useAuth();
   const { isNavigating, isPageLoading } = useLoading();
-  const currentUserRole = user?.role ?? "";
+  const currentUserRole = getPrimaryRole() ?? "";
 
   const filterByRole = (items: SidebarItem[], role: string): SidebarItem[] => {
     return items

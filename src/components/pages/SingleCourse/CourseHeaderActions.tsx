@@ -5,7 +5,7 @@ import Edit2 from "../../ui/icons/Edit2";
 import Suspend from "../../ui/icons/Suspend";
 import { Delete } from "../../ui/icons/Delete";
 
-type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions";
+type ActiveTab = "course_info" | "pricing" | "exam" | "certificate" | "sessions" | "enrollments";
 
 interface CourseHeaderActionsProps {
   isEditing: boolean;

@@ -1,4 +1,4 @@
-import { UserWithRoles, SYSTEM_ROLES } from '@/types/roles.types';
+import { UserWithRoles, SYSTEM_ROLES, SystemRoleKey } from '@/types/roles.types';
 
 /**
  * Check if a user has a specific permission
@@ -171,5 +171,5 @@ export const convertLegacyRole = (legacyRole: string): string[] => {
  * @returns boolean indicating if it's a system role
  */
 export const isSystemRole = (roleKey: string): boolean => {
-  return Object.values(SYSTEM_ROLES).includes(roleKey as any);
+  return Object.values(SYSTEM_ROLES).includes(roleKey as SystemRoleKey);
 }; 

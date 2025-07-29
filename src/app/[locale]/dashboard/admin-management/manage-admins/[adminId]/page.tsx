@@ -18,10 +18,7 @@ export default async function Page({
 
   return (
     <SingleAdmin
-      adminData={{
-        ...initialData.admin,
-        avatar: initialData.admin.user.avatar,
-      }}
+      adminData={initialData.admin}
       adminID={adminId}
     />
   );

@@ -1,11 +1,12 @@
 import SingleCourseType from "@/components/pages/SingleCourseType";
 
 interface SingleCourseTypePageProps {
-  params: {
+  params: Promise<{
     courseTypeId: string;
-  };
+  }>;
 }
 
-export default function SingleCourseTypePage({ params }: SingleCourseTypePageProps) {
-  return <SingleCourseType courseTypeId={params.courseTypeId} />;
+export default async function SingleCourseTypePage({ params }: SingleCourseTypePageProps) {
+  const { courseTypeId } = await params;
+  return <SingleCourseType courseTypeId={courseTypeId} />;
 } 

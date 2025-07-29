@@ -66,8 +66,7 @@ export default function SingleCourse({ courseID }: SingleCourseProps) {
     refetchPricingData,
     refetchCertificateData,
     refetchExamData,
-    refetchSessionData,
-    refetchEnrollmentsData
+    refetchSessionData
   } = useCourseData(courseID, activeTab);
 
   const getInitialFormValues = (): Partial<CourseFormValues> => {

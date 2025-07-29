@@ -10,8 +10,8 @@ import { useAuth } from "@/contexts/UserProvider";
 import { useLoading } from "@/contexts/LoadingProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
-  faUser, 
-  faCog,
+  faUser,
+  faGear,
   IconDefinition
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -34,7 +34,7 @@ const toTranslationKey = (name: string) =>
 // Font Awesome icon mapping
 const fontAwesomeIcons: Record<string, IconDefinition> = {
   faUser,
-  faCog,
+  faGear,
 };
 
 const Sidebar = () => {
@@ -112,7 +112,7 @@ const Sidebar = () => {
             // Font Awesome icon
             <FontAwesomeIcon 
               icon={fontAwesomeIcons[item.icon]} 
-              className={`w-5 h-5 ${active || isParentActive ? "text-primary" : "text-gray-600"}`}
+              className={`w-5 h-5 duotone-icon ${active || isParentActive ? "duotone-primary" : "duotone-secondary"}`}
             />
           ) : (
             // Image icon

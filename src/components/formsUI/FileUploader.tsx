@@ -41,20 +41,20 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'pdf':
-        return <FontAwesomeIcon icon={faFilePdf} className="w-8 h-8 text-red-500" />;
+        return <FontAwesomeIcon icon={faFilePdf} className="w-8 h-8 duotone-icon duotone-danger" />;
       case 'doc':
       case 'docx':
-        return <FontAwesomeIcon icon={faFileWord} className="w-8 h-8 text-blue-500" />;
+        return <FontAwesomeIcon icon={faFileWord} className="w-8 h-8 duotone-icon duotone-info" />;
       case 'ppt':
       case 'pptx':
-        return <FontAwesomeIcon icon={faFilePowerpoint} className="w-8 h-8 text-orange-500" />;
+        return <FontAwesomeIcon icon={faFilePowerpoint} className="w-8 h-8 duotone-icon duotone-warning" />;
       case 'xls':
       case 'xlsx':
-        return <FontAwesomeIcon icon={faFileExcel} className="w-8 h-8 text-green-500" />;
+        return <FontAwesomeIcon icon={faFileExcel} className="w-8 h-8 duotone-icon duotone-success" />;
       case 'txt':
-        return <FontAwesomeIcon icon={faFileText} className="w-8 h-8 text-gray-500" />;
+        return <FontAwesomeIcon icon={faFileText} className="w-8 h-8 duotone-icon duotone-secondary" />;
       default:
-        return <FontAwesomeIcon icon={faFileAlt} className="w-8 h-8 text-gray-500" />;
+        return <FontAwesomeIcon icon={faFileAlt} className="w-8 h-8 duotone-icon duotone-secondary" />;
     }
   };
 

@@ -14,7 +14,7 @@ import Toggler from "../formsUI/Toggler";
 import FileUploader from "../formsUI/FileUploader";
 import SelectField from "../formsUI/SelectField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileAlt, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faFileAlt, faSave, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface NewHandoutFormProps {
   initialValues: Partial<HandoutDTO>;
@@ -144,7 +144,7 @@ export default function NewHandoutForm({
   return (
     <div className="bg-white rounded-lg p-6 max-w-2xl mx-auto">
       <div className="flex items-center space-x-2 mb-6">
-        <FontAwesomeIcon icon={faFileAlt} className="w-6 h-6 text-blue-600" />
+                    <FontAwesomeIcon icon={faFileAlt} className="w-6 h-6 duotone-icon duotone-info" />
         <h2 className="text-xl font-semibold text-gray-900">
           {initialValues.id ? t("edit_handout") : t("add_handout")}
         </h2>
@@ -305,14 +305,14 @@ export default function NewHandoutForm({
                 variant="transparent"
                 onClick={onCancel}
                 disabled={isLoading}
-                icon={<FontAwesomeIcon icon={faTimes} className="w-4 h-4" />}
+                icon={<FontAwesomeIcon icon={faXmark} className="w-4 h-4 duotone-icon duotone-danger" />}
                 label={t("buttons.cancel")}
               />
               <Button
                 type="submit"
                 variant="primary"
                 disabled={isLoading}
-                icon={<FontAwesomeIcon icon={faSave} className="w-4 h-4" />}
+                icon={<FontAwesomeIcon icon={faSave} className="w-4 h-4 duotone-icon duotone-success" />}
                 label={isLoading ? t("buttons.saving") : t("buttons.save")}
               />
             </div>

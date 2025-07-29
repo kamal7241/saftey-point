@@ -6,19 +6,19 @@ import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faEdit,
+  faIdCard,
+  faCalendarAlt,
   faBuilding,
   faTrash,
-  faEdit,
   faLock,
   faPhone,
   faCheckCircle,
   faPause,
   faStar,
   faStickyNote,
-  faIdCard,
   faUserTie,
   faShieldAlt,
-  faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";

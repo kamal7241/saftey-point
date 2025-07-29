@@ -11,14 +11,14 @@ import Popup from "@/components/ui/Popup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
   faUser, 
-  faShield, 
   faEnvelope, 
-  faPhone, 
   faIdCard, 
   faCalendar, 
   faCheckCircle, 
   faEdit,
-  faTimes
+  faShield,
+  faPhone,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 
 const ProfilePage = () => {
@@ -84,7 +84,7 @@ const ProfilePage = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FontAwesomeIcon icon={faUser} className="w-8 h-8 text-gray-500" />
+            <FontAwesomeIcon icon={faUser} className="w-8 h-8 duotone-icon duotone-primary" />
           </div>
           <p className="text-gray-500">{t("please_log_in")}</p>
         </div>
@@ -116,7 +116,7 @@ const ProfilePage = () => {
                 </div>
                 <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
                   <div className="w-8 h-8 bg-success rounded-full flex items-center justify-center border-4 border-white shadow-sm">
-                    <FontAwesomeIcon icon={faCheckCircle} className="w-4 h-4 text-white" />
+                    <FontAwesomeIcon icon={faCheckCircle} className="w-4 h-4 duotone-icon duotone-success" />
                   </div>
                 </div>
               </div>
@@ -127,7 +127,7 @@ const ProfilePage = () => {
               <p className="text-light-400 mb-4">{user.email}</p>
               
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-success/10 text-success rounded-full text-sm font-medium">
-                <FontAwesomeIcon icon={faCheckCircle} className="w-4 h-4" />
+                <FontAwesomeIcon icon={faCheckCircle} className="w-4 h-4 duotone-icon duotone-success" />
                 {t("active_account")}
               </div>
             </div>
@@ -139,7 +139,7 @@ const ProfilePage = () => {
             <div className="p-8 bg-gray-100 rounded-lg">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <FontAwesomeIcon icon={faUser} className="w-5 h-5 text-primary bg-gray-200 p-3 rounded-lg" />
+                  <FontAwesomeIcon icon={faUser} className="w-5 h-5 duotone-icon duotone-primary bg-gray-200 p-3 rounded-lg" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-dark">{t("personal_information")}</h3>
@@ -173,7 +173,7 @@ const ProfilePage = () => {
             <div className="p-8 bg-gray-100 rounded-lg">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center">
-                  <FontAwesomeIcon icon={faShield} className="w-5 h-5 text-primary bg-gray-200 p-3 rounded-lg" />
+                  <FontAwesomeIcon icon={faShield} className="w-5 h-5 duotone-icon duotone-secondary bg-gray-200 p-3 rounded-lg" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-dark">{t("account_information")}</h3>
@@ -184,7 +184,7 @@ const ProfilePage = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5 duotone-icon duotone-info" />
                     <span className="text-sm font-medium text-light-400">{t("email")}</span>
                   </div>
                   <p className="text-dark font-semibold">{user.email}</p>
@@ -192,7 +192,7 @@ const ProfilePage = () => {
 
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faPhone} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faPhone} className="w-5 h-5 duotone-icon duotone-info" />
                     <span className="text-sm font-medium text-light-400">{t("phone_number")}</span>
                   </div>
                   <p className="text-dark font-semibold">
@@ -202,7 +202,7 @@ const ProfilePage = () => {
 
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faIdCard} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faIdCard} className="w-5 h-5 duotone-icon duotone-warning" />
                     <span className="text-sm font-medium text-light-400">{t("user_id")}</span>
                   </div>
                   <p className="text-dark font-semibold">{user.id || "N/A"}</p>
@@ -210,7 +210,7 @@ const ProfilePage = () => {
 
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faShield} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faShield} className="w-5 h-5 duotone-icon duotone-secondary" />
                     <span className="text-sm font-medium text-light-400">{t("role")}</span>
                   </div>
                   <p className="text-dark font-semibold capitalize">
@@ -222,7 +222,7 @@ const ProfilePage = () => {
 
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faCalendar} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faCalendar} className="w-5 h-5 duotone-icon duotone-info" />
                     <span className="text-sm font-medium text-light-400">{t("member_since")}</span>
                   </div>
                   <p className="text-dark font-semibold">January 2024</p>
@@ -230,7 +230,7 @@ const ProfilePage = () => {
 
                 <div className="p-4 rounded-lg">
                   <div className="flex items-center gap-3 mb-2">
-                    <FontAwesomeIcon icon={faCheckCircle} className="w-5 h-5 text-primary" />
+                    <FontAwesomeIcon icon={faCheckCircle} className="w-5 h-5 duotone-icon duotone-success" />
                     <span className="text-sm font-medium text-light-400">{t("status")}</span>
                   </div>
                   <p className="text-success font-semibold">{t("active")}</p>
@@ -246,7 +246,7 @@ const ProfilePage = () => {
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-              <FontAwesomeIcon icon={faEdit} className="w-5 h-5 text-primary" />
+              <FontAwesomeIcon icon={faEdit} className="w-5 h-5 duotone-icon duotone-primary" />
             </div>
             <div>
               <h3 className="text-xl font-semibold text-dark">{t("edit_profile")}</h3>
@@ -340,7 +340,7 @@ const ProfilePage = () => {
             <Button
               variant="secondary"
               onClick={handleCancel}
-              icon={<FontAwesomeIcon icon={faTimes} />}
+              icon={<FontAwesomeIcon icon={faXmark} className="duotone-icon duotone-danger" />}
               label={t("cancel")}
             />
           </div>

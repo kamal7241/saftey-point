@@ -117,7 +117,7 @@ export default function Handouts() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-2">
-          <FontAwesomeIcon icon={faFileAlt} className="w-6 h-6 text-gray-600" />
+                          <FontAwesomeIcon icon={faFileAlt} className="w-6 h-6 duotone-icon duotone-secondary" />
           <h1 className="text-2xl font-bold text-gray-900">{t("handouts")}</h1>
         </div>
         <Button
@@ -125,13 +125,13 @@ export default function Handouts() {
           label={t("buttons.add_handout")}
           onClick={() => setShowAddPopup(true)}
           variant="primary"
-          icon={<FontAwesomeIcon icon={faPlus} className="w-4 h-4" />}
+                        icon={<FontAwesomeIcon icon={faPlus} className="w-4 h-4 duotone-icon duotone-success" />}
         />
       </div>
 
       {handouts.length === 0 ? (
         <div className="text-center py-8">
-          <FontAwesomeIcon icon={faFileAlt} className="w-16 h-16 text-gray-900 mx-auto mb-4" />
+                      <FontAwesomeIcon icon={faFileAlt} className="w-16 h-16 duotone-icon duotone-secondary mx-auto mb-4" />
           <p className="text-gray-900 text-lg">{t("no_handouts_found")}</p>
         </div>
       ) : (
@@ -144,7 +144,7 @@ export default function Handouts() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
-                    <FontAwesomeIcon icon={faFileAlt} className="w-5 h-5 text-blue-600" />
+                    <FontAwesomeIcon icon={faFileAlt} className="w-5 h-5 duotone-icon duotone-info" />
                     <h3 className="text-lg font-semibold text-gray-900">
                       {handout.title}
                     </h3>
@@ -172,21 +172,21 @@ export default function Handouts() {
                     type="button"
                     variant="secondary"
                     onClick={() => window.open(handout.fileUrl, '_blank')}
-                    icon={<FontAwesomeIcon icon={faDownload} className="w-4 h-4" />}
+                    icon={<FontAwesomeIcon icon={faDownload} className="w-4 h-4 duotone-icon duotone-info" />}
                     label={t("buttons.download")}
                   />
                   <Button
                     type="button"
                     variant="dark"
                     onClick={() => handleEdit(handout)}
-                    icon={<FontAwesomeIcon icon={faEdit} className="w-4 h-4" />}
+                    icon={<FontAwesomeIcon icon={faEdit} className="w-4 h-4 duotone-icon duotone-primary" />}
                     label={t("buttons.edit")}
                   />
                   <Button
                     type="button"
                     variant="danger"
                     onClick={() => handleDelete(handout.id)}
-                    icon={<FontAwesomeIcon icon={faTrash} className="w-4 h-4" />}
+                    icon={<FontAwesomeIcon icon={faTrash} className="w-4 h-4 duotone-icon duotone-danger" />}
                     label={t("buttons.delete")}
                   />
                 </div>

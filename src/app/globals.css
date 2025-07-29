@@ -6,20 +6,20 @@
   :root {
     --background: 256 58% 99%;
     --foreground: 256 56% 1%;
-    --muted: 16 30% 87%;
-    --muted-foreground: 16 10% 39%;
+    --muted: 256 58% 99%;
+    --muted-foreground: 256 56% 100%;
     --popover: 256 58% 99%;
-    --popover-foreground: 256 56% 1%;
+    --popover-foreground: 256 56% 100%;
     --card: 256 58% 99%;
     --card-foreground: 256 56% 1%;
-    --border: 256 10% 91%;
-    --input: 256 10% 91%;
-    --primary: 256 61% 79%;
-    --primary-foreground: 256 61% 19%;
-    --secondary: 16 61% 79%;
-    --secondary-foreground: 16 61% 19%;
-    --accent: 136 61% 79%;
-    --accent-foreground: 136 61% 19%;
+    --border: 256 58% 99%;
+    --input: 256 58% 99%;
+    --primary: 350 58% 42%;
+    --primary-foreground: 256 61% 100%;
+    --secondary: 213 7% 35%;
+    --secondary-foreground: 256 56% 100%;
+    --accent: 256 58% 99%;
+    --accent-foreground: 256 56% 100%;
     --destructive: 0 88% 27%;
     --destructive-foreground: 0 88% 87%;
     --ring: 256 61% 79%;
@@ -98,6 +98,40 @@
   }
   .inputLabel {
     @apply text-dark mb-1.5 block text-sm font-medium capitalize;
+  }
+  
+  /* Duotone Icon Styles */
+  .duotone-icon {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .duotone-icon svg {
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
+  }
+  
+  .duotone-primary {
+    color: hsl(var(--primary));
+  }
+  
+  .duotone-secondary {
+    color: hsl(var(--secondary));
+  }
+  
+  .duotone-success {
+    color: hsl(var(--success));
+  }
+  
+  .duotone-warning {
+    color: hsl(var(--warning));
+  }
+  
+  .duotone-danger {
+    color: hsl(var(--danger));
+  }
+  
+  .duotone-info {
+    color: hsl(var(--info));
   }
 }
 

@@ -193,8 +193,8 @@
     "name": "Settings",
     "link": "/settings",
     "children": [],
-    "icon": "faCog",
-    "activeIcon": "faCog",
+    "icon": "faGear",
+    "activeIcon": "faGear",
     "roles": ["admin", "company", "individual"]
   }
 ]

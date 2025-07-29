@@ -31,6 +31,7 @@ interface FormValues {
   password: string;
   resume: string | null;
   avatar: string | null;
+  isVerified?: boolean;
 }
 
 export default function NewStaffForm({
@@ -44,15 +45,16 @@ export default function NewStaffForm({
 
   const initialValues: FormValues = userData
     ? {
-      firstName: userData.user.firstName,
-      lastName: userData.user.lastName || "",
-      status: userData.status || "pending",
-      email: userData.user.email,
-      phoneNumber: userData.user.phone || "",
+      firstName: userData.firstName,
+      lastName: userData.lastName || "",
+      status: userData.staff?.status || "pending",
+      email: userData.email,
+      phoneNumber: userData.phone || "",
       password: "",
       resume: null,
-      role: userData.role?.id ? Number(userData.role.id) : userData.user.roleId ? Number(userData.user.roleId) : "", // Use role.id first, fallback to user.roleId
-      avatar: userData.user.avatar,
+      role: userData.staff?.staffRole?.id ? Number(userData.staff.staffRole.id) : "", // Use staffRole.id
+      avatar: userData.avatar,
+      isVerified: userData.isVerified,
     }
     : {
       firstName: "",
@@ -76,36 +78,23 @@ export default function NewStaffForm({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [apiErrors, setApiErrors] = useState<string | null>(null);
   const handleSubmit = async (values: FormValues) => {
-    const mappedValues: SingleStaff = {
-      resume: values.resume ?? "",
-      status: values.status || "pending",
-      userType: "staff".toUpperCase(),
-      roleId: typeof values.role === 'number' ? values.role : undefined, // Set roleId at staff level
-      user: {
-        id: userData ? userData.user.id : 0,
-        firstName: values.firstName,
-        lastName: values.lastName || "",
-        avatar: values.avatar || "",
-        email: values.email,
-        phone: values.phoneNumber,
-        password: values.password,
-        isVerified: false,
-        roleId: values.role || "", // Keep as number or empty string
-      },
-    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let result: any;
-    if (userData && userData.id) {
-      result = await updateStaff(userData.id, mappedValues, userData);
+    if (userData && userData.staff?.id) {
+      result = await updateStaff(userData.staff.id, values, userData);
     } else {
-      result = await submitStaff(mappedValues);
+      result = await submitStaff(values);
     }
+    
+    // Check if the result exists and has success property
     if (result && result.success === true) {
       setIsSubmitted(true);
       setApiErrors(null);
     } else {
       setIsSubmitted(false);
-      setApiErrors(result?.message);
+      // Handle different error response structures
+      const errorMessage = result?.message || result?.error || "An error occurred while processing your request.";
+      setApiErrors(errorMessage);
     }
   };
 
@@ -158,7 +147,7 @@ export default function NewStaffForm({
                 subdirName="staff"
                 initialImageUrl={
                   userData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.avatar}`
+                    ? `${process.env.NEXT_PUBLIC_URL}/${userData.avatar}`
                     : null
                 }
               />
@@ -243,11 +232,11 @@ export default function NewStaffForm({
               <FileUploader
                 onChange={(file) => setFieldValue("resume", file)}
                 label="Attach Resume"
-                subdirName="user"
+                subdirName="resume"
                 small
                 initialImageUrl={
                   userData
-                    ? `${process.env.NEXT_PUBLIC_URL}/${initialValues.resume}`
+                    ? `${process.env.NEXT_PUBLIC_URL}/${userData.staff?.resume}`
                     : null
                 }
               />

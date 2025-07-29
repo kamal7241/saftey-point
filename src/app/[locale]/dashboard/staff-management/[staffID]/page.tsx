@@ -8,7 +8,8 @@ export default async function Page({
   params: Promise<{ staffID: string }>;
 }) {
   const { staffID } = await params;
-  const staffData = await fetchStaffById(Number(staffID));
+  const userData = await fetchStaffById(Number(staffID));
 
-  return <SingleStaff staffData={staffData} />;
+  // If server-side fetch fails, pass null to let client-side handle it
+  return <SingleStaff staffData={userData} staffId={staffID} />;
 }

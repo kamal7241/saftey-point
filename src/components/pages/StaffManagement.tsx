@@ -83,12 +83,16 @@ const StaffManagement = () => {
     setStaffToDelete(null);
   };
 
-  const handleView = (id: number) => {
-    router.push(`/dashboard/staff-management/${id}`);
+  const handleView = (id: number, staffId?: number) => {
+    // Use staff ID for navigation since the API expects staff ID
+    const navigationId = staffId || id;
+    router.push(`/dashboard/staff-management/${navigationId}`);
   };
 
-  const handleEdit = (id: number) => {
-    router.push(`/dashboard/staff-management/${id}`);
+  const handleEdit = (id: number, staffId?: number) => {
+    // Use staff ID for navigation since the API expects staff ID
+    const navigationId = staffId || id;
+    router.push(`/dashboard/staff-management/${navigationId}`);
   };
 
   const handleExport = () => {
@@ -132,14 +136,14 @@ const StaffManagement = () => {
         noBackground={true}
         textColor="blue-400"
         noLabel={true}
-        onClick={() => handleView(row.id)}
+        onClick={() => handleView(row.id, row.staffId)}
       />
       <Button
         icon={<Edit />}
         noBackground={true}
         textColor="gray-900"
         noLabel={true}
-        onClick={() => handleEdit(row.id)}
+        onClick={() => handleEdit(row.id, row.staffId)}
       />
       <Button
         icon={<Delete />}
@@ -147,7 +151,7 @@ const StaffManagement = () => {
         textColor="red-500"
         noLabel={true}
         onClick={() => {
-          setStaffToDelete(row.id);
+          setStaffToDelete(row.staffId || row.id);
           setShowDeleteConfirm(true);
         }}
       />

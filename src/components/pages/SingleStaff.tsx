@@ -3,34 +3,43 @@ import { deleteStaff, resetStaffPassword, toggleStaffVerification } from "@/api/
 import { useRouter } from "@/i18n/routing";
 import type { SingleStaff } from "@/types/ui.types";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faBuilding,
+  faTrash,
+  faEdit,
+  faLock,
+  faPhone,
+  faCheckCircle,
+  faPause,
+  faStar,
+  faStickyNote,
+  faIdCard,
+  faUserTie,
+  faShieldAlt,
+  faCalendarAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import PageHeader from "../global/PageHeader";
 import Button from "../ui/Button";
 import GroupInfo from "../ui/GroupInfo";
-import Buildings2 from "../ui/icons/Buildings2";
-import { Delete } from "../ui/icons/Delete";
-import Edit2 from "../ui/icons/Edit2";
-import Lock from "../ui/icons/Lock";
-import PhoneIcon from "../ui/icons/PhoneIcon";
-import StatusCheck from "../ui/icons/StatusCheck";
-import Suspend from "../ui/icons/Suspend";
-import MedalStar from "../ui/icons/MedalStar";
 import ImageWithFallback from "../ui/ImageWithFallback";
 import Popup from "../ui/Popup";
 import Status from "../ui/Status";
-import Note from "../ui/icons/Note";
-import Teacher from "../ui/icons/Teacher";
 import NewStaffForm from "../forms/NewStaffForm";
 import SomethingWentWrong from "../ui/SomethingWentWrong";
 import ResetPasswordForm from "../forms/ResetPasswordForm";
+import Loader from "../ui/Loader";
 
 interface SingleStaffProps {
-  staffData: SingleStaff;
+  staffData: SingleStaff | null;
+  staffId?: string;
 }
 
-export default function SingleStaff({ staffData }: SingleStaffProps) {
+export default function SingleStaff({ staffData, staffId }: SingleStaffProps) {
   const t = useTranslations("common");
-  const [userData] = useState<SingleStaff>(staffData);
+  const [userData, setUserData] = useState<SingleStaff | null>(staffData);
+  const [loading, setLoading] = useState(!staffData);
   const [error, setError] = useState<string | null>(null);
   const [addPopupOpen, setAddPopupOpen] = useState(false);
   const [resetPasswordPopupOpen, setResetPasswordPopupOpen] = useState(false);
@@ -39,8 +48,50 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
   const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
   const router = useRouter();
 
+  // Fetch staff data if not provided
+  useEffect(() => {
+    const fetchStaffData = async () => {
+      if (!staffData && staffId) {
+        try {
+          setLoading(true);
+          setError(null);
+          const { fetchStaffById } = await import("@/api/staffService");
+          const fetchedUser = await fetchStaffById(Number(staffId));
+          if (fetchedUser) {
+            setUserData(fetchedUser);
+          } else {
+            setError("Staff not found");
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to fetch staff data");
+        } finally {
+          setLoading(false);
+        }
+      } else if (staffData) {
+        setUserData(staffData);
+        setLoading(false);
+      }
+    };
+
+    fetchStaffData();
+  }, [staffData, staffId]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader />
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !userData) {
+    return <SomethingWentWrong message={error || "Staff not found"} />;
+  }
+
   const handleDelete = async () => {
-    const result = await deleteStaff(Number(userData?.id));
+    const result = await deleteStaff(Number(userData?.staff?.id));
     if (result.success) {
       router.push("/dashboard/staff-management");
     } else {
@@ -60,8 +111,8 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
   const handleToggleVerification = async () => {
     try {
       const result = await toggleStaffVerification(
-        Number(userData?.id),
-        (userData?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
+        Number(userData?.staff?.id),
+        (userData?.staff?.status === "ACTIVE") ? "INACTIVE" : "ACTIVE"
       );
       if (result.success) {
         handleClose();
@@ -82,7 +133,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
   const handleResetPassword = async (newPassword: string) => {
     try {
       const result = await resetStaffPassword(
-        Number(userData?.id),
+        Number(userData?.staff?.id),
         newPassword
       );
 
@@ -107,7 +158,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
     { label: t("home"), href: "/" },
     { label: t("staff-management"), href: "/dashboard/staff-management" },
     {
-      label: t("user_details"),
+      label: userData ? `${userData.firstName} ${userData.lastName}` : t("user_details"),
       href: "/dashboard/staff-management",
     },
   ];
@@ -146,7 +197,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
         <Popup isOpen={showSuspendConfirm} onClose={handleSuspendCancel}>
           <div>
             <p className="p-5 text-center text-2xl">
-              {t(userData?.status === "ACTIVE" ? "are_you_sure_suspend" : "are_you_sure_activate")}
+              {t(userData?.staff?.status === "ACTIVE" ? "are_you_sure_suspend" : "are_you_sure_activate")}
             </p>
             <div className="flex items-center justify-center gap-4">
               <Button onClick={handleToggleVerification} label={t("buttons.confirm")} />
@@ -186,7 +237,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               onClick={() => setAddPopupOpen(true)}
               icon={
                 <span className="inline-block w-6">
-                  <Edit2 />
+                  <FontAwesomeIcon icon={faEdit} />
                 </span>
               }
               variant="primary"
@@ -196,17 +247,17 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               onClick={() => setResetPasswordPopupOpen(true)}
               icon={
                 <span className="inline-block w-6">
-                  <Lock />
+                  <FontAwesomeIcon icon={faLock} />
                 </span>
               }
               variant="dark"
             />
             <Button
-              label={t(userData?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}
+              label={t(userData?.staff?.status === "ACTIVE" ? "buttons.suspend" : "buttons.activate")}
               onClick={() => setShowSuspendConfirm(true)}
               icon={
                 <span className="inline-block w-6">
-                  <Suspend />
+                  <FontAwesomeIcon icon={faPause} />
                 </span>
               }
               variant="dark"
@@ -216,7 +267,7 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
               onClick={() => setShowDeleteConfirm(true)}
               icon={
                 <span className="inline-block w-6">
-                  <Delete />
+                  <FontAwesomeIcon icon={faTrash} />
                 </span>
               }
               variant="danger"
@@ -228,62 +279,132 @@ export default function SingleStaff({ staffData }: SingleStaffProps) {
         <h1 className="heading3">{t("staff_details")}</h1>
         <div className="flex items-center gap-3 rounded-lg border border-gray-900 border-opacity-50 p-4">
           <ImageWithFallback
-            src={`${process.env.NEXT_PUBLIC_URL}/${userData?.user.avatar}`}
+            src={`${process.env.NEXT_PUBLIC_URL}/${userData?.avatar}`}
             alt="staff-profile"
             width={80}
             height={80}
             className="rounded-full object-cover w-20 h-20"
           />
           <h2 className="heading2">
-            {userData?.user.firstName} {userData?.user.lastName}
+            {userData?.firstName} {userData?.lastName}
           </h2>
         </div>
         <div className="flex flex-col gap-10">
+          {/* Basic Information */}
           <div className="grid grid-cols-3 gap-6">
             <GroupInfo
-              label={t("role")}
-              content={userData?.role?.name || t(`user_role.${userData?.userType.toLowerCase()}`)}
-              icon={<MedalStar />}
+              label={t("staff_id")}
+              content={userData?.staff?.id}
+              icon={<FontAwesomeIcon icon={faIdCard} />}
             />
             <GroupInfo
               label={t("phone_number")}
-              content={userData?.user.phone}
+              content={userData?.phone}
               copyIt
-              icon={<PhoneIcon />}
+              icon={<FontAwesomeIcon icon={faPhone} />}
             />
             <GroupInfo
               label={t("email")}
-              content={userData?.user.email}
+              content={userData?.email}
               copyIt
-              icon={<Buildings2 />}
+              icon={<FontAwesomeIcon icon={faBuilding} />}
             />
           </div>
-          {userData?.role?.description && (
+
+          {/* Role Information */}
+          <div className="grid grid-cols-3 gap-6">
+            <GroupInfo
+              label={t("role")}
+              content={userData?.staff?.staffRole?.name || t("no_role")}
+              icon={<FontAwesomeIcon icon={faUserTie} />}
+            />
+            <GroupInfo
+              label={t("user_type")}
+              content={userData?.staff?.userType}
+              icon={<FontAwesomeIcon icon={faUserTie} />}
+            />
+            <GroupInfo
+              label={t("verification_status")}
+              content={<Status status={userData?.isVerified ? "ACTIVE" : "INACTIVE"} />}
+              icon={<FontAwesomeIcon icon={faCheckCircle} />}
+            />
+          </div>
+
+          {/* Role Description */}
+          {userData?.staff?.staffRole?.description && (
             <div className="grid grid-cols-1 gap-6">
               <GroupInfo
                 label={t("role_description")}
-                content={userData.role.description}
-                icon={<MedalStar />}
+                content={userData.staff.staffRole.description}
+                icon={<FontAwesomeIcon icon={faStar} />}
               />
             </div>
           )}
-          <div className="grid grid-cols-3 gap-6">
+
+          {/* Permissions */}
+          {userData?.staff?.staffRole?.permissions && userData.staff.staffRole.permissions.length > 0 && (
+            <div className="grid grid-cols-1 gap-6">
+              <GroupInfo
+                label={t("permissions")}
+                content={
+                  <div className="flex flex-wrap gap-2">
+                    {userData.staff.staffRole.permissions.map((permission, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+                      >
+                        {permission}
+                      </span>
+                    ))}
+                  </div>
+                }
+                icon={<FontAwesomeIcon icon={faShieldAlt} />}
+              />
+            </div>
+          )}
+
+          {/* Resume and Status */}
+          <div className="grid grid-cols-2 gap-6">
             <GroupInfo
               label={t("resume")}
-              content={"missing from API"}
-              icon={<Note />}
+              content={
+                userData?.staff?.resume ? (
+                  <a
+                    href={`${process.env.NEXT_PUBLIC_URL}/${userData.staff.resume}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    {t("download_resume")}
+                  </a>
+                ) : (
+                  t("no_resume_available")
+                )
+              }
+              icon={<FontAwesomeIcon icon={faStickyNote} />}
             />
             <GroupInfo
               label={t("status")}
-              content={<Status status={userData?.status} />}
-              icon={<StatusCheck />}
-            />
-            <GroupInfo
-              label={t("certificates")}
-              content={"missing from API"}
-              icon={<Teacher />}
+              content={<Status status={userData?.staff?.status} />}
+              icon={<FontAwesomeIcon icon={faCheckCircle} />}
             />
           </div>
+
+          {/* Timestamps */}
+          {userData?.staff?.staffRole?.createdAt && (
+            <div className="grid grid-cols-2 gap-6">
+              <GroupInfo
+                label={t("created_at")}
+                content={new Date(userData.staff.staffRole.createdAt).toLocaleDateString()}
+                icon={<FontAwesomeIcon icon={faCalendarAlt} />}
+              />
+              <GroupInfo
+                label={t("updated_at")}
+                content={new Date(userData.staff.staffRole.updatedAt).toLocaleDateString()}
+                icon={<FontAwesomeIcon icon={faCalendarAlt} />}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -190,38 +190,43 @@ export interface CancellationFee {
     image?: string;
 }
 
-export interface SingleStaff {
-    id?: number;
-    status: string;
+export interface StaffRole {
+    id: number;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+    name: string;
+    description: string;
+    permissions: string[];
+    isActive: boolean;
+}
+
+export interface StaffData {
+    id: number;
     userType: string;
-    image?: string;
-    resume?: string;
-    roleId?: number;
-    role?: {
-        id: number;
-        name: string;
-        description: string;
-        permissions: string[];
-        isActive: boolean;
-    };
-    user: {
+    resume: string;
+    status: string;
+    staffRole: StaffRole | null;
+}
+
+export interface SingleStaff {
+
         id: number;
         firstName: string;
         lastName: string;
         avatar: string;
         email: string;
         phone: string;
-        password?: string;
         isVerified: boolean;
-        roleId: number | string;
-        individual?: any;
-        staff?: any;
-        company?: any;
-        admin?: any;
-    };
+        individual: any;
+        staff: StaffData;
+        company: any;
+        admin: any;
+
 }
 export interface SingleStaffUI {
     id: number;
+    staffId?: number;
     status: string;
     type: string;
     image?: string;

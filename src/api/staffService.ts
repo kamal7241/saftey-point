@@ -1,4 +1,4 @@
-import { SingleStaff } from "@/types/ui.types";
+// Updated to match new backend structure
 
 export const fetchStaffManagement = async (offset: number = 0, limit: number = 10, name?: string) => {
     try {
@@ -17,17 +17,18 @@ export const fetchStaffManagement = async (offset: number = 0, limit: number = 1
         }
 
         return {
-            users: result.innerData.staff.map((staff: SingleStaff) => ({
-                id: staff.id,
-                name: `${staff.user.firstName} ${staff.user.lastName}`,
-                email: `${staff.user.email}`,
-                status: staff.status,
-                type: staff.userType.toLowerCase(),
-                phone: staff.user.phone,
-                image: `${process.env.NEXT_PUBLIC_URL}/${staff.user.avatar}`,
-                roleName: staff.role?.name || "No Role",
-                roleDescription: staff.role?.description || "",
-                roleId: staff.role?.id || staff.roleId || staff.user.roleId,
+            users: result.innerData.staff.map((staff: any) => ({
+                id: staff.id, // User ID for backward compatibility
+                staffId: staff.staff?.id, // Staff ID for staff operations
+                name: `${staff.firstName} ${staff.lastName}`,
+                email: staff.email,
+                status: staff.staff?.status || "pending",
+                type: staff.staff?.userType?.toLowerCase() || "staff",
+                phone: staff.phone,
+                image: `${process.env.NEXT_PUBLIC_URL}/${staff.avatar}`,
+                roleName: staff.staff?.staffRole?.name || "No Role",
+                roleDescription: staff.staff?.staffRole?.description || "",
+                roleId: staff.staff?.staffRole?.id,
             })),
             totalCount: result.innerData.count
         };
@@ -47,30 +48,24 @@ export const fetchStaffById = async (userID: number) => {
             throw new Error(result.message || "Failed to fetch staff details");
         }
 
-        const staff = result.innerData.staff;
-        return staff;
+        const user = result.innerData.user;
+        return user;
     } catch (error) {
         console.error("Error fetching staff by ID:", error);
         return null;
     }
 };
 
-export const submitStaff = async (values: SingleStaff) => {
+export const submitStaff = async (values: any) => {
     const apiData = {
+        firstName: values.firstName,
+        lastName: values.lastName || "",
+        avatar: values.avatar || "",
+        email: values.email,
+        phone: values.phoneNumber,
+        password: values.password || "",
         resume: values.resume || "",
-        status: values.status || "pending",
-        userType: values.userType || "STAFF",
-        roleId: values.roleId || values.user.roleId || 1, // Use roleId from staff level first
-        user: {
-            firstName: values.user.firstName,
-            lastName: values.user.lastName || "",
-            avatar: values.user.avatar,
-            email: values.user.email,
-            phone: values.user.phone,
-            password: values.user.password || "",
-            isVerified: values.user.isVerified || false,
-            roleId: values.user.roleId || 1,
-        },
+        staffRoleId: values.role,
     };
 
     try {
@@ -88,6 +83,11 @@ export const submitStaff = async (values: SingleStaff) => {
             throw new Error(result.message || "Failed to submit staff");
         }
 
+        // Check if the API response indicates success
+        if (result.success === false) {
+            throw new Error(result.message || "Failed to submit staff");
+        }
+
         return result;
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -101,48 +101,40 @@ export const submitStaff = async (values: SingleStaff) => {
 };
 export const updateStaff = async (
     id: number,
-    values: SingleStaff,
-    currentData: SingleStaff
+    values: any,
+    currentData: any
 ) => {
-    const apiData: Partial<SingleStaff> = {};
+    const apiData: any = {};
 
-    // Compare top-level fields
-    if (values.resume !== currentData.resume) apiData.resume = values.resume;
-    if (values.status !== currentData.status) apiData.status = values.status;
-    if (values.userType !== currentData.userType) apiData.userType = values.userType;
-    if (values.roleId !== currentData.roleId) apiData.roleId = values.roleId;
-
-    // Compare nested `user` fields
-    const userUpdates: Partial<SingleStaff["user"]> = {};
-
-    if (values.user.firstName && values.user.firstName !== currentData.user.firstName)
-        userUpdates.firstName = values.user.firstName;
-    if (values.user.lastName && values.user.lastName !== currentData.user.lastName)
-        userUpdates.lastName = values.user.lastName;
-    if (values.user.avatar && values.user.avatar !== currentData.user.avatar)
-        userUpdates.avatar = values.user.avatar;
-    if (values.user.email && values.user.email !== currentData.user.email)
-        userUpdates.email = values.user.email;
-    if (values.user.phone && values.user.phone !== currentData.user.phone)
-        userUpdates.phone = values.user.phone;
-    if (values.user.isVerified !== currentData.user.isVerified)
-        userUpdates.isVerified = values.user.isVerified;
-    if (values.user.roleId !== currentData.user.roleId) {
-        userUpdates.roleId = values.user.roleId;    
-    }
-
-    if (Object.keys(userUpdates).length > 0) {
-        apiData.user = userUpdates as SingleStaff["user"]; // Type assertion to match the expected type
-    }
+    // Compare user fields (now directly on apiData)
+    if (values.firstName && values.firstName !== currentData.firstName)
+        apiData.firstName = values.firstName;
+    if (values.lastName && values.lastName !== currentData.lastName)
+        apiData.lastName = values.lastName;
+    if (values.avatar && values.avatar !== currentData.avatar)
+        apiData.avatar = values.avatar;
+    if (values.email && values.email !== currentData.email)
+        apiData.email = values.email;
+    if (values.phoneNumber && values.phoneNumber !== currentData.phone)
+        apiData.phone = values.phoneNumber;
+    if (values.isVerified !== currentData.isVerified)
+        apiData.isVerified = values.isVerified;
+    if (values.resume && values.resume !== currentData.staff?.resume)
+        apiData.resume = values.resume;
+    if (values.role && values.role !== currentData.staff?.staffRole?.id)
+        apiData.staffRoleId = values.role;
 
     // If no changes detected, return early
     if (Object.keys(apiData).length === 0) {
         return { success: true, data: currentData };
     }
 
+    // Use staff ID for the API call instead of user ID
+    const staffId = currentData.staff?.id || id;
+    
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_URL}/api/v1/staff/${id}`,
+            `${process.env.NEXT_PUBLIC_URL}/api/v1/staff/${staffId}`,
             {
                 method: "PATCH",
                 headers: {
@@ -155,6 +147,11 @@ export const updateStaff = async (
         const result = await response.json();
 
         if (!response.ok) {
+            throw new Error(result.message || "Failed to update staff");
+        }
+
+        // Check if the API response indicates success
+        if (result.success === false) {
             throw new Error(result.message || "Failed to update staff");
         }
 

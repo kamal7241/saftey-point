@@ -29,7 +29,9 @@
     "account-management": "إدارة الحساب",
     "cancellations-refunds": "الإلغاء واسترداد",
     "rewards": "مكافآت",
-    "course_type": "نوع الدورة"
+    "course_type": "نوع الدورة",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات"
   },
   "about_page": {
     "title": "حول لوحة معلومات السلامة",
@@ -916,7 +918,27 @@
     "course_type_deleted_successfully": "تم حذف نوع الدورة بنجاح",
     "error_creating_course_type": "خطأ في إنشاء نوع الدورة",
     "error_updating_course_type": "خطأ في تحديث نوع الدورة",
-    "error_deleting_course_type": "خطأ في حذف نوع الدورة"
+    "error_deleting_course_type": "خطأ في حذف نوع الدورة",
+    "profile": "الملف الشخصي",
+    "personal_information": "المعلومات الشخصية",
+    "account_information": "معلومات الحساب",
+    "profile_information": "معلومات الملف الشخصي",
+    "account_details": "تفاصيل الحساب",
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "email_address": "عنوان البريد الإلكتروني",
+    "phone_number": "رقم الهاتف",
+    "user_id": "معرف المستخدم",
+    "member_since": "عضو منذ",
+    "active_account": "حساب نشط",
+    "edit_profile": "تعديل الملف الشخصي",
+    "update_personal_information": "تحديث معلوماتك الشخصية",
+    "not_provided": "غير متوفر",
+    "save_changes": "حفظ التغييرات",
+    "cancel": "إلغاء",
+    "please_log_in": "يرجى تسجيل الدخول لعرض ملفك الشخصي",
+    "your_basic_profile_details": "تفاصيل ملفك الشخصي الأساسية",
+    "your_account_and_security_details": "تفاصيل حسابك وأمانك"
   },
   "landing": {
     "login": "تسجيل الدخول",

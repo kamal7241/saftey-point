@@ -183,18 +183,18 @@
   },
   {
     "name": "Profile",
-    "link": "/profile",
+    "link": "/dashboard/profile",
     "children": [],
-    "icon": "/images/icons/user.svg",
-    "activeIcon": "/images/icons/user.svg",
+    "icon": "faUser",
+    "activeIcon": "faUser",
     "roles": ["admin", "company", "individual"]
   },
   {
     "name": "Settings",
     "link": "/settings",
     "children": [],
-    "icon": "/images/icons/toolbox.svg",
-    "activeIcon": "/images/icons/toolbox.svg",
+    "icon": "faCog",
+    "activeIcon": "faCog",
     "roles": ["admin", "company", "individual"]
   }
 ]

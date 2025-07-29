@@ -8,6 +8,12 @@ import { ArrowDown } from "./ui/icons/ArrowDown";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/UserProvider";
 import { useLoading } from "@/contexts/LoadingProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faUser, 
+  faCog,
+  IconDefinition
+} from "@fortawesome/free-solid-svg-icons";
 
 type SidebarItem = {
   name: string;
@@ -24,6 +30,12 @@ const toTranslationKey = (name: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, "")
     .replace(/\s+/g, "-");
+
+// Font Awesome icon mapping
+const fontAwesomeIcons: Record<string, IconDefinition> = {
+  faUser,
+  faCog,
+};
 
 const Sidebar = () => {
   const t = useTranslations("nav");
@@ -96,16 +108,25 @@ const Sidebar = () => {
     <>
       {item.icon && (
         <span className="relative inline-block h-5 w-5 flex-shrink-0">
-          <Image
-            src={
-              active || isParentActive
-                ? item.activeIcon || "/default-active-icon.png"
-                : item.icon || "/default-icon.png"
-            }
-            alt={item.name}
-            className="object-contain"
-            fill
-          />
+          {item.icon.startsWith('fa') ? (
+            // Font Awesome icon
+            <FontAwesomeIcon 
+              icon={fontAwesomeIcons[item.icon]} 
+              className={`w-5 h-5 ${active || isParentActive ? "text-primary" : "text-gray-600"}`}
+            />
+          ) : (
+            // Image icon
+            <Image
+              src={
+                active || isParentActive
+                  ? item.activeIcon || "/default-active-icon.png"
+                  : item.icon || "/default-icon.png"
+              }
+              alt={item.name}
+              className="object-contain"
+              fill
+            />
+          )}
         </span>
       )}
       <span className="whitespace-nowrap capitalize">{item.name}</span>
@@ -178,17 +199,20 @@ const Sidebar = () => {
   if (translatedSidebarData.length === 0) {
     console.warn('Sidebar - No items found to display');
     return (
-      <div className="p-4 text-center text-gray-500">
-        <p>No navigation items available</p>
-        <p className="text-sm mt-2">Role: {currentUserRole || 'None'}</p>
-      </div>
+      <aside className="w-64 bg-white border-r border-gray-200 p-4">
+        <div className="text-center text-gray-500">
+          <p>No menu items available for your role.</p>
+        </div>
+      </aside>
     );
   }
 
   return (
-    <div>
-      <ul className="space-y-4">{renderMenu(translatedSidebarData)}</ul>
-    </div>
+    <aside className="w-64 bg-white border-r border-gray-200 p-4">
+      <nav className="space-y-2">
+        <ul className="space-y-1">{renderMenu(translatedSidebarData)}</ul>
+      </nav>
+    </aside>
   );
 };
 

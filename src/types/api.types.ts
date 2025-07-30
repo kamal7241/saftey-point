@@ -362,3 +362,95 @@ export interface SingleHandoutResponse {
   };
   error?: string;
 }
+
+// Notification Types
+export interface NotificationDTO {
+  title: string;
+  message: string;
+  type?: 'info' | 'success' | 'warning' | 'error';
+  data?: Record<string, any>;
+}
+
+export interface NotificationGroupDTO {
+  name: string;
+  description?: string;
+  userIds?: number[];
+}
+
+export interface NotificationGroup {
+  id: number;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  userCount?: number;
+}
+
+export interface PlatformStat {
+  platform: string;
+  count: string;
+}
+
+export interface NotificationStats {
+  totalTokens: number;
+  platformStats: PlatformStat[];
+  activeUsers: number;
+}
+
+export interface NotificationGroupStats {
+  groupId: number;
+  groupName: string;
+  totalUsers: number;
+  totalSent: number;
+  totalDelivered: number;
+  totalFailed: number;
+  totalRead: number;
+  deliveryRate: number;
+  readRate: number;
+}
+
+export interface NotificationResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: any;
+  error?: string;
+}
+
+export interface NotificationGroupsResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    count: number;
+    groups: NotificationGroup[];
+  };
+  error?: string;
+}
+
+export interface SingleNotificationGroupResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: {
+    group?: NotificationGroup;
+  };
+  error?: string;
+}
+
+export interface NotificationStatsResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: NotificationStats;
+  error?: string;
+}
+
+export interface NotificationGroupStatsResponse {
+  success: boolean;
+  message?: string;
+  timestamp?: string;
+  innerData?: NotificationGroupStats;
+  error?: string;
+}

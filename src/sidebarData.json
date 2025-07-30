@@ -103,6 +103,14 @@
     "roles": ["admin"]
   },
   {
+    "name": "Notifications",
+    "link": "/dashboard/notifications",
+    "children": [],
+    "icon": "/images/icons/navbar/notification.svg",
+    "activeIcon": "/images/icons/navbar/notification-active.svg",
+    "roles": ["admin"]
+  },
+  {
     "name": "Presets",
     "link": "/dashboard/presets",
     "children": [{

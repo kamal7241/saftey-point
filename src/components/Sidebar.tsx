@@ -152,7 +152,7 @@ const Sidebar = () => {
           {item.children && item.children.length > 0 ? (
             <button
               onClick={() => toggleItem(item.name)}
-              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${active || isParentActive ? "text-primary" : ""
+              className={`w-full flex items-center px-2 py-2 text-balance font-medium rounded-md gap-3 ${active || isParentActive ? "text-primary" : ""
                 }`}
             >
               {renderMenuItem(item, active, isParentActive)}
@@ -165,7 +165,7 @@ const Sidebar = () => {
             </button>
           ) : isComingSoon ? (
             <div
-              className="w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-1 cursor-not-allowed opacity-60 text-xs"
+              className="w-full flex items-center px-2 py-2 text-balance font-medium rounded-md gap-1 cursor-not-allowed opacity-60 text-xs"
               title="Coming Soon"
             >
               {renderMenuItem(item, false, false)}
@@ -174,7 +174,7 @@ const Sidebar = () => {
           ) : (
             <Link
               href={item.link}
-              className={`w-full flex items-center px-4 py-2 text-balance font-medium rounded-md gap-3 ${active ? "bg-primary text-white" : "text-gray-600"
+              className={`w-full flex items-center px-2 py-2 text-balance font-medium rounded-md gap-3 ${active ? "bg-primary text-white" : "text-gray-600"
                 }`}
             >
               {renderMenuItem(item, active, isParentActive)}
@@ -208,7 +208,7 @@ const Sidebar = () => {
   }
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 p-4">
+    <aside className="w-full bg-white p-4">
       <nav className="space-y-2">
         <ul className="space-y-1">{renderMenu(translatedSidebarData)}</ul>
       </nav>

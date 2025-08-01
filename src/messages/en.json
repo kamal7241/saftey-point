@@ -34,7 +34,8 @@
     "course_type": "Course Type",
     "handouts": "Handouts",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "notifications": "Notifications"
   },
   "about_page": {
     "title": "About Safety Dashboard",

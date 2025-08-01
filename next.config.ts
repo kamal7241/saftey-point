@@ -61,6 +61,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "safetypointacademy.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   reactStrictMode: true,
@@ -83,7 +89,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/upload",
-        destination: "https://api.imtyaaz.com/safety-point-academy/api/v1/upload",
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/safety-point-academy/api/v1/upload`,
       },
     ];
   },

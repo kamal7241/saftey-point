@@ -141,7 +141,7 @@ export const fetchAdmins = async (offset: number = 0, limit: number = 10, name?:
                 phone: admin.user.phone,
                 image: admin.user.avatar.startsWith('http') 
                     ? admin.user.avatar 
-                    : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
+                    : `${process.env.NEXT_PUBLIC_URL}/${admin.user.avatar}`,
                 isVerified: admin.user.isVerified,
                 role: admin.roles && admin.roles.length > 0 ? admin.roles[0].name : 'N/A'
             })),
@@ -186,7 +186,7 @@ export const fetchAdminById = async (adminId: string) => {
                 phone: admin.user.phone,
                 image: admin.user.avatar.startsWith('http')
                     ? admin.user.avatar
-                    : `${process.env.NEXT_PUBLIC_URL}${admin.user.avatar}`,
+                    : `${process.env.NEXT_PUBLIC_URL}/${admin.user.avatar}`,
                 isVerified: admin.user.isVerified,
                 user: {
                     ...admin.user,

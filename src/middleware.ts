@@ -5,16 +5,16 @@ import { routing } from "./i18n/routing";
 // Define CSP headers
 
 
-const cspHeaders = `default-src 'self' https: https://api.imtyaaz.com http://localhost:4444;
-script-src 'self' blob: 'unsafe-eval' 'unsafe-inline' https://api.imtyaaz.com http://localhost:4444;
-img-src 'self' blob: data: https://api.imtyaaz.com http://localhost:4444 https://*.openstreetmap.org;
-media-src 'self' blob: https://api.imtyaaz.com http://localhost:4444;
+const cspHeaders = `default-src 'self' https: https://api.imtyaaz.com http://localhost:4444 https://safetypointacademy.com;
+script-src 'self' blob: 'unsafe-eval' 'unsafe-inline' https://api.imtyaaz.com http://localhost:4444 https://safetypointacademy.com;
+img-src 'self' blob: data: https://api.imtyaaz.com http://localhost:4444 https://*.openstreetmap.org https://safetypointacademy.com;
+media-src 'self' blob: https://api.imtyaaz.com http://localhost:4444 https://safetypointacademy.com;
 font-src 'self' 'unsafe-eval' blob: data: webpack: https://fonts.gstatic.com;
 base-uri 'self';
-connect-src 'self' https://api.imtyaaz.com http://localhost:4444 https://nominatim.openstreetmap.org;
+connect-src 'self' https://api.imtyaaz.com http://localhost:4444 https://nominatim.openstreetmap.org https://safetypointacademy.com;
 script-src-elem 'self' 'unsafe-inline' https://analytics.google.com https://maps.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://static.hotjar.com https://connect.facebook.net https://*.googleapis.com https://*.google.com https://googleads.g.doubleclick.net  https://script.hotjar.com https://www.googleadservices.com https://www.youtube.com;
-form-action 'self' https://api.imtyaaz.com http://localhost:4444;
-frame-src 'self' https://api.imtyaaz.com http://localhost:4444;
+form-action 'self' https://api.imtyaaz.com http://localhost:4444 https://safetypointacademy.com;
+frame-src 'self' https://api.imtyaaz.com http://localhost:4444 https://safetypointacademy.com;
 object-src 'self' blob: data:;
 worker-src 'self' blob:;
 style-src 'self' 'unsafe-inline';
